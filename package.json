@@ -25,5 +25,6 @@
     "ejs": "^2.0.8",
     "express": "^4.10.7",
     "morgan": "^1.5.1"
-  }
+  },
+  "private": true
 }
