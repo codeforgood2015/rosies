@@ -1,0 +1,5 @@
+# Logs
+npm-debug.log
+
+# Use npm install for modules
+node_modules
