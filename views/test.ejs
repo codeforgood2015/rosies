@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html style = "text-align: center;">
+<head>
+<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js">
+</script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+</head>
+<script>
+	var app = angular.module('dateTime', []);
+	app.controller('datetimeController', function(){
+		this.today = new Date(Date.now());
+		this.tomorrow = new Date(Date.now() + 1000*60*60*24)
+		this.dateSlots = [this.today.toDateString() + " (today)", this.tomorrow.toDateString() + " (tomorrow)"];
+		this.selectDate = function(dateChoice){this.dateSelect = this.dateSlots[dateChoice]};
+		this.timeSlots = ['9:00 am to 10:00 am', '10:00 am  to 11:00 am', '11:00 am to 12:00 noon', '4:30 pm to 5:30 pm', '5:30 pm to 6:30 pm'];
+		this.selectTime = function(timeChoice){this.timeSelect = timeChoice;};
+		this.selectBag = function(bagChoice){this.bag = bagChoice;};
+		this.allergies = false;
+		this.clearAllergies = function(){$('#allergybox').val(''); this.allergies = false;};
+
+	});
+</script>
+<body ng-app = "dateTime">
+<h1>Sign Up for the Food Pantry</h1>
+
+<div ng-controller="datetimeController as ctrl">
+<h3>Select a Date</h3>
+	<br>
+	<button ng-click="ctrl.selectDate(0)">{{ctrl.dateSlots[0]}}</button>
+	<button ng-click="ctrl.selectDate(1)">{{ctrl.dateSlots[1]}}</button>
+	<br>
+<h3>Select a Time</h3>
+<div ng-repeat="time in ctrl.timeSlots"><button ng-click="ctrl.selectTime(time)">{{time}}</button></div>
+
+<br>
+
+<h3>Premade Bag</h3>
+	<button ng-click="ctrl.selectBag('yes')">yes, make me a bag</button>
+	<button ng-click="ctrl.selectBag('no')">no, I want to pick my own food</button>
+
+<h3>Dietary Constraints</h3>
+	<button ng-click="ctrl.allergies = true;"> yes </button>
+	<button ng-click="ctrl.clearAllergies(); allergies = '';"> no </button>
+	<br><br>
+	<textarea id = "allergybox" rows = "4" cols = "50" ng-show = "ctrl.allergies" ng-model="allergies"></textarea>
+<br>
+<br>
+<hr>
+<span>
+Date: {{ctrl.dateSelect}}<br>
+Time: {{ctrl.timeSelect}}<br>
+Pre-made Bag: {{ctrl.bag}}<br>
+Dietary constraints: {{allergies}}
+</span>
+</div>
+
+</body>
+</html>
