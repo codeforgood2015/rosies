@@ -4,6 +4,8 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var http = require('http');
 
+// routes for the app
+var auth = require('./routes/auth');
 
 var app = express();
 
@@ -18,13 +20,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/auth', auth);
+
 app.get('/', function(req, res) {
 	res.send('Hello World');
 });
-
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
-});
-
 
 module.exports = app;
