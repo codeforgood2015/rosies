@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!--Include scripts and stylesheets -->
+		<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src='../public/javascript/admintest.js'> </script>
+		<link href='../public/stylesheets/admintest.css' type='text/css' rel='stylesheet'/>
+		<title>
+			Admin Home
+		</title>
+	</head>
+	<body>
+		<div np-app='admin'>
+			<!-- back button -->
+			<button>
+			</button>
+			<!-- form for login -->
+			<div class='login' ng-show='currentSection === 0'>
+				<img src=''/>
+				<form>
+				</form>
+			</div>
+			<!-- Buttons for different actions admins can take: e.g. manage hours, manage accounts, view signups -->
+			<div class='actions' ng-show='currentSection === 1'>
+				<button>
+					View current food pantry signups.
+				</button>
+				<button>
+					Manage food pantry hours.
+				</button>
+				<button>
+					Manage admin accounts.
+				</button>
+			</div>
+			<!-- Interactive view for the current guest signups for today or tomorrow. JQuery and show/hidden tags -->
+			<div class='viewguests' ng-show='currentSection === 2'>
+				<div class=''
+			</div>
+			<!-- Table displaying the current hours, with edit buttons. -->
+			<!-- Form for new hours.-->
+			<div class='hours' ng-show='currentSection === 3'>
+			</div>
+			<!-- Scrollable table with current admins and delete buttons-->
+			<!-- Form for new admin -->
+			<div class='accounts' ng-show='currentSection === 4'>
+			</div>
+		</div>
+	</body>	
+</html>
