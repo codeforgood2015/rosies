@@ -119,7 +119,8 @@ table tr td:nth-child(odd){
 	vertical-align: top; 
 	padding-right: 20px;
 }
-button .back{
+
+#back{
 	background-color: #3c84d5;
 	color: white;
 	width: 250px;
@@ -133,7 +134,7 @@ button .back{
 <body ng-app = "dateTime">
 <div ng-controller="datetimeController as ctrl">
 
-<button class = "back"  ng-show="currentSelect >= 1" ng-click = "ctrl.back()"> BACK </button>
+<button id = "back"  ng-show="currentSelect >= 1" ng-click = "ctrl.back()"><span style = "font-family: 'Times New Roman';">&#9166</span><br>BACK </button>
 <div id = "header">
 <img id = "logo" src = '../public/images/logo.png'>
 <h1>Food Pantry Sign Up</h1>
