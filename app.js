@@ -4,6 +4,19 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var http = require('http');
 
+var mongoose = require('mongoose');
+var connection_string = 'localhost/rosies';
+if (process.env.OPENSHIFT_MONGODB_DB_PASSWORD) {
+  connection_string = process.env.OPENSHIFT_MONGODB_DB_USERNAME + ':' +
+        process.env.OPENSHIFT_MONGODB_DB_PASSWORD + '@' +
+        process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
+        process.env.OPENSHIFT_MONGODB_DB_PORT + process.env.OPENSHIFT_APP_NAME;
+}
+mongoose.connect(connection_string);
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+// db.once('open', function(callback) {});
+
 // routes for the app
 var auth = require('./routes/auth');
 
