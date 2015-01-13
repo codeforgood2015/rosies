@@ -5,7 +5,7 @@
 <script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js">
 </script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<link href='http://fonts.googleapis.com/css?family=Open+Sans|Raleway:400,300|Bree+Serif|Playfair+Display' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans|Roboto|Playfair+Display' rel='stylesheet' type='text/css'>
 </head>
 <script>
 	var app = angular.module('dateTime', []);
@@ -20,7 +20,7 @@
 
 		this.today = new Date(Date.now());
 		this.tomorrow = new Date(Date.now() + 1000*60*60*24)
-		this.dateSlots = [this.today.toDateString() + " (today)", this.tomorrow.toDateString() + " (tomorrow)"];
+		this.dateSlots = [this.today.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'}), this.tomorrow.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})];
 		this.selectDate = function(dateChoice){
 			this.dateSelect = this.dateSlots[dateChoice];
 		};
@@ -40,20 +40,38 @@ html{
 	background-color: #734866;
 	color:white;
 	text-align:center;
-	font-family: 'Open Sans';
+	font-family: 'Roboto';
 	font-size: 25px;
+	background-image: url('../public/images/background.png');
+	background-size: 100%;
 }
+body{
 
+
+}
 #logo{
 	width: 150px;
 }
-
+button:focus{
+	outline:0;
+}
 button{
 	color: #3c84d5;
 	font-size: 40px;
 	border-radius: 10px;
-	font-family: 'Open Sans';
+	font-family: 'Roboto';
 	background-color: white;
+	border-top: 3px solid lightgray;
+	border-left: 3px solid lightgray;
+	border-right: 3px solid gray;
+	border-bottom: 3px solid gray;
+}
+
+button:active{
+	border-top: 3px solid gray;
+	border-left: 3px solid gray;
+	border-right: 3px solid lightgray;
+	border-bottom: 3px solid lightgray;	
 }
 .button0{
 	width: 600px;
@@ -97,7 +115,7 @@ h3{
 	width: 100%;
 	font-size: 75px;
 	margin-bottom: 20px;
-	font-family: 'Open Sans';
+	font-family: 'Playfair Display';
 }
 
 textarea{
@@ -129,6 +147,7 @@ table tr td:nth-child(odd){
 	left: 10px;
 	top: 10px;
 }
+
 </style>
 
 <body ng-app = "dateTime">
@@ -143,8 +162,8 @@ table tr td:nth-child(odd){
 <div ng-show = "currentSelect === 0">
 <h3>Select a Date</h3>
 	<br>
-	<button class = "button0" ng-click="ctrl.selectDate(0); ctrl.next()">{{ctrl.dateSlots[0]}}</button>
-	<button class = "button0" ng-click="ctrl.selectDate(1);ctrl.next()">{{ctrl.dateSlots[1]}}</button>
+	<button class = "button0" ng-click="ctrl.selectDate(0); ctrl.next()"><b>{{ctrl.dateSlots[0]}}</b><br>(today)</button>
+	<button class = "button0" ng-click="ctrl.selectDate(1);ctrl.next()"><b>{{ctrl.dateSlots[1]}}</b><br>(tomorrow)</button>
 </div>
 
 <div ng-show = "currentSelect === 1">
@@ -154,16 +173,16 @@ table tr td:nth-child(odd){
 
 <div ng-show = "currentSelect === 2">
 <h3>Premade Bag</h3>
-	<button class = "button2" ng-click="ctrl.selectBag('yes'); ctrl.next()"><h4>YES</h4>make me a bag</button>
-	<button class = "button2" ng-click="ctrl.selectBag('no'); ctrl.next()"><h4>NO</h4>I want to pick my own food</button>
+	<button class = "button2" ng-click="ctrl.selectBag('yes'); ctrl.next()"><b>YES</b><br>make me a bag</button>
+	<button class = "button2" ng-click="ctrl.selectBag('no'); ctrl.next()"><b>NO</b><br>I want to pick my own food</button>
 </div>
 
 <div ng-show = "currentSelect === 3">
 <h3>Dietary Constraints</h3>
-	<button class = "button3" ng-click="ctrl.allergies = true;"> yes </button>
-	<button class = "button3" ng-click="ctrl.clearAllergies(); allergies = ''; ctrl.next()"> no </button>
+	<button class = "button3" ng-click="ctrl.allergies = true;"><b>YES</b> </button>
+	<button class = "button3" ng-click="ctrl.clearAllergies(); allergies = ''; ctrl.next()"><b>NO</b></button>
 	<br><br>
-	<textarea id = "allergybox" rows = "4" cols = "50" ng-show = "ctrl.allergies" ng-model="allergies"></textarea>
+	<textarea id = "allergybox" rows = "4" cols = "50" ng-show = "ctrl.allergies" ng-model="allergies" placeholder = "type your dietary constraints here"></textarea>
 	<br>
 	<button class = "button3-1" ng-click = "ctrl.next()" ng-show = "ctrl.allergies">done</button>
 </div>
