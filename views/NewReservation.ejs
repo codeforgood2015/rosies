@@ -7,10 +7,108 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <link href='http://fonts.googleapis.com/css?family=Open+Sans|Roboto|Playfair+Display' rel='stylesheet' type='text/css'>
 </head>
+
+<body ng-app = "dateTime">
+<div ng-controller="datetimeController as ctrl">
+
+<button id = "back"  ng-show="currentSelect >= 0" ng-click = "ctrl.back()"><span style = "font-family: 'Times New Roman';">&#9166</span><br>BACK </button>
+<div id = "header"><br>
+<img id = "logo" src = '../public/images/logo.png'>
+<h1>Food Pantry Sign Up</h1>
+</div>
+
+<div ng-show = "currentSelect === -1">
+	<h3>Log In</h3>
+	<form>
+	First Name: <input type = "text" ng-model = "firstName" placeholder = "type here"><br>
+	Last Name: <input type = "text" ng-model = "lastName" placeholder = "type here"><br>
+	Date of Birth: 
+	<select id = "dobyear" ng-model = "dob.year" ng-change = "ctrl.updateDates()"><option ng-repeat = "year in ctrl.years" value = {{year}}>{{year}}</option></select>
+	<select id = "dobmonth" ng-model = "dob.month" ng-change = "ctrl.updateDates()"><option ng-repeat = "month in ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November', 'December']" value = {{month}}>{{month}}</option></select>
+	<select id = "dobdate" ng-model = "dob.day"><option ng-repeat = "day in ctrl.monthDayPairs.January" value = {{day}}>{{day}}</option></select>
+<br><br>
+	<button type = "submit" class = "button-1" ng-click = "ctrl.next()">next</button>
+	</form>
+
+</div>
+<div ng-show = "currentSelect === 0">
+<h3>Select a Date</h3>
+	<br>
+	<button class = "button0" ng-click="ctrl.selectDate(0); ctrl.next()"><b>{{ctrl.dateSlots[0]}}</b><br>(today)</button>
+	<button class = "button0" ng-click="ctrl.selectDate(1);ctrl.next()"><b>{{ctrl.dateSlots[1]}}</b><br>(tomorrow)</button>
+</div>
+
+<div ng-show = "currentSelect === 1">
+<h3>Select a Time</h3>
+<div ng-repeat="time in ctrl.timeSlots"><button class = "button1" ng-click="ctrl.selectTime(time); ctrl.next()">{{time}}</button></div>
+</div>
+
+<div ng-show = "currentSelect === 2">
+<h3>Premade Bag</h3>
+	<button class = "button2" ng-click="ctrl.selectBag('yes'); ctrl.next()"><b>YES</b><br>make me a bag</button>
+	<button class = "button2" ng-click="ctrl.selectBag('no'); ctrl.next()"><b>NO</b><br>I want to pick my own food</button>
+</div>
+
+<div ng-show = "currentSelect === 3">
+<h3>Dietary Constraints</h3>
+	<button class = "button3" ng-click="ctrl.allergies = true;"><b>YES</b> </button>
+	<button class = "button3" ng-click="ctrl.clearAllergies(); allergies = ''; ctrl.next()"><b>NO</b></button>
+	<br><br>
+	<textarea id = "allergybox" rows = "4" cols = "50" ng-show = "ctrl.allergies" ng-model="allergies" placeholder = "type your dietary constraints here"></textarea>
+	<br>
+	<button class = "button3-1" ng-click = "ctrl.next()" ng-show = "ctrl.allergies">done</button>
+</div>
+
+<div ng-show="currentSelect ===4">
+	<h3>Confirmation</h3>
+	<table>
+		<tr>
+			<td>Name: </td>
+			<td>{{firstName}} {{lastName}}</td>
+		</tr>
+		<tr>
+			<td>Date: </td>
+			<td>{{ctrl.dateSelect}}</td>
+		</tr>
+		<tr>
+			<td>Time: </td>
+			<td>{{ctrl.timeSelect}}</td>
+		</tr>
+		<tr>
+			<td>Pre-made Bag: </td>
+			<td>{{ctrl.bag}}</td>
+		</tr>
+		<tr>
+			<td>Dietary constraints: </td>
+			<td>{{allergies}}</td>
+		</tr>
+	<table>
+	<button class = "button4" ng-click = "">submit</button>
+</div>
+</div>
+
+</body>
+</html>
+
 <script>
+	var range = function(start, end, up){
+		result = [];
+		if (up === 1){
+			for(var i = start; i <= end; i++){
+			result.push(i);
+		}
+		}
+		else{
+			for(var i = end; i >= start; i--){
+			result.push(i)
+			}
+		};
+		return result
+	}
+
 	var app = angular.module('dateTime', []);
 	app.controller('datetimeController', function($scope){
-		$scope.currentSelect = 0;
+		$scope.currentSelect = -1;
 		this.next = function(){
 			$scope.currentSelect += 1;
 		};
@@ -25,6 +123,44 @@
 			this.dateSelect = this.dateSlots[dateChoice];
 		};
 
+		this.years = range(1900, this.today.getFullYear(), 0);
+		this.monthDayPairs = {
+			'January' : range(1, 31, 1),
+			'February' : range(1, 28, 1),
+			'March' : range(1, 31, 1),
+			'April' : range(1, 30, 1), 
+			'May' : range(1, 31, 1),
+			'June' : range(1, 30, 1),
+			'July' : range(1, 31, 1),
+			'August' : range(1, 31, 1),
+			'September' : range(1, 30, 1),
+			'October' : range(1, 31, 1),
+			'November' : range(1, 30, 1),
+			'December' : range(1, 31, 1)		
+		}
+
+		this.updateDates = function(){
+			console.log("hi");
+			myYear = $("#dobyear").val();
+			myMonth = $("#dobmonth").val();
+			myCurrentDate = $("#dobdate").val();
+			myDates = range(1, 31, 1);
+			if(myYear != undefined && myMonth != undefined){
+				myDates = this.monthDayPairs[myMonth];
+				if(myYear % 4 === 0 && myMonth == 'February'){
+					myDates = range(1, 29, 1);
+				}
+			}
+			$("#dobdate").empty();
+			$("#dobdate").append("<option></option>")
+			for(var i = 1; i <= myDates.length; i++){
+				$("#dobdate").append("<option value = " + String(i) + ">" + String(i) + "</option>");
+			}
+			if(myDates.indexOf(Number(myCurrentDate)) >= 0){
+				$("#dobdate").val(myCurrentDate);
+			}
+
+		}
 		this.timeSlots = ['9:00 am to 10:00 am', '10:00 am  to 11:00 am', '11:00 am to 12:00 noon', '4:30 pm to 5:30 pm', '5:30 pm to 6:30 pm'];
 		this.selectTime = function(timeChoice){this.timeSelect = timeChoice;};
 
@@ -149,63 +285,3 @@ table tr td:nth-child(odd){
 }
 
 </style>
-
-<body ng-app = "dateTime">
-<div ng-controller="datetimeController as ctrl">
-
-<button id = "back"  ng-show="currentSelect >= 1" ng-click = "ctrl.back()"><span style = "font-family: 'Times New Roman';">&#9166</span><br>BACK </button>
-<div id = "header">
-<img id = "logo" src = '../public/images/logo.png'>
-<h1>Food Pantry Sign Up</h1>
-</div>
-
-<div ng-show = "currentSelect === 0">
-<h3>Select a Date</h3>
-	<br>
-	<button class = "button0" ng-click="ctrl.selectDate(0); ctrl.next()"><b>{{ctrl.dateSlots[0]}}</b><br>(today)</button>
-	<button class = "button0" ng-click="ctrl.selectDate(1);ctrl.next()"><b>{{ctrl.dateSlots[1]}}</b><br>(tomorrow)</button>
-</div>
-
-<div ng-show = "currentSelect === 1">
-<h3>Select a Time</h3>
-<div ng-repeat="time in ctrl.timeSlots"><button class = "button1" ng-click="ctrl.selectTime(time); ctrl.next()">{{time}}</button></div>
-</div>
-
-<div ng-show = "currentSelect === 2">
-<h3>Premade Bag</h3>
-	<button class = "button2" ng-click="ctrl.selectBag('yes'); ctrl.next()"><b>YES</b><br>make me a bag</button>
-	<button class = "button2" ng-click="ctrl.selectBag('no'); ctrl.next()"><b>NO</b><br>I want to pick my own food</button>
-</div>
-
-<div ng-show = "currentSelect === 3">
-<h3>Dietary Constraints</h3>
-	<button class = "button3" ng-click="ctrl.allergies = true;"><b>YES</b> </button>
-	<button class = "button3" ng-click="ctrl.clearAllergies(); allergies = ''; ctrl.next()"><b>NO</b></button>
-	<br><br>
-	<textarea id = "allergybox" rows = "4" cols = "50" ng-show = "ctrl.allergies" ng-model="allergies" placeholder = "type your dietary constraints here"></textarea>
-	<br>
-	<button class = "button3-1" ng-click = "ctrl.next()" ng-show = "ctrl.allergies">done</button>
-</div>
-
-<div ng-show="currentSelect ===4">
-	<h3>Confirmation</h3>
-	<table>
-		<tr>
-			<td>Date: </td>
-			<td>{{ctrl.dateSelect}}</td>
-		<tr>
-			<td>Time: </td>
-			<td>{{ctrl.timeSelect}}</td>
-		<tr>
-			<td>Pre-made Bag: </td>
-			<td>{{ctrl.bag}}</td>
-		<tr>
-			<td>Dietary constraints: </td>
-			<td>{{allergies}}</td>
-	<table>
-	<button class = "button4" ng-click = "">submit</button>
-</div>
-</div>
-
-</body>
-</html>
