@@ -3,3 +3,6 @@ npm-debug.log
 
 # Use npm install for modules
 node_modules
+
+# Windows-generated cache for thumbnails of images
+public/images/Thumbs.db
