@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app='admin'>
 	<head>
 		<!--Include scripts and stylesheets -->
 		<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
@@ -10,22 +10,22 @@
 			Admin Home
 		</title>
 	</head>
-	<body np-app='admin'>
-		<div np-controller='adminController as ctrl'>
+	<body>
+		<div ng-controller='AdminController as ctrl'>
 			<!-- back button -->
 			<button id='back' ng-click='ctrl.prevSection();' ng-show="currentSection>0"> back </button>
 			<!-- logo -->
 			<img id='logo' src='../public/images/logo.png'/>
 			
 			<!-- form for login -->
-			<div class='login' ng-show='currentSection === 0'>
+			<div class='login' ng-show='ctrl.currentSection === 0'>
 				<h1> Rosie's Place Admin Login </h1>
 				<form>
 				</form>
 			</div>
 			
 			<!-- Buttons for different actions admins can take -->
-			<div class='actions' ng-show='currentSection === 1'>
+			<div class='actions' ng-show='ctrl.currentSection === 1'>
 				<h2>I would like to ... <h2>
 				<button class='select-action'>
 					View current food pantry signups.
