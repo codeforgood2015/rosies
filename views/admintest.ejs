@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html ng-app='admin'>
+	<head>
+		<!--Include scripts and stylesheets -->
+		<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src='../public/javascripts/admintest.js'></script>
+		<link href='../public/stylesheets/admintest.css' type='text/css' rel='stylesheet'/>
+		<title>
+			Admin Home
+		</title>
+	</head>
+	<body>
+		<div ng-controller='AdminController as ctrl'>
+			<!-- back button -->
+			<button id='back' ng-click='ctrl.prevSection();' ng-show="currentSection>0"> back </button>
+			<!-- logo -->
+			<img id='logo' src='../public/images/logo.png'/>
+			
+			<!-- form for login -->
+			<div class='login' ng-show='ctrl.currentSection === 0'>
+				<h1> Rosie's Place Admin Login </h1>
+				<form>
+				</form>
+			</div>
+			
+			<!-- Buttons for different actions admins can take -->
+			<div class='actions' ng-show='ctrl.currentSection === 1'>
+				<h2>I would like to ... <h2>
+				<button class='select-action'>
+					View current food pantry signups.
+				</button>
+				<button class='select-action'>
+					Manage food pantry hours.
+				</button>
+				<button class='select-action'>
+					Manage admin accounts.
+				</button>
+			</div>
+			
+			<!-- Interactive view for the current guest signups for today or tomorrow. JQuery and show/hidden tags -->
+			<div class='viewguests' ng-show="currentSection === 2">
+				<h2> View guests currently signed up for each time slot: </h2>
+				<div class='today'>
+					<!-- TODO make times reflect the actual times for that day, instead of default -->
+					<div ng-repeat="time in crtl.defaultTimes"><button> {{time}} </button></div>
+				</div>
+				<div class='tomorrow'>
+				</div>
+			</div>
+			
+			<!-- Table displaying the current hours, with edit buttons, and a form for new hours, that will appear only if edit button is clicked-->
+			<div class='hours' ng-show='currentSection === 3'>
+				<h2>Food Pantry Hours of Operation</h2>
+				<h3>Manage default hours:</h3>
+				<!-- Form for new hours.-->
+
+				<div ng-show='editHours === true'>
+					<form>
+					</form>
+				</div>
+			</div>
+			
+			<!-- Scrollable table with current admins and delete buttons-->
+			<!-- Form for new admin -->
+			<div class='accounts' ng-show='currentSection === 4'>
+			</div>
+		</div>
+	</body>	
+</html>

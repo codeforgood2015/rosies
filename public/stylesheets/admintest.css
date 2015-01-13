@@ -1,0 +1,19 @@
+/*Stylesheet for admin side*/
+html {
+	background-color: #734866;
+	color: white;
+	text-align: center;
+}
+
+#logo {
+	width: 150px;
+	margin-bottom: 50px;
+}
+
+button {
+	border-radius: 10px;
+	background-color: white;
+	color: black;
+
+}
+
