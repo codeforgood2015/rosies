@@ -18,4 +18,4 @@ var timeslotSchema = mongoose.Schema({
 
 });
 
-module.exports.Timeslot = mongoose.model('Timeslot', timeslotSchema);
+module.exports.Timeslot = mongoose.model('timeslot', timeslotSchema);

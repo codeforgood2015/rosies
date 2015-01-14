@@ -4,7 +4,7 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var http = require('http');
 var Agenda = require('agenda');
-var Timeslot = require('../models/timeslot').model;
+var Timeslot = require('./models/timeslot').model;
 var mongoose = require('mongoose');
 var connection_string = 'localhost/rosies';
 
