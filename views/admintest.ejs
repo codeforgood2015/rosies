@@ -66,11 +66,12 @@
 						<tr ng-repeat="dayHours in ctrl.defaultHours">
 							<td>{{dayHours.day}} </td>
 							<td ng-repeat='time in dayHours.hours'>{{time}}</td>
+							<td ng-repeat='day in ctrl.daysOfWeek' class='edit-default'> <button ng-click='ctrl.editDefaultHours(day);'>edit</button></td>'
 						</tr>
 					</table>
 				</div>
-				<div class='edit-buttons'> <!--lay this out in a vertical column next to the column of hours-->
-					<button ng-repeat='day in ctrl.daysOfWeek' class='edit-default' ng-click='ctrl.editDefaultHours(day);'>edit</button></li>
+				<!--<div class='edit-buttons'> lay this out in a vertical column next to the column of hours
+					<button ng-repeat='day in ctrl.daysOfWeek' class='edit-default' ng-click='ctrl.editDefaultHours(day);'>edit</button></li>- ->
 				</div>
 				<!-- Form for new hours.-->
 				<div class='edit-default' ng-show='ctrl.showEditDefaultHours'>
