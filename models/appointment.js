@@ -12,4 +12,6 @@ var appointmentSchema = mongoose.Schema({
 */	waitlist: boolean
 });
 
+//add some validators?
+
 module.exports.Appointment = mongoose.model('Appointment', appointmentSchema);
