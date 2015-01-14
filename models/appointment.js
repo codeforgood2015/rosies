@@ -8,8 +8,8 @@ var appointmentSchema = mongoose.Schema({
 	lastName: String,
 	birthday: String,
 	premade: boolean,
-	allergies: [String],
-	waitlist: boolean
+/*	allergies: [String],
+*/	waitlist: boolean
 });
 
 module.exports.Appointment = mongoose.model('Appointment', appointmentSchema);

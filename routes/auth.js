@@ -50,9 +50,7 @@ router.post('/guest', function(req, res) {
 		password: req.body.password
 	};
 	var guest = new Guest(data);
-	guest.save(function(err)) {
-		
-	}
+	guest.save(function(err){})
 });
 
 router.get('/guest', function(req, res) {

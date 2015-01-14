@@ -49,7 +49,7 @@
 	<button class = "button2" ng-click="ctrl.selectBag('no'); ctrl.next()"><b>NO</b><br>I want to pick my own food</button>
 </div>
 
-<div ng-show = "currentSelect === 3">
+<!-- <div ng-show = "currentSelect === 3">
 <h3>Dietary Constraints</h3>
 	<button class = "button3" ng-click="ctrl.allergies = true;"><b>YES</b> </button>
 	<button class = "button3" ng-click="ctrl.clearAllergies(); allergies = ''; ctrl.next()"><b>NO</b></button>
@@ -57,7 +57,7 @@
 	<textarea id = "allergybox" rows = "4" cols = "50" ng-show = "ctrl.allergies" ng-model="allergies" placeholder = "type your dietary constraints here"></textarea>
 	<br>
 	<button class = "button3-1" ng-click = "ctrl.next()" ng-show = "ctrl.allergies">done</button>
-</div>
+</div> -->
 
 <div ng-show="currentSelect ===4">
 	<h3>Confirmation</h3>
@@ -78,10 +78,10 @@
 			<td>Pre-made Bag: </td>
 			<td>{{ctrl.bag}}</td>
 		</tr>
-		<tr>
+<!-- 		<tr>
 			<td>Dietary constraints: </td>
 			<td>{{allergies}}</td>
-		</tr>
+		</tr> -->
 	<table>
 	<button class = "button4" ng-click = "">submit</button>
 </div>
