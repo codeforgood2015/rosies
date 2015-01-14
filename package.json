@@ -28,8 +28,9 @@
     "mongoose": "^3.8.21",
     "morgan": "^1.5.1",
     "passport": "^0.2.1",
-    "passport-oauth": "^1.0.0",
-    "agenda": "~0.6.26"
+    "agenda": "~0.6.26",
+    "passport-local": "^1.0.0",
+    "passport-oauth": "^1.0.0"
   },
   "private": true
 }

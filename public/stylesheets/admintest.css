@@ -3,6 +3,30 @@ html {
 	background-color: #734866;
 	color: white;
 	text-align: center;
+	font-family: Helvetica;
+}
+
+.left-align {
+	text-align: left;
+}
+
+input {
+	margin: 10px;
+}
+
+#back-button {
+	position: fixed;
+	width: 150px;
+	height: 75px;
+	left: 5px;
+	top: 5px;
+	font-size: 24pt;
+	border-radius: 10px;
+
+}
+
+#login-button {
+	font-size: 24pt;
 }
 
 #logo {
@@ -10,10 +34,43 @@ html {
 	margin-bottom: 50px;
 }
 
-button {
+.select-action-button {
 	border-radius: 10px;
 	background-color: white;
 	color: black;
-
+	padding: 5px;
+	margin: 10px;
+	font-size: 24pt;
 }
 
+#default-hours td {
+ 	padding: 10px;
+ }
+
+.new-hours {
+	height: 25px;
+}
+
+.admin-list {
+	list-style-type: none; /*clear the bullet points */
+	overflow: scroll;
+	height: 300px;
+	margin-left: 25%;
+	margin-right: 25%;
+	border: 1px solid black;
+	border-radius: 10px;
+}
+
+.admin-list li:nth-child(even) {
+	background-color: 9750A1;
+	padding: 10px;
+}
+
+.admin-list li:nth-child(odd) {
+  background-color: 58285F;
+  padding: 10px;
+}
+
+.admin-edit-buttons {
+	font-size: 18pt;
+}

@@ -63,14 +63,32 @@ router.get('/:id', function(req, res) {
 /*
 	PUT /:id - modify details of an appointment based on its id
 	Request body:
-	- 
-
+	- date: Date object representing a changed appointment time
+	- premade: boolean for new 
+*/
 router.put('/:id', function(req, res) {
 	Appointment.findById(req.params.id, function(err, appointment) {
 		if (err) {
 			utils.sendErrResponse(res, 404, err);
 		} else {
-
+			appointment.date = req.body.date;
+			appointment.premade = req.body.premade;
+			appointment.save(function(err) {
+				utils.sendSuccessResponse(res, appointment);
+			});
 		}
 	});
-});*/
+});
+
+//TODO: Check that the signed-in user is the one deleting the appointment
+router.delete('/id', function(req, res) {
+	Appointment.remove({id: req.params.id}, function(err, appointment) {
+		if (err) {
+			utils.sendErrResponse(res, 404, err);
+		} else {
+			utils.sendSuccessResponse(res, appointment);
+		}
+	});
+});
+
+module.exports = router;

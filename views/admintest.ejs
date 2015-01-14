@@ -13,7 +13,7 @@
 	<body>
 		<div ng-controller='AdminController as ctrl'>
 			<!-- back button -->
-			<button id='back' ng-click='ctrl.prevSection();' ng-show="currentSection>0"> back </button>
+			<button id='back-button' ng-click='ctrl.back();' ng-show="ctrl.currentSection>0"> back </button>
 			<!-- logo -->
 			<img id='logo' src='../public/images/logo.png'/>
 			
@@ -21,49 +21,93 @@
 			<div class='login' ng-show='ctrl.currentSection === 0'>
 				<h1> Rosie's Place Admin Login </h1>
 				<form>
+					username:<input type='text'></input>
+					<br>
+					password:<input type='text'></input>
+					<br>
+					<input id='login-button' type='button' value='Login' ng-click="ctrl.toSelectAction();"</input>
 				</form>
 			</div>
 			
 			<!-- Buttons for different actions admins can take -->
 			<div class='actions' ng-show='ctrl.currentSection === 1'>
 				<h2>I would like to ... <h2>
-				<button class='select-action'>
+				<button class='select-action-button' ng-click='ctrl.toSignupView();'>
 					View current food pantry signups.
 				</button>
-				<button class='select-action'>
+				<br>
+				<button class='select-action-button' ng-click='ctrl.toHoursView();'>
 					Manage food pantry hours.
 				</button>
-				<button class='select-action'>
+				<br>
+				<button class='select-action-button' ng-click='ctrl.toAccountsView();'>
 					Manage admin accounts.
 				</button>
 			</div>
 			
 			<!-- Interactive view for the current guest signups for today or tomorrow. JQuery and show/hidden tags -->
-			<div class='viewguests' ng-show="currentSection === 2">
+			<div class='viewguests' ng-show="ctrl.currentSection === 2">
 				<h2> View guests currently signed up for each time slot: </h2>
 				<div class='today'>
+					<h3>Today</h3>
 					<!-- TODO make times reflect the actual times for that day, instead of default -->
-					<div ng-repeat="time in crtl.defaultTimes"><button> {{time}} </button></div>
+					
 				</div>
 				<div class='tomorrow'>
 				</div>
 			</div>
 			
 			<!-- Table displaying the current hours, with edit buttons, and a form for new hours, that will appear only if edit button is clicked-->
-			<div class='hours' ng-show='currentSection === 3'>
+			<div class='hours' ng-show='ctrl.currentSection === 3'>
 				<h2>Food Pantry Hours of Operation</h2>
-				<h3>Manage default hours:</h3>
+				<h3 class='left-align'>Manage default hours:</h3>
+				<div> 
+					<table id='default-hours'>
+						<tr ng-repeat="dayHours in ctrl.defaultHours">
+							<td>{{dayHours.day}} </td>
+							<td ng-repeat='time in dayHours.hours'>{{time}}</td>
+						</tr>
+					</table>
+				</div>
+				<div class='edit-buttons'> <!--lay this out in a vertical column next to the column of hours-->
+					<button ng-repeat='day in ctrl.daysOfWeek' class='edit-default' ng-click='ctrl.editDefaultHours(day);'>edit</button></li>
+				</div>
 				<!-- Form for new hours.-->
-
-				<div ng-show='editHours === true'>
+				<div class='edit-default' ng-show='ctrl.showEditDefaultHours'>
+					<p> Please enter your new desired hours, in the format: 
+						<br>
+						"9:00 AM" 
+						<br>
+						with spaces in between different time entries 
+					</p>
 					<form>
+						{{ctrl.editDay}}<input class=new-hours type=text> </input>
+						<input type='button' value='Save New Hours'></input>
 					</form>
 				</div>
 			</div>
 			
 			<!-- Scrollable table with current admins and delete buttons-->
 			<!-- Form for new admin -->
-			<div class='accounts' ng-show='currentSection === 4'>
+			<div class='accounts' ng-show='ctrl.currentSection === 4'>
+				<h3>Manage admin accounts</h3>
+				<ul class='admin-list left-align' >
+					<li ng-repeat='admin in ctrl.fakeAdminData'>{{admin}}</li>
+				</ul>
+				<div class='admin-edit-buttons'> <!--lay this out in a vertical column next to the column of hours-->
+					<button ng-repeat='day in ctrl.daysOfWeek' class='edit-default' ng-click='ctrl.editDefaultHours(day);'>edit</button></li>
+				</div>
+				<button ng-click='ctrl.toAddNewAdmin();'>Add New Admin Account</button>
+				<div class='new-admin' ng-show='ctrl.showNewAdmin'>
+					<form>
+						new username:<input id='new-admin-username' type='text'></input>
+						<br>
+						new password:<input id='new-admin-password' type='text'></input>
+						<br>
+						confirm new password:<input id='new-admin-confirm-password' type='text'></input>
+						<input type='button' value='Save New Admin Account' ng-click="ctrl.addNewAdmin();"</input>
+					</form>
+				</div>
 			</div>
 		</div>
 	</body>	

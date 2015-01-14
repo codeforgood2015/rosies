@@ -31,12 +31,12 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.use('/auth', auth);
 
 app.get('/', function(req, res) {
-	res.send('Hello World');
+	res.render('NewReservation');
 });
 
 module.exports = app;
