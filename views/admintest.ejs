@@ -66,23 +66,30 @@
 						<tr ng-repeat="dayHours in ctrl.defaultHours">
 							<td>{{dayHours.day}} </td>
 							<td ng-repeat='time in dayHours.hours'>{{time}}</td>
+							<td class='edit-default'> <button ng-click='ctrl.editDefaultHours(dayHours.day);'>edit</button></td>'
 						</tr>
 					</table>
 				</div>
-				<div class='edit-buttons'> <!--lay this out in a vertical column next to the column of hours-->
-					<button ng-repeat='day in ctrl.daysOfWeek' class='edit-default' ng-click='ctrl.editDefaultHours(day);'>edit</button></li>
-				</div>
 				<!-- Form for new hours.-->
 				<div class='edit-default' ng-show='ctrl.showEditDefaultHours'>
-					<p> Please enter your new desired hours, in the format: 
+					<p> Please enter your new desired hours. 
 						<br>
-						"9:00 AM" 
+						<strong>Include the start and end time of each timeslot.</strong>
 						<br>
-						with spaces in between different time entries 
-					</p>
-					<form>
-						{{ctrl.editDay}}<input class=new-hours type=text> </input>
-						<input type='button' value='Save New Hours'></input>
+						example - start: 9:00AM end: 10:00AM
+ 					</p>
+ 					<p> New Hours for {{ctrl.editDay}}:
+					<form class='new-default-times'>
+						<div class='slots'>
+							<button class='new-time-slot' ng-click='ctrl.additionalTimeslot();'>Additional Time Slot</button>
+							<div class='slot'>
+								<input class='new-start-time' type='text' placeholder='9:00'> </input>
+								<input class='new-end-time' type='text' placeholder='10:00'> </input>
+								<button class='remove-time-slot' ng-click='ctrl.removeTimeslot();'>Remove</button>
+								<br>
+							</div>
+						</div> 
+						<button ng-click='ctrl.saveNewDefaultHours();'>Save New Hours</button>
 					</form>
 				</div>
 			</div>
@@ -91,12 +98,12 @@
 			<!-- Form for new admin -->
 			<div class='accounts' ng-show='ctrl.currentSection === 4'>
 				<h3>Manage admin accounts</h3>
-				<ul class='admin-list left-align' >
-					<li ng-repeat='admin in ctrl.fakeAdminData'>{{admin}}</li>
-				</ul>
-				<div class='admin-edit-buttons'> <!--lay this out in a vertical column next to the column of hours-->
-					<button ng-repeat='day in ctrl.daysOfWeek' class='edit-default' ng-click='ctrl.editDefaultHours(day);'>edit</button></li>
-				</div>
+				<table class='admin-list' >
+					<tr ng-repeat='admin in ctrl.fakeAdminData'>
+						<td width='50%'> {{admin}} </td>
+						<td width='50%'> <button ng-click='ctrl.removeAdmin(admin)'> remove </button></td>
+					</tr>
+				</table>
 				<button ng-click='ctrl.toAddNewAdmin();'>Add New Admin Account</button>
 				<div class='new-admin' ng-show='ctrl.showNewAdmin'>
 					<form>

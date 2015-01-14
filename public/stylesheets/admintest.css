@@ -51,23 +51,34 @@ input {
 	height: 25px;
 }
 
+.remove-time-slot {
+	background-color: red;
+}
+
+.new-start-time {
+	background-color: blue;
+}
+
 .admin-list {
-	list-style-type: none; /*clear the bullet points */
+	display: block;
 	overflow: scroll;
-	height: 300px;
-	margin-left: 25%;
-	margin-right: 25%;
+	max-height: 300px;
+	margin: auto;
 	border: 1px solid black;
 	border-radius: 10px;
 }
 
-.admin-list li:nth-child(even) {
-	background-color: 9750A1;
+.admin-list tr {
+	border: 1px black solid;
+}
+
+tr:nth-child(even) {
+	/*background-color: #9750A1;*/
 	padding: 10px;
 }
 
-.admin-list li:nth-child(odd) {
-  background-color: 58285F;
+tr:nth-child(odd) {
+  /*background-color: #CCCCCC;*/
   padding: 10px;
 }
 
