@@ -36,6 +36,7 @@ db.on('error', console.error.bind(console, 'connection error:'));
 
 // routes for the app
 var auth = require('./routes/auth');
+// var admin = require('./routes/admin');
 
 var app = express();
 
@@ -51,6 +52,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.use('/auth', auth);
+
+app.get('/admin', function(req, res) {
+	res.render('admintest');
+});
 
 app.get('/', function(req, res) {
 	res.render('NewReservation');

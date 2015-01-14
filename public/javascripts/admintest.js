@@ -32,16 +32,27 @@
 		};
 
 		this.saveNewDefaultHours = function() {
+			var day = this.editDay;
+
 			//current editDay should be the correct day, selected when the user pressed an edit button
 			//TODO: some parsing crap, and accounting for user error
 
 			//...
 		};
 
+		this.additionalTimeslot = function() {
+			//adds new start and end time text input boxes
+			// $('.slots').append($("<input type='text' placeholder='9:00AM'>").addClass('new-start-time'));
+			// $('.slots').append($("<input type='text' placeholder='10:00AM'>").addClass('new-end-time'));
+			// $('.slots').append($("<button ng-click='ctrl.removeTimeslot()'>Remove</button>").addClass('remove-time-slot'));
+			// $('.slots').append($("<br>"));
+			var div  = $('.slot');
+			$('.slots').append(div);
+		}
 
 		//admin account stuff, all fake right now
-		this.fakeAdminData = ['admin', 'account1', 'account2', 'account3', 'scroll!!!!', 'account5', 'uncle bill', 'uncle tom', 'george bush', 'im bored', 'clearly',
-		'hello world', 'hehehehehe', 'code for good', 'helping people', 'rosies place', 'volunteer peeps', 'these are getting longer haha'];
+		this.fakeAdminData = ['admin', 'account1', 'account2', 'account3', 'scroll!!!!', 'account5', 'im bored', 'clearly',
+		'hello world', 'hehehehehe', 'code for good', 'yayayayayay', 'rosies place', 'these are getting longer haha'];
 
 		this.ShowNewAdmin = false; //change to true to display the new admin form
 
