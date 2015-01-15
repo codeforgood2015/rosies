@@ -6,6 +6,10 @@ html {
 	font-family: Helvetica;
 }
 
+body {
+	margin-bottom: 50px;
+}
+
 .left-align {
 	text-align: left;
 }
@@ -43,6 +47,11 @@ input {
 	font-size: 24pt;
 }
 
+.hours {
+	margin-left: 20%;
+	margin-right: 20%;
+}
+
 #default-hours td {
  	padding: 10px;
  }
@@ -51,21 +60,34 @@ input {
 	height: 25px;
 }
 
-.remove-time-slot {
-	background-color: red;
+.edit-default span {
+	text-decoration: underline;
+	font-size: 20pt;
 }
 
-.new-start-time {
-	background-color: blue;
+.remove-time-slot {
+	/*background-color: red;*/
+}
+
+#special-hours {
+	display: block; /*have to make it block to make it scrollable*/
+	overflow: scroll; 
+	max-height: 300px;
+}
+
+#special-hours td{
+	padding: 10px;
 }
 
 .admin-list {
 	display: block;
 	overflow: scroll;
 	max-height: 300px;
+	max-width: 50%;
 	margin: auto;
 	border: 1px solid black;
 	border-radius: 10px;
+	text-align: center;
 }
 
 .admin-list tr {

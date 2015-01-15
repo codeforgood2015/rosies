@@ -19,13 +19,13 @@
 			
 			<!-- form for login -->
 			<div class='login' ng-show='ctrl.currentSection === 0'>
-				<h1> Rosie's Place Admin Login </h1>
+				<h1> Food Pantry Admin Site </h1>
 				<form>
 					username:<input type='text'></input>
 					<br>
 					password:<input type='text'></input>
 					<br>
-					<input id='login-button' type='button' value='Login' ng-click="ctrl.toSelectAction();"</input>
+					<input class='-not-disappear' id='login-button' type='button' value='Login' ng-click="ctrl.login();"</input>
 				</form>
 			</div>
 			
@@ -64,7 +64,7 @@
 				<h3 class='left-align'>Manage default hours:</h3>
 				<div> 
 					<table id='default-hours'>
-						<tr ng-repeat="dayHours in ctrl.defaultHours">
+						<tr ng-repeat="dayHours in ctrl.defaultHours()">
 							<td>{{dayHours.day}} </td>
 							<td ng-repeat='time in dayHours.hours'>{{time}}</td>
 							<td class='edit-default'> <button ng-click='ctrl.editDefaultHours(dayHours.day);'>edit</button></td>'
@@ -75,19 +75,19 @@
 				<div class='edit-default' ng-show='ctrl.showEditDefaultHours'>
 					<p> Please enter your new desired hours. 
 						<br>
-						<strong>Include the start and end time of each timeslot.</strong>
+						<strong>Include the start and end time and capacity of each timeslot.</strong>
 						<br>
-						example - start: 9:00AM end: 10:00AM
+						example - start: 9:00AM end: 10:00AM max-capacity: 27
  					</p>
- 					<p> New Hours for {{ctrl.editDay}}:
+ 					<p> New Hours for <span>{{ctrl.editDay}}</span>: </p>
 					<form class='new-default-times'>
 						<div class='slots'>
-							<button class='new-time-slot' ng-click='ctrl.additionalTimeslot();'>Additional Time Slot</button>
+							<button class='new-time-slot' ng-click='ctrl.additionalDefaultTimeslot();'>Additional Time Slot</button>
 							<div class='slot'>
-								<input class='new-start-time' type='text' placeholder='9:00'> </input>
-								<input class='new-end-time' type='text' placeholder='10:00'> </input>
-								<input class='new-max-cap' type='text' placeholder='27'> </input>
-								<button class='remove-time-slot' ng-click='ctrl.removeTimeslot();'>Remove</button>
+								start: <input class='new-start-time' type='text' placeholder='9:00AM'> </input>
+								end: <input class='new-end-time' type='text' placeholder='10:00AM'> </input>
+								max-capacity: <input class='new-max-cap' type='text' placeholder='27'> </input>
+								<button class='remove-time-slot' ng-click='ctrl.removeDefaultTimeslot();'>Remove</button>
 								<br>
 							</div>
 						</div> 
@@ -95,13 +95,39 @@
 					</form>
 				</div>
 				<!-- Current specific date rules -->
-				<div id='special-hours'>
+				<div>
+					<h3 class='left-align'>Manage special hours:</h3>
 					<table id='special-hours'>
+						<!--Runs the specialRules function to get a list of rules, each of which contains a date and a list of times -->
 						<tr ng-repeat='rule in ctrl.specialRules()'>
 							<td> <strong> {{rule.date}} </strong> </td>
 							<td ng-repeat='time in rule.times'>{{time}}</td> 
+							<td><button class='edit-special-hours-button' ng-click='ctrl.editSpecialHours(rule.date);'>edit</button></td>
 						</tr>
-					</table>
+					</table> 
+					<div id='edit-special-hours' ng-show='ctrl.showEditSpecialHours'>
+						<div class='slots'>
+							<p> Editing the hours for: <span>{{ctrl.editDate}}</span> </p>
+							start: <input class='new-start-time' type='text' placeholder='9:00AM'> </input>
+							end: <input class='new-end-time' type='text' placeholder='10:00AM'> </input>
+							max-capacity: <input class='new-max-cap' type='text' placeholder='27'> </input>
+							<button class='remove-time-slot' ng-click='ctrl.removeSpecialTimeslot();'>Remove</button>
+						</div>
+						<button ng-click='ctrl.saveNewEditedSpecialHours();'>Save New Special Hours for {{ctrl.editDate}} </button>
+					</div>
+					<div id='new-special-hours'>
+						<p>Add New Special Hours on Date:</p>
+						<select id = "year" ng-change = "ctrl.updateDates()">
+							<option ng-repeat = "year in ctrl.years" value = {{year}}>{{year}}</option>
+						</select>
+						<select id = "month" ng-change = "ctrl.updateDates()">
+							<option ng-repeat = "month in ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November', 'December']" value = {{month}}>{{month}}</option>
+						</select>
+						<select id = "date" ng-change = "ctrl.updateDates()">
+							<option ng-repeat = "day in ctrl.monthDayPairs.January" value = {{day}}>{{day}}</option>
+						</select>
+						<button ng-click='ctrl.newSpecialHours();'>Select</button>
+					</div>
 				</div>
 			</div>
 			
@@ -123,7 +149,7 @@
 						new password:<input id='new-admin-password' type='text'></input>
 						<br>
 						confirm new password:<input id='new-admin-confirm-password' type='text'></input>
-						<input type='button' value='Save New Admin Account' ng-click="ctrl.addNewAdmin();"</input>
+						<input class='not-disappear' id='new-admin' type='button' value='Save New Admin Account' ng-click="ctrl.addNewAdmin();"</input>
 					</form>
 				</div>
 			</div>
