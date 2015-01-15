@@ -35,7 +35,8 @@
 			var day = this.editDay;
 
 			//current editDay should be the correct day, selected when the user pressed an edit button
-			//TODO: some parsing crap, and accounting for user error
+			//need to go through the text in the input fields in class='slots' and save their info to database, then clear their text
+			//TODO: some parsing stuff, and accounting for user error
 
 			//...
 		};
@@ -44,15 +45,31 @@
 			//adds new start and end time text input boxes
 			// $('.slots').append($("<input type='text' placeholder='9:00AM'>").addClass('new-start-time'));
 			// $('.slots').append($("<input type='text' placeholder='10:00AM'>").addClass('new-end-time'));
+			// $('.slots').append($("<input type='text' placeholder='27'>").addClass('new-max-cap'));
 			// $('.slots').append($("<button ng-click='ctrl.removeTimeslot()'>Remove</button>").addClass('remove-time-slot'));
 			// $('.slots').append($("<br>"));
 			var div  = $('.slot');
 			$('.slots').append(div);
+		};
+
+		this.removeTimeslot = function() {
+			//figure out how to associate the remove button with the timeslots it's related to
+		};
+
+		this.specialRules = function(){
+			//should return a list of rule objects, drawing from the database
+			//each rule has rule.date and rule.times, where times is a list of times on that day
+			return [
+			{date: '2/14/15', times: ['9:00AM', '10:00AM', '11:00AM', '4:30PM']},
+			{date: '12/25/15' times: ['9:00AM', '10:00AM', '12:00PM', '3:00PM']}
+			];
 		}
 
 		//admin account stuff, all fake right now
-		this.fakeAdminData = ['admin', 'account1', 'account2', 'account3', 'scroll!!!!', 'account5', 'im bored', 'clearly',
-		'hello world', 'hehehehehe', 'code for good', 'yayayayayay', 'rosies place', 'these are getting longer haha'];
+		this.fakeAdminData = function() { 
+			return ['admin', 'account1', 'account2', 'account3', 'scroll!!!!', 'account5', 'im bored', 'clearly',
+			'hello world', 'hehehehehe', 'code for good', 'yayayayayay', 'rosies place', 'these are getting longer haha'];
+		}
 
 		this.ShowNewAdmin = false; //change to true to display the new admin form
 
@@ -70,6 +87,7 @@
 				//have an error message show (use another boolean to control whether it's hidden or not)
 			}
 		}
+
 
 		//change pages based on buttons, use with ng-click in admintest.ejs
 		this.toSelectAction = function() {
@@ -93,6 +111,7 @@
 		}
 
 	});
+
 	//animate the viewing of who is signed up for various dates and times
 	//... to be continued
 

@@ -4,9 +4,7 @@ var https = require('https');
 var passport = require('passport');
 var OAuth2Strategy = require('passport-oauth').OAuth2Strategy;
 var LocalStrategy = require('passport-local').Strategy;
-var Guest = require('../models/guest').Guest;
-var Admin = require('../models/admin').Admin;
-var bcrypt = require('bcrypt');
+var Guest = require('../models/guest').Guest
 
 // Once we figure our how to get Salesforce working, we should
 // use a module other than passport to authenticate with OAuth2,
@@ -31,40 +29,20 @@ passport.use('guest', new LocalStrategy(function(username, password, done) {
 			return done(err);
 		} if (!guest) {
 			return done(null, false, {message: 'Incorrect username.'});
-		} if (!guest.password == password) {
+		} if (!guest.validPassword(password)) {
 			return done(null, false, {message: 'Incorrect password.'});
 		}
 		return done(null, guest);
 	});
 }));
 
-passport.use('admin', new LocalStrategy(function(username, password, done) {
-	Admin.findOne({username: username}, function(err, admin) {
-		if (err) {
-			return done(err0;)
-		} if (!guest) {
-			return done(null, false, {message: 'Incorrect username.'});
-		} 
-		bcrypt.compare(password, admin.password, function(err, result) {
-			if (result) {
-				return done(null, admin);
-			} else {
-				return done(null, false, {message: 'Incorrect password.'});
-			}
-		});
-	})
-}));
-
 router.get('/oauth', passport.authenticate('oauth'));
 
 router.get('/oauth/callback', passport.authenticate('oauth', {successRedirect: '/', failureRedirect: '/'}));
 
-// GET /guest - show login view for guests
-router.get('/guest', function(req, res) {
-	// TODO: render login view
-});
+// TODO: set a different failure redirect as needed
+router.put('/guest', passport.authenticate('guest', {successRedirect: '/', failureRedirect: '/', failureFlash: true}));
 
-// POST /guest - create a new guest user
 // once we get Salesforce working, this should be removed as well.
 router.post('/guest', function(req, res) {
 	var data = {
@@ -72,36 +50,12 @@ router.post('/guest', function(req, res) {
 		password: req.body.password
 	};
 	var guest = new Guest(data);
-	guest.save(function(err)) {
-		utils.sendSuccessResponse(res, 'New user created');
-	}
+	guest.save(function(err){})
 });
 
-// PUT /guest - log in a guest
-// TODO: set a different failure redirect as needed
-router.put('/guest', passport.authenticate('guest', {successRedirect: '/', failureRedirect: '/', failureFlash: true}));
-
-router.get('/admin', function(req, res) {
-	// TODO: render login view for admins
+router.get('/guest', function(req, res) {
+	// TODO: render login view
 });
-
-router.post('/admin', function(req, res) {
-	bcrypt.genSalt(10, function(err, salt) {
-		bcrypt.hash(req.body.password, salt, function(err, hash) {
-			var data = {
-				username: req.body.username,
-				password: hash,
-				type: req.body.type
-			};
-			var admin = new Admin(data);
-			admin.save(function(err) {
-				utils.sendSuccessResponse(res, 'New admin creted');
-			});
-		});
-	});
-});
-
-router.put('/admin', passport.authenticate('admin', {successRedirect: '/', failureRedirect: '/', failureFlash: true}));
 
 // Clears the session
 router.get('/logout', function(req, res) {

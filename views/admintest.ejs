@@ -50,8 +50,9 @@
 				<h2> View guests currently signed up for each time slot: </h2>
 				<div class='today'>
 					<h3>Today</h3>
+
 					<!-- TODO make times reflect the actual times for that day, instead of default -->
-					
+					<h3>Tomorrow</h3>
 				</div>
 				<div class='tomorrow'>
 				</div>
@@ -85,12 +86,22 @@
 							<div class='slot'>
 								<input class='new-start-time' type='text' placeholder='9:00'> </input>
 								<input class='new-end-time' type='text' placeholder='10:00'> </input>
+								<input class='new-max-cap' type='text' placeholder='27'> </input>
 								<button class='remove-time-slot' ng-click='ctrl.removeTimeslot();'>Remove</button>
 								<br>
 							</div>
 						</div> 
 						<button ng-click='ctrl.saveNewDefaultHours();'>Save New Hours</button>
 					</form>
+				</div>
+				<!-- Current specific date rules -->
+				<div id='special-hours'>
+					<table id='special-hours'>
+						<tr ng-repeat='rule in ctrl.specialRules()'>
+							<td> <strong> {{rule.date}} </strong> </td>
+							<td ng-repeat='time in rule.times'>{{time}}</td> 
+						</tr>
+					</table>
 				</div>
 			</div>
 			
@@ -99,7 +110,7 @@
 			<div class='accounts' ng-show='ctrl.currentSection === 4'>
 				<h3>Manage admin accounts</h3>
 				<table class='admin-list' >
-					<tr ng-repeat='admin in ctrl.fakeAdminData'>
+					<tr ng-repeat='admin in ctrl.fakeAdminData()'>
 						<td width='50%'> {{admin}} </td>
 						<td width='50%'> <button ng-click='ctrl.removeAdmin(admin)'> remove </button></td>
 					</tr>
