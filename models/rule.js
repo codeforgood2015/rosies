@@ -6,7 +6,7 @@ var rulesSchema = mongoose.Schema( {
 	maxCap: Number, 
 	maxWaitlist: Number,
 	time: [String],
-	day: Schema.Types.Mixed,
+	date: Schema.Types.Mixed,
 	repeat: Boolean //true if rule should repeat yearly
 });
 

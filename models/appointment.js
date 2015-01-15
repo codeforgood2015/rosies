@@ -9,7 +9,6 @@ var appointmentSchema = mongoose.Schema({
 	lastName: String,
 	birthday: String,
 	premade: boolean,
-/*	allergies: [String],*/
 	waitlist: boolean
 });
 

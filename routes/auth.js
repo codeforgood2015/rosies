@@ -4,7 +4,8 @@ var https = require('https');
 var passport = require('passport');
 var OAuth2Strategy = require('passport-oauth').OAuth2Strategy;
 var LocalStrategy = require('passport-local').Strategy;
-var Guest = require('../models/guest').Guest
+var Guest = require('../models/guest').Guest;
+var Appointment = require('../models/appointment').Appointment;
 
 // Once we figure our how to get Salesforce working, we should
 // use a module other than passport to authenticate with OAuth2,
@@ -75,6 +76,21 @@ router.post('/guest', function(req, res) {
 router.get('/guest', function(req, res) {
 	// TODO: render login view
 });
+
+
+var checkUser = function(data, callback) {
+	Appointment.find({
+		firstName: data.firstName,
+		lastName: data.lastName,
+		birthday: data.birthday
+	}, function(err, appointments) {
+		if (appointments.length > 0) {
+			callback(err, false);
+		} else {
+			callback(err, true);
+		}
+	});
+};
 
 // Clears the session
 router.get('/logout', function(req, res) {

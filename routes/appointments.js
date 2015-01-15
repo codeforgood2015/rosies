@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Appointment = require('../models/appointment').Appointment;
+var Rule = require('../models/rule').Rule;
 var utils = require('../utils/utils');
 
 // GET /appointments - get all appointments
@@ -14,11 +15,11 @@ router.get('/', function(req, res) {
 /*
 	POST /appointments: create a new appointment
 	Request body:
-	- date: Date object representing the start of the time slot
+	- date: Date object representing the day of appointment
+	- timeslot: Array of Strings representing the time interval of appointment
 	- firstName, lastName: Strings identifying the guest
 	- birthday: Guest's birthday, as a String
 	- premade: boolean representing whether a premade bag is accepted
-	- allergies: Array of Strings representing allergies
 */
 router.post('/', function(req, res) {
 	var data = {
@@ -30,7 +31,8 @@ router.post('/', function(req, res) {
 		premade: req.body.premade,
 		//allergies: req.body.allergies
 	}; 
-	Appointment.find({date: date}, function(err, appointments) {
+	Appointment.find({date: data.date, timeslot: data.timeslot}, function(err, appointments) {
+		// TODO: check if user has already made an appointment
 		// TODO: fetch number of allotted slots
 		if (appointments.length < 27) {
 			data.waitlist = false;
@@ -49,6 +51,45 @@ router.post('/', function(req, res) {
 		}
 	});
 });
+
+/*
+	Given a JSON object (data), check whether the timeslot is open
+    Executes callback(err, status)
+    	err - error, typically occurs if a data entry is null
+    	status - String, one of 'open', 'waitlist', or 'closed'
+*/
+var checkTime = function(data, callback) {
+	Appointment.find({
+		date: data.date, 
+		timeslot: data.timeslot
+	}, function(err, appointments) {
+		//TODO: fix these queries, they need to include timeslots
+		Rule.find({date: data.date}, function(err, rules) {
+			if (rules.length == 0) {
+				Rule.findOne({date: data.date.getDay()}, function(err, rule) {
+					callback(err, checkRule(appointments.length, rule));
+				});
+			} else {
+				callback(err, checkRule(appointments.length, rules[0]));
+			}
+		});
+	});
+};
+
+/*
+	Helper function that compares the number of appointments to a rule,
+	Returns - String, one of 'open', 'waitlist', or 'closed' depending 
+	    status of the timeslot
+*/
+var checkRule = function(num_appts, rule) {
+	if (num_appts < rule.maxCap) {
+		return 'open';
+	} else if (num_appts < rule.maxCap + rule.maxWaitlist) {
+		return 'waitlist';
+	} else {
+		return 'closed';
+	}
+};
 
 // GET /:id - return json of appointment using its id 
 router.get('/:id', function(req, res) {
