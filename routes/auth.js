@@ -41,7 +41,7 @@ passport.use('guest', new LocalStrategy(function(username, password, done) {
 passport.use('admin', new LocalStrategy(function(username, password, done) {
 	Admin.findOne({username: username}, function(err, admin) {
 		if (err) {
-			return done(err0;)
+			return done(err);
 		} if (!guest) {
 			return done(null, false, {message: 'Incorrect username.'});
 		} 
@@ -72,9 +72,9 @@ router.post('/guest', function(req, res) {
 		password: req.body.password
 	};
 	var guest = new Guest(data);
-	guest.save(function(err)) {
+	guest.save(function(err) {
 		utils.sendSuccessResponse(res, 'New user created');
-	}
+	});
 });
 
 // PUT /guest - log in a guest
