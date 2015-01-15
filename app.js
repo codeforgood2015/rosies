@@ -10,19 +10,6 @@ var Timeslot = require('./models/timeslot').model;
 var mongoose = require('mongoose');
 var connection_string = 'localhost/rosies';
 
-// ------------------------------------------------------------
-//based off of README.md on https://github.com/rschmukler/agenda
-var agenda = new Agenda({db: {address: 'localhost:27017/agenda-example'}});
-
-
-agenda.define('update timeslots', function(job, done) {
-	var data = job.attrs.data;
- 	done();  
-});
-
-agenda.every('midnight', 'update timeslots', {time: new Date(), capacity: Number, guests: Array, waitlist: Array});
-agenda.start();
-
 if (process.env.OPENSHIFT_MONGODB_DB_PASSWORD) {
   connection_string = process.env.OPENSHIFT_MONGODB_DB_USERNAME + ':' +
         process.env.OPENSHIFT_MONGODB_DB_PASSWORD + '@' +
