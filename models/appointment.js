@@ -4,12 +4,13 @@ var ObjectId = Schema.ObjectId;
 
 var appointmentSchema = mongoose.Schema({
 	date: Date,
+	timeslot: [String], 
 	firstName: String,
 	lastName: String,
 	birthday: String,
 	premade: boolean,
-/*	allergies: [String],
-*/	waitlist: boolean
+/*	allergies: [String],*/
+	waitlist: boolean
 });
 
 //add some validators?
