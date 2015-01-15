@@ -23,11 +23,12 @@ router.get('/', function(req, res) {
 router.post('/', function(req, res) {
 	var data = {
 		date: req.body.date,
+		timeslot: req.body.timeslot,
 		firstName: req.body.firstName,
 		lastName: req.body.lastName,
 		birthday: req.body.birthday,
 		premade: req.body.premade,
-		allergies: req.body.allergies
+		//allergies: req.body.allergies
 	}; 
 	Appointment.find({date: date}, function(err, appointments) {
 		// TODO: fetch number of allotted slots
