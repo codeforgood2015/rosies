@@ -6,11 +6,12 @@ var http = require('http');
 var Agenda = require('agenda');
 var Rule = require('./models/rules').model;
 var Timeslot = require('./models/timeslot').model;
+
 var mongoose = require('mongoose');
 var connection_string = 'localhost/rosies';
 
 if (process.env.OPENSHIFT_MONGODB_DB_PASSWORD) {
-  connection_string = process.env.OPENSHIFT_MONGODB_DB_USERNAME + ':' +
+	connection_string = process.env.OPENSHIFT_MONGODB_DB_USERNAME + ':' +
         process.env.OPENSHIFT_MONGODB_DB_PASSWORD + '@' +
         process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
         process.env.OPENSHIFT_MONGODB_DB_PORT + process.env.OPENSHIFT_APP_NAME;
@@ -20,25 +21,27 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 // db.once('open', function(callback) {});
 
-// ------------------------------------------------------------
-//based off of README.md on https://github.com/rschmukler/agenda
-/*var agenda = new Agenda({db: {address: 'localhost:27017'}});
-
-
+// set up agenda in order to schedule jobs
+var agenda = new Agenda({
+	db: {
+		address: connection_string,
+		collection: 'agendaJobs'
+	}
+});
+// job processors
 agenda.define('update timeslots', function(job, done) {
-	console.log("got here 0");
+	//console.log("got here 0");
 	var yesterday = new Date(Date.now() - 1000*60*60*24);
 	var tomorrow = new Date(Date.now() + 1000*60*60*24);
-	console.log("got here 1");
+	//console.log("got here 1");
 	//delete yesterday's timeslots
-	Timeslot
-	.findAndModify({
+	Timeslot.findAndModify({
 		query: {dayOfWeek: yesterday.toLocaleDateString('en-US', {weekday: 'long'})},
 		update: 
 	});
 	//create tomorrow's timeslots
 	//right now only searches for the weekly timeslots
-	console.log("got here 2");
+	//console.log("got here 2");
 	Rule.find({day: 'Friday'}).exec(function(err, rules){
 		console.log(err)
 		if(err || !rules){
@@ -70,9 +73,8 @@ agenda.define('update timeslots', function(job, done) {
 //currently every day at 12:01AM
 agenda.schedule('* * * * * *', 'update timeslots');
 agenda.start();
-console.log("starting")*/
 
-// ---------------------------------------------------------------
+
 // routes for the app
 var auth = require('./routes/auth');
 // var admin = require('./routes/admin');
