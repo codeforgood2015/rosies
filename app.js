@@ -44,14 +44,12 @@ agenda.define('update timeslots', function(job, done) {
 	console.log("got here 2");
 	Rule.find({day: 'Friday'}).exec(function(err, rules){
 		console.log(err)
-		console.log('rules' + rules);
-		console.log(rules)
-		console.log(rules[i]);
-		if(err || rules.length==0){
+		if(err || !rules || rules.length == 0){
 			console.log("uhoh")
 		}
 		else{
-			console.log("looking for rules");   
+			console.log(rules);
+			console.log("looking for rules");
 			for(var i = 0; i <= rules.length; i++){
 				timeslot = new Timeslot({
 					dayOfWeek: tomorrow.toLocaleDateString('en-US', {weekday: 'long'}),
