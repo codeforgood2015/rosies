@@ -20,9 +20,9 @@
 <div ng-show = "currentSelect === -1">
 	<h3>Log In</h3>
 	<form>
-	First Name: <input type = "text" ng-model = "firstName" placeholder = "type here"><br>
-	Last Name: <input type = "text" ng-model = "lastName" placeholder = "type here"><br>
-	Date of Birth: 
+	<span class = "label"> First Name: </span><input type = "text" ng-model = "firstName" placeholder = "type here"><br>
+	<span class = "label"> Last Name: </span><input type = "text" ng-model = "lastName" placeholder = "type here"><br>
+	<span class = "label"> Date of Birth: </span>
 	<select id = "dobyear" ng-model = "dob.year" ng-change = "ctrl.updateDates()"><option ng-repeat = "year in ctrl.years" value = {{year}}>{{year}}</option></select>
 	<select id = "dobmonth" ng-model = "dob.month" ng-change = "ctrl.updateDates()"><option ng-repeat = "month in ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November', 'December']" value = {{month}}>{{month}}</option></select>
 	<select id = "dobdate" ng-model = "dob.day"><option ng-repeat = "day in ctrl.monthDayPairs.January" value = {{day}}>{{day}}</option></select>
@@ -285,14 +285,28 @@ table tr td:nth-child(odd){
 }
 @media only screen and (max-width: 1300px){
 	html{
-		font-size: 25px;
 		background-size: 200%;
+		font-size: 30px;
 	}
 
 	h3{
 		font-size: 60px;
 	}
+	.label{
+		display: block;
+		margin-right: auto;
+		margin-right: auto;
+		margin-top: 50px;
+		font-size: 30px;
+	}
 
+	input{
+		font-size: 30px;
+	}
+
+	select{
+		font-size: 30px;
+	}
 	#back{
 		width: 100px;
 		height: 75px;
@@ -303,18 +317,18 @@ table tr td:nth-child(odd){
 		width: 25%;
 	}
 	.button0{
-		width: 50%;
-		height: 30%;
+		width: 75%;
+		height: 150px;
 	}
 
 	.button1{
-		width: 75%;
-		height: 20%;
+		width: 80%;
+		height: 50px;
 	}
 
 	.button2{
-		width: 50%;
-		height: 30%;
+		width: 75%;
+		height: 150px;
 	}
 
 	.button3{
