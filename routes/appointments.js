@@ -3,6 +3,7 @@ var router = express.Router();
 var Appointment = require('../models/appointment').Appointment;
 var Rule = require('../models/rule').Rule;
 var utils = require('../utils/utils');
+var moment = require('moment');
 
 // GET /appointments - get all appointments
 // TODO: should check that an admin is logged in
@@ -34,6 +35,7 @@ router.post('/', function(req, res) {
 	Appointment.find({date: data.date, timeslot: data.timeslot}, function(err, appointments) {
 		// TODO: check if user has already made an appointment
 		// TODO: fetch number of allotted slots
+		
 		if (appointments.length < 27) {
 			data.waitlist = false;
 			var appointment = new Appointment(data);
@@ -48,6 +50,24 @@ router.post('/', function(req, res) {
 			});
 		} else {
 			res.sendErrResponse(res, 403, 'This timeslot is filled.');
+		}
+	});
+});
+
+router.get('/:time', function(req, res) {
+	var dateObj = moment(req.params.time);
+	var month = dateObj.month();
+	var day = dateObj.date();
+	var year = dateObj.year();
+	var data = {
+		date: new Date(year, month, day),
+		timeslot: dateObj.hour() + ':' + dateObj.minute()
+	}
+	checkTime(data, function(err, status) {
+		if (err) {
+			utils.sendErrResponse(res, 403, err);
+		} else {
+			utils.sendSuccessResponse(res, status);
 		}
 	});
 });
