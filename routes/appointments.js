@@ -54,6 +54,13 @@ router.post('/', function(req, res) {
 	});
 });
 
+/*
+	GET /:time - given an input time as a URL param, return status of timeslot
+	Request body/Parameters:
+	- time: Any string that can be parsed by moment, as defined at momentjs.com
+	Returns
+	- status: a string taking on the states 'open', 'closed', or 'waitlist'
+*/
 router.get('/:time', function(req, res) {
 	var dateObj = moment(req.params.time);
 	var month = dateObj.month();

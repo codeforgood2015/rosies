@@ -125,7 +125,7 @@ agenda.define('update timeslots', function(job, done) {
 //cron format: minute, hour, dayOfMonth, monthOfYear, dayOfWeek, Year, * means any
 //currently every day at 12:01AM
 //agenda.schedule('in 2 seconds', 'update timeslots');
-agenda.start();
+//agenda.start();
 
 // routes for the app
 var auth = require('./routes/auth');
