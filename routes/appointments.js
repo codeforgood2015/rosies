@@ -3,7 +3,7 @@ var router = express.Router();
 var Appointment = require('../models/appointment').Appointment;
 var Rule = require('../models/rule').Rule;
 var utils = require('../utils/utils');
-var moment = require('moment');
+//var moment = require('moment');
 
 // GET /appointments - get all appointments
 // TODO: should check that an admin is logged in
