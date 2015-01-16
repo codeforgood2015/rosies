@@ -3,7 +3,7 @@ var router = express.Router();
 var Appointment = require('../models/appointment').Appointment;
 var Rule = require('../models/rule').Rule;
 var utils = require('../utils/utils');
-//var moment = require('moment');
+var moment = require('moment');
 
 // GET /appointments - get all appointments
 // TODO: should check that an admin is logged in
@@ -21,6 +21,7 @@ router.get('/', function(req, res) {
 	- firstName, lastName: Strings identifying the guest
 	- birthday: Guest's birthday, as a String
 	- premade: boolean representing whether a premade bag is accepted
+	- waitlist: boolean representing whether this is a waitlisted array
 */
 router.post('/', function(req, res) {
 	var data = {
@@ -30,6 +31,7 @@ router.post('/', function(req, res) {
 		lastName: req.body.lastName,
 		birthday: req.body.birthday,
 		premade: req.body.premade,
+		waitlist: req.body.waitlist
 		//allergies: req.body.allergies
 	}; 
 	Appointment.find({date: data.date, timeslot: data.timeslot}, function(err, appointments) {
@@ -54,6 +56,13 @@ router.post('/', function(req, res) {
 	});
 });
 
+/*
+	GET /:time - given an input time as a URL param, return status of timeslot
+	Request body/Parameters:
+	- time: Any string that can be parsed by moment, as defined at momentjs.com
+	Returns
+	- status: a string taking on the states 'open', 'closed', or 'waitlist'
+*/
 router.get('/:time', function(req, res) {
 	var dateObj = moment(req.params.time);
 	var month = dateObj.month();
@@ -73,27 +82,52 @@ router.get('/:time', function(req, res) {
 });
 
 /*
-	Given a JSON object (data), check whether the timeslot is open
+	Given a JSON object, check whether the timeslot is open
+	Arguments:
+	- data.date: Date object representing the relevant day at 0:00
+	- data.timeslot: Array representing time interval for the slot
     Executes callback(err, status)
-    	err - error, typically occurs if a data entry is null
-    	status - String, one of 'open', 'waitlist', or 'closed'
+    - err: error, typically occurs if a data entry is null
+    - status: String, one of 'open', 'waitlist', or 'closed'
 */
 var checkTime = function(data, callback) {
 	Appointment.find({
 		date: data.date, 
 		timeslot: data.timeslot
 	}, function(err, appointments) {
-		//TODO: fix these queries, they need to include timeslots
-		Rule.find({date: data.date}, function(err, rules) {
+		Rule.find({date: data.date, timeslot: data.timeslot}, function(err, rules) {
 			if (rules.length == 0) {
-				Rule.findOne({date: data.date.getDay()}, function(err, rule) {
-					callback(err, checkRule(appointments.length, rule));
+				Rule.findOne({date: dayString(data.date.getDay()), timeslot: data.timeslot}, function(err, rule) {
+					if (rule) {
+						callback(err, checkRule(appointments.length, rule));
+					} else {
+						callback(err, 'closed');
+					}
 				});
 			} else {
 				callback(err, checkRule(appointments.length, rules[0]));
 			}
 		});
 	});
+};
+
+var dayString = function(day) {
+	switch (day) {
+		case 0:
+			return 'Sunday';
+		case 1:
+			return 'Monday';
+		case 2:
+			return 'Tuesday';
+		case 3:
+			return 'Wednesday';
+		case 4:
+			return 'Thursday';
+		case 5:
+			return 'Friday';
+		case 6:
+			return 'Saturday';
+	}
 };
 
 /*
@@ -111,7 +145,11 @@ var checkRule = function(num_appts, rule) {
 	}
 };
 
-// GET /:id - return json of appointment using its id 
+/*
+	GET /:id - return json of appointment using its id 
+	Request body/parameters:
+	- id: ObjectId of the appointment to be returned
+*/
 router.get('/:id', function(req, res) {
 	Appointment.findById(req.params.id, function(err, appointment) {
 		if (err) {

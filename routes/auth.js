@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var https = require('https');
 var passport = require('passport');
+var utils = require('../utils/utils');
 var OAuth2Strategy = require('passport-oauth').OAuth2Strategy;
 var LocalStrategy = require('passport-local').Strategy;
 var Guest = require('../models/guest').Guest;
@@ -25,11 +26,15 @@ passport.use('oauth', new OAuth2Strategy({
 // authenticating users with accounts in our database.
 // Note that we need two authentication flows for admins compared to guests
 passport.use('guest', new LocalStrategy(function(username, password, done) {
+	console.log('authenticating');
 	Guest.findOne({username: username}, function(err, guest) {
 		if (err) {
 			return done(err);
 		} if (!guest) {
-			return done(null, false, {message: 'Incorrect username.'});
+			console.log('Trying to create new user');
+			var guest = new Guest({username: username, password: password});
+			guest.save();
+			return done(null, false, {message: 'New user created, retry login.'});
 		} if (!guest.validPassword(password)) {
 			return done(null, false, {message: 'Incorrect password.'});
 		}
@@ -38,6 +43,7 @@ passport.use('guest', new LocalStrategy(function(username, password, done) {
 }));
 
 passport.use('admin', new LocalStrategy(function(username, password, done) {
+	console.log('test');
 	Admin.findOne({username: username}, function(err, admin) {
 		if (err) {
 			return done(err);
@@ -58,8 +64,8 @@ router.get('/oauth', passport.authenticate('oauth'));
 
 router.get('/oauth/callback', passport.authenticate('oauth', {successRedirect: '/', failureRedirect: '/'}));
 
-// TODO: set a different failure redirect as needed
-router.put('/guest', passport.authenticate('guest', {successRedirect: '/', failureRedirect: '/', failureFlash: true}));
+/*
+router.post('/guest/login', passport.authenticate('guest', {successRedirect: '/', failureRedirect: '/test', failureFlash: false}));
 
 // once we get Salesforce working, this should be removed as well.
 router.post('/guest', function(req, res) {
@@ -70,6 +76,21 @@ router.post('/guest', function(req, res) {
 	var guest = new Guest(data);
 	guest.save(function(err) {
 		utils.sendSuccessResponse(res, 'New user created');
+	});
+});*/
+
+router.post('/guest', function(req, res) {
+	var data = {
+		firstName: req.body.firstName,
+		lastName: req.body.lastName,
+		dob: req.body.dob
+	};
+	checkUser(data, function(err, status) {
+		if (err) {
+			utils.sendErrResponse(res, 403, err);
+		} else {
+			utils.sendSuccessResponse(res, status);
+		}
 	});
 });
 
