@@ -19,18 +19,19 @@
 
 <div ng-show = "currentSelect === -1">
 	<h3>Log In</h3>
-	<form>
-	<span class = "label"> First Name: </span><input type = "text" ng-model = "firstName" placeholder = "type here"><br>
-	<span class = "label"> Last Name: </span><input type = "text" ng-model = "lastName" placeholder = "type here"><br>
+	<form ng-controller = "LoginController as login">
+	<span class = "label"> First Name: </span><input type = "text" ng-model = "user.firstName" placeholder = "type here" required><br>
+	<span class = "label"> Last Name: </span><input type = "text" ng-model = "user.lastName" placeholder = "type here" required><br>
 	<span class = "label"> Date of Birth: </span>
-	<select id = "dobyear" ng-model = "dob.year" ng-change = "ctrl.updateDates()"><option ng-repeat = "year in ctrl.years" value = {{year}}>{{year}}</option></select>
-	<select id = "dobmonth" ng-model = "dob.month" ng-change = "ctrl.updateDates()"><option ng-repeat = "month in ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November', 'December']" value = {{month}}>{{month}}</option></select>
-	<select id = "dobdate" ng-model = "dob.day"><option ng-repeat = "day in ctrl.monthDayPairs.January" value = {{day}}>{{day}}</option></select>
+	<select id = "dobyear" ng-model = "user.dob.year" ng-change = "ctrl.updateDates()" required><option ng-repeat = "year in ctrl.years" value = {{year}}>{{year}}</option></select>
+	<select id = "dobmonth" ng-model = "user.dob.month" ng-change = "ctrl.updateDates()" required><option ng-repeat = "month in ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November', 'December']" value = {{month}}>{{month}}</option></select>
+	<select id = "dobdate" ng-model = "user.dob.day" required><option ng-repeat = "day in ctrl.monthDayPairs.January" value = {{day}}>{{day}}</option></select>
 <br><br>
-	<button type = "submit" class = "button-1" ng-click = "ctrl.next()">next</button>
+	<button type = "submit" class = "button-1" ng-click = "login.lookup(user)">next</button>
 	</form>
 
 </div>
+
 <div ng-show = "currentSelect === 0">
 <h3>Select a Date</h3>
 	<br>
@@ -64,7 +65,7 @@
 	<table>
 		<tr>
 			<td>Name: </td>
-			<td>{{firstName}} {{lastName}}</td>
+			<td>{{user.firstName}} {{user.lastName}}</td>
 		</tr>
 		<tr>
 			<td>Date: </td>
@@ -107,6 +108,11 @@
 	}
 
 	var app = angular.module('dateTime', []);
+	app.controller('LoginController', function($scope){
+		this.lookup = function(user){
+			console.log(user);
+		}
+	});
 	app.controller('datetimeController', function($scope){
 		$scope.currentSelect = -1;
 		this.next = function(){
@@ -140,7 +146,6 @@
 		}
 
 		this.updateDates = function(){
-			console.log("hi");
 			myYear = $("#dobyear").val();
 			myMonth = $("#dobmonth").val();
 			myCurrentDate = $("#dobdate").val();
@@ -152,7 +157,8 @@
 				}
 			}
 			$("#dobdate").empty();
-			$("#dobdate").append("<option></option>")
+			$("#dobdate").append("<option></option>");
+			console.log(myDates.length);
 			for(var i = 1; i <= myDates.length; i++){
 				$("#dobdate").append("<option value = " + String(i) + ">" + String(i) + "</option>");
 			}
