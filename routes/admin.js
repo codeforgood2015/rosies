@@ -13,7 +13,7 @@ router.get('/', function(req, res) {
 
 /*
 	POST /admins - create a new admin user
-	Request body:
+	Request body: 
 	- username: String
 	- password: String
 */
