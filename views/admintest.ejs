@@ -27,6 +27,10 @@
 					<br>
 					<input class='-not-disappear' id='login-button' type='button' value='Login' ng-click="ctrl.login();"</input>
 				</form>
+				<div class='login-error' ng-show='ctrl.loginError'>
+					<p> Error: Sorry, incorrect username or password combination. </p>
+					<p> Please contact __________ with login difficulties, or if you would like to request an account. </p>
+				</div>
 			</div>
 			
 			<!-- Buttons for different actions admins can take -->
@@ -48,16 +52,37 @@
 			<!-- Interactive view for the current guest signups for today or tomorrow. JQuery and show/hidden tags -->
 			<div class='viewguests' ng-show="ctrl.currentSection === 2">
 				<h2> View guests currently signed up for each time slot: </h2>
-				<div class='today'>
-					<h3>Today</h3>
-
-					<!-- TODO make times reflect the actual times for that day, instead of default -->
-					<h3>Tomorrow</h3>
-				</div>
-				<div class='tomorrow'>
-				</div>
+				<p> Click on a day and a time to see a list of guests and whether or not they require a pre-made bag. </p>
+				<ul id='times'>
+					<!-- Today -->
+					<li> <a href='#' ng-click='ctrl.toggleToday();'>Today </a>
+						<ul class='today-times' ng-show='ctrl.showToday'> 							
+							<li ng-repeat='time in ctrl.todayTimes();'> <a href='#' ng-click='ctrl.toggleGuests("today", time);'>  
+								{{time}} </a>
+								<table class='today-guests' ng-show='ctrl.showGuests("today", time);'>
+									<tr ng-repeat='guest in ctrl.getGuests("today", time);'> 
+											<td>{{guest.name}}</td> <td>{{ctrl.displayYesNo(guest.premade_bag);}}</td>
+									</tr>
+								</table>
+							</li>
+						</ul>
+					</li>
+					<!-- Tomorrow -->
+					<li> <a href='#' ng-click='ctrl.toggleTomorrow();'>Tomorrow </a>
+						<ul class='tomorrow-times' ng-show='ctrl.showTomorrow'> 
+							<li ng-repeat='time in ctrl.tomorrowTimes();'> <a href='#' ng-click='ctrl.toggleGuests("tomorrow", time);'>  
+								{{time}} </a>
+								<table class='tomorrow-guests' ng-show='ctrl.showGuests("tomorrow", time);'>
+									<tr ng-repeat='guest in ctrl.getGuests("tomorrow", time);'> 
+										<td>{{guest.name}}</td> <td>{{ctrl.displayYesNo(guest.premade_bag);}}</td>
+									</tr>
+								</table>
+							</li>
+						</ul>
+					</li>
+				</ul>
 			</div>
-			
+
 			<!-- Table displaying the current hours, with edit buttons, and a form for new hours, that will appear only if edit button is clicked-->
 			<div class='hours' ng-show='ctrl.currentSection === 3'>
 				<h2>Food Pantry Hours of Operation</h2>
@@ -92,6 +117,7 @@
 							</div>
 						</div> 
 						<button ng-click='ctrl.saveNewDefaultHours();'>Save New Hours</button>
+						<button ng-click='ctrl.cancelNewDefaultHours();'>Cancel</button>
 					</form>
 				</div>
 				<!-- Current specific date rules -->
@@ -106,7 +132,7 @@
 						</tr>
 					</table> 
 					<div id='edit-special-hours' ng-show='ctrl.showEditSpecialHours'>
-						<div class='slots'>
+						<div class='special-slots'>
 							<p> Editing the hours for: <span>{{ctrl.editDate}}</span> </p>
 							start: <input class='new-start-time' type='text' placeholder='9:00AM'> </input>
 							end: <input class='new-end-time' type='text' placeholder='10:00AM'> </input>
@@ -114,6 +140,7 @@
 							<button class='remove-time-slot' ng-click='ctrl.removeSpecialTimeslot();'>Remove</button>
 						</div>
 						<button ng-click='ctrl.saveNewEditedSpecialHours();'>Save New Special Hours for {{ctrl.editDate}} </button>
+						<button ng-click='ctrl.cancelNewEditedSpecialHours();'>Cancel</button>
 					</div>
 					<div id='new-special-hours'>
 						<p>Add New Special Hours on Date:</p>
@@ -149,7 +176,9 @@
 						new password:<input id='new-admin-password' type='text'></input>
 						<br>
 						confirm new password:<input id='new-admin-confirm-password' type='text'></input>
+						<br>
 						<input class='not-disappear' id='new-admin' type='button' value='Save New Admin Account' ng-click="ctrl.addNewAdmin();"</input>
+						<button ng-click='ctrl.cancelNewAdminAccount();'>Cancel</button>
 					</form>
 				</div>
 			</div>

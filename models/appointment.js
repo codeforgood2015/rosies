@@ -8,8 +8,8 @@ var appointmentSchema = mongoose.Schema({
 	firstName: String,
 	lastName: String,
 	birthday: String,
-	premade: boolean,
-	waitlist: boolean
+	premade: Boolean,
+	waitlist: Boolean
 });
 
 //add some validators?
