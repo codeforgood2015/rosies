@@ -111,6 +111,16 @@
 	app.controller('LoginController', function($scope){
 		this.lookup = function(user){
 			console.log(user);
+			$.ajax('/auth/guest',{
+				data: {
+					firstName: user.firstName,
+					lastName: user.lastName, 
+					dob: user.dob
+				},
+				type: 'POST'
+			}).done(function(data, textStatus, jqXHR) {
+				console.log(data);
+			});
 		}
 	});
 	app.controller('datetimeController', function($scope){
