@@ -21,6 +21,7 @@ router.get('/', function(req, res) {
 	- firstName, lastName: Strings identifying the guest
 	- birthday: Guest's birthday, as a String
 	- premade: boolean representing whether a premade bag is accepted
+	- waitlist: boolean representing whether this is a waitlisted array
 */
 router.post('/', function(req, res) {
 	var data = {
@@ -30,6 +31,7 @@ router.post('/', function(req, res) {
 		lastName: req.body.lastName,
 		birthday: req.body.birthday,
 		premade: req.body.premade,
+		waitlist: req.body.waitlist
 		//allergies: req.body.allergies
 	}; 
 	Appointment.find({date: data.date, timeslot: data.timeslot}, function(err, appointments) {

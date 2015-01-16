@@ -111,7 +111,7 @@
 	app.controller('LoginController', function($scope){
 		this.lookup = function(user){
 			console.log(user);
-			$.ajax('/auth/guest',{
+			$.ajax('/auth/guest', {
 				data: {
 					firstName: user.firstName,
 					lastName: user.lastName, 
@@ -120,6 +120,13 @@
 				type: 'POST'
 			}).done(function(data, textStatus, jqXHR) {
 				console.log(data);
+				if (data.success && data.content) {
+					console.log($scope.currentSelect);
+					$scope.currentSelect += 1;
+					console.log($scope.currentSelect);
+				} else {
+					// TODO: Generate view for booked appointment
+				}
 			});
 		}
 	});
