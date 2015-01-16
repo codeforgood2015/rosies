@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var http = require('http');
 var Agenda = require('agenda');
 var Rule = require('./models/rule').Rule;
-//var Timeslot = require('./models/timeslot').model;
+var Timeslot = require('./models/timeslot').Timeslot;
 
 var mongoose = require('mongoose');
 var connection_string = 'localhost/rosies';
@@ -70,62 +70,99 @@ var createDefaultRules = function() {
 }
 
 // set up agenda in order to schedule jobs
-/*var agenda = new Agenda({
+var agenda = new Agenda({
 	db: {
 		address: connection_string,
 		collection: 'agendaJobs'
 	}
-});*/
+});
 // job processors
 
-/*
+
 agenda.define('update timeslots', function(job, done) {
 	console.log("got here 0");
+	var today = new Date(Date.now());
 	var yesterday = new Date(Date.now() - 1000*60*60*24);
 	var tomorrow = new Date(Date.now() + 1000*60*60*24);
-	console.log("got here 1");*/
+	var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+	//console.log("got here 1");
 	//delete yesterday's timeslots
-	/*Timeslot.findAndModify({
-		query: {dayOfWeek: yesterday.toLocaleDateString('en-US', {weekday: 'long'})},
-		remove: true
-	});
-	//create tomorrow's timeslots
+	Timeslot.find({dayOfWeek: weekdays[yesterday.getDay()]}).exec(function(err, timeslots){
+		if(!err && timeslots.length > 0){
+			Timeslot.find({dayOfWeek: weekdays[yesterday.getDay()]}).remove().exec()
+		}
+	})
+	//create today's timeslots if they're not there
 	//right now only searches for the weekly timeslots
-/*	console.log("got here 2");
-	Rule.find({day: 'Friday'}).exec(function(err, rules){
-		console.log(err)
-		if(err || !rules || rules.length == 0){
-			console.log("uhoh")
+	Timeslot.find({dayOfWeek: weekdays[today.getDay()]}).exec(function(err, timeslots){
+		if(!err && timeslots.length == 0){
+			console.log("why are these missing, creating today's dates anyways");
+			Rule.find({date: weekdays[today.getDay()]}).exec(function(err, rules){
+				if(err || !rules || rules.length == 0){
+					console.log("uhoh")
+				}
+				else{
+					for(var i = 0; i < rules.length; i++){
+						timeslot = new Timeslot({
+							dayOfWeek: weekdays[today.getDay()],
+							date: today,
+							time: rules[i].time,
+							maxCapacity: rules[i].maxCap,
+							maxWaitlist: rules[i].maxWaitlist,
+							guests: [],
+							waitlist: []
+						});
+						timeslot.save();
+					}
+				}
+			})
 		}
-		else{
-			console.log(rules);
-			console.log("looking for rules");
-			for(var i = 0; i <= rules.length; i++){
-				timeslot = new Timeslot({
-					dayOfWeek: tomorrow.toLocaleDateString('en-US', {weekday: 'long'}),
-					date: tomorrow,
-					time: rules[i].time,
-					maxCapacity: rules[i].maxCap,
-					maxWaitlist: rules[i].maxWaitlist,
-					guests: [],
-					waitlist: []
-				})
-			}
+	})
+
+	//create today's timeslots if they're not there
+	//right now only searches for the weekly timeslots
+	Timeslot.find({dayOfWeek: weekdays[tomorrow.getDay()]}).exec(function(err, timeslots){
+		if(!err && timeslots.length == 0){
+			console.log("creating tomorrow's slots");
+			Rule.find({date: weekdays[tomorrow.getDay()]}).exec(function(err, rules){
+				if(err || !rules || rules.length == 0){
+					console.log("uhoh")
+				}
+				else{
+					for(var i = 0; i < rules.length; i++){
+						timeslot = new Timeslot({
+							dayOfWeek: weekdays[tomorrow.getDay()],
+							date: today,
+							time: rules[i].time,
+							maxCapacity: rules[i].maxCap,
+							maxWaitlist: rules[i].maxWaitlist,
+							guests: [],
+							waitlist: []
+						});
+						timeslot.save();
+					}
+				}
+			})
 		}
-	})*/
-/*	console.log("got here 3");
+	})
+
+	//console.log("got here 3");
 	//remove events if they were no repeat
  	//not implemented yet
- 	Timeslot.find().exec(function(err, timeslots){console.log(timeslots)})
- 	console.log("got here 4");
+ 	//Timeslot.find().exec(function(err, timeslots){console.log(timeslots)})
+ 	//console.log("got here 4");
  	done();  
 
 });
-*/
+
 //cron format: minute, hour, dayOfMonth, monthOfYear, dayOfWeek, Year, * means any
-//currently every day at 12:01AM
-//agenda.schedule('in 2 seconds', 'update timeslots');
-/*agenda.start();*/
+agenda.every('10 seconds', 'update timeslots');
+agenda.on('fail', function(err, job){
+	console.log(err.message)
+})
+agenda.start();
+
+console.log("starting");
 
 // routes for the app
 var auth = require('./routes/auth');
@@ -147,7 +184,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.use('/auth', auth);
-//app.get('/dev', dev.testDev);
+app.get('/dev', dev.testDev);
 //app.get('/dev/set', dev.createDefaultRules);
 app.use('/admin', admin);
 app.use('/appointments', appointments);

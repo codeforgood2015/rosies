@@ -1,6 +1,8 @@
 var Rule = require('../models/rule').Rule;
+var Timeslot = require('../models/timeslot').Timeslot;
 
 exports.testDev = function(req, res){
+	Timeslot.find().exec(function(err, timeslots){console.log(timeslots.length)})
 	res.render('error');
 }
 

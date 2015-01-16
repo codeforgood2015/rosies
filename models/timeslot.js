@@ -4,7 +4,7 @@ var ObjectId = Schema.ObjectId;
 
 var timeslotSchema = mongoose.Schema({
 	//things id in database
-	dayOfWeek: {type: String, enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']},
+	dayOfWeek: {type: String, enum: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']},
 	date: Date,
 
 	//things to modify html
@@ -18,4 +18,4 @@ var timeslotSchema = mongoose.Schema({
 
 });
 
-module.exports.Timeslot = mongoose.model('timeslot', timeslotSchema);
+module.exports.Timeslot = mongoose.model('Timeslot', timeslotSchema);
