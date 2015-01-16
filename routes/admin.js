@@ -6,9 +6,10 @@ var utils = require('../utils/utils');
 // GET /admins - return a list of all admins
 // TODO: Check log-in status
 router.get('/', function(req, res) {
-	Admin.find({}, function(err, admins) {
-		utils.sendSuccessResponse(res, admins);
-	});
+	// Admin.find({}, function(err, admins) {
+	// 	utils.sendSuccessResponse(res, admins);
+	// });
+	res.render('admintest');
 });
 
 /*

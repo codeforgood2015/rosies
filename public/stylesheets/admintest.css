@@ -27,8 +27,24 @@ body {
 	text-align: left;
 }
 
+#logo {
+	width: 150px;
+	margin-bottom: 50px;
+}
+
 input {
 	margin: 10px;
+}
+
+#login-button {
+	font-size: 24pt;
+}
+
+.login-error {
+	border: 1px solid red;
+	background-color: white;
+	margin: auto;
+	max-width: 75%;
 }
 
 #back-button {
@@ -40,15 +56,6 @@ input {
 	font-size: 24pt;
 	border-radius: 10px;
 
-}
-
-#login-button {
-	font-size: 24pt;
-}
-
-#logo {
-	width: 150px;
-	margin-bottom: 50px;
 }
 
 .select-action-button {

@@ -11,7 +11,7 @@
 			if (valid) {
 				this.toSelectAction();
 			} else {
-				this.loginError = true;
+				this.loginError = true; //displays login error message, and prevents login button from progressing user to the next page
 			}
 		};
 
@@ -223,6 +223,8 @@
 
 		this.additionalDefaultTimeslot = function() {
 			//adds new start and end time text input boxes
+			var div = $("<div class='slot'");
+
 			$('.slots').append($("<input type='text' placeholder='9:00AM'>").addClass('new-start-time'));
 			$('.slots').append($("<input type='text' placeholder='10:00AM'>").addClass('new-end-time'));
 			$('.slots').append($("<input type='text' placeholder='27'>").addClass('new-max-cap'));
@@ -316,7 +318,7 @@
 		/*  ADMIN PAGE */
 		/***************/
 		//admin account stuff, returns list of admin accounts, retrieved from database
-		this.fakeAdminData = function() { 
+		this.getAdminUsernames = function() { 
 			return ['admin', 'account1', 'account2', 'account3', 'scroll!!!!', 'account5', 'im bored', 'clearly',
 			'hello world', 'hehehehehe', 'code for good', 'yayayayayay', 'rosies place', 'these are getting longer haha'];
 		};
@@ -350,6 +352,23 @@
 			$('#new-admin-confirm-password').val('');
 		}
 
+		this.checkValidUsername = function() {
+			//true if the username is valid 
+			//TODO grab the username field
+			//check against database
+			return true;
+		}
+
+		this.showAdminError = function(error) {
+			if (error === 'username') {
+				return !this.checkValidUsername();
+			} else if (error === 'password') {
+				//grab password
+				//grab confirm password
+				//return false if same
+				return false;
+			}
+		}
 
 	}); //end of angular controller
 
