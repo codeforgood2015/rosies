@@ -75,25 +75,66 @@
 
 		//FAKE DATA ... the below two functions should actually figure out the times for today and tomorrow
 		this.todayTimes = function() {
-			return ["4:30PM", "5:30PM"];
+			return ["9:00AM", "10:00AM", "11:00AM", "4:30PM", "5:30PM"];
 		}
 		this.tomorrowTimes = function() {
 			return ["9:00AM", "10:00AM", "11:00AM", "4:30PM", "5:30PM"];
 		}
 
+		this.toMilitary = {
+			"9:00AM": "9:00",
+			"10:00AM": "10:00",
+			"11:00AM": "11:00",
+			"12:00PM": "12:00",
+			"4:30PM": "16:30",
+			"5:30PM": "17:30",
+			"6:30PM": "18:30"
+		}
+
+		this.toNextMilitary = {
+			"9:00AM": "10:00",
+			"10:00AM": "11:00",
+			"11:00AM": "12:00",
+			"12:00PM": "13:00",
+			"4:30PM": "17:30",
+			"5:30PM": "18:30",
+			"6:30PM": "19:30"			
+		}
+
 		//return list of guests, each of which has a name and a boolean representing premade bag or not
 		//will need to query the database, and filter
 		this.getGuests = function(day, time) {
+			var today = new Date();
+			var tomorrow = new Date();
+		  tomorrow.setDate(tomorrow.getDate() + 1);
+		  var start = this.toMilitary(time);
+		  var end = this.toNextMilitary(time);
+		  var time = [start, end];
+		  if (day === "today") {
+		  	var date = today;
+		  } else if (day === "tomorrow") {
+		  	var date = tomorrow;
+		  } else {
+		  	console.log("should never get here")
+		  }
+		  $http.put('/appointments/time', {date: date, time: time}).success(function(data, status, headers, config) {
+		  	return data.content; //returns the list of appointment objects, each of which should have name and premade 
+		  }).error(function(data, status, headers, config) {
+		  	console.log(data);
+		  	return [{name: 'error', premade: 'false'}];
+		  });
+
+			//put 'appointments/time'
 			//FAKE DATA AHHH 
-			if (time === "9:00AM") {
-				return [{name: "hanna", premade_bag: false}, {name: "tricia", premade_bag: true}, {name: "shi-ke", premade_bag: false}];
-			} else if (time === "10:00AM") {
-				return [{name: "person 1", premade_bag: false}, {name: "person 2", premade_bag: true}];
-			} else if (time === "4:30PM") {
-				return [{name: "abc", premade_bag: true}, {name: "def", premade_bag: false}];
-			} else {
-				return [{name: 'persona', premade_bag: false}, {name: 'hello', premade_bag: false}];
-			}
+			// if (time === "9:00AM") {
+			// 	return [{name: "hanna", premade: false}, {name: "tricia", premade: true}, {name: "shi-ke", premade: false}];
+			// } else if (time === "10:00AM") {
+			// 	return [{name: "person 1", premade: false}, {name: "person 2", premade: true}];
+			// } else if (time === "4:30PM") {
+			// 	return [{name: "abc", premade: true}, {name: "def", premade: false}];
+			// } else {
+			// 	return [{name: 'persona', premade: false}, {name: 'hello', premade: false}];
+			// }
 		};
 
 		//dumb utility function that is used to populate the showTodayTimes and showTomorrowTimes lists
@@ -382,6 +423,7 @@
 
 
 		this.validateDate = function() {
+			this.addSpecialHours(); //for testing display; should not be here
 			this.debug = ''; //debugging this method...something with the selects is weird
 			var year = $('#select-year').val();
 			var month = $('#select-month').val();
@@ -475,9 +517,18 @@
 			var pass = $('.new-admin-password').value();
 			var passConfirm = $('.new-admin-password').value();
 			//TODO: post request to database
-			// $.ajax('/', [type: "POST", data:{username: username, password:password, confirm:passConfirm}]).done(function(data, textStatus, jqXHR) {
+			$.ajax('/', {type: "POST", data:{username: username, password:password, confirm:passConfirm}}
+				).done(function(data, textStatus, jqXHR) {
+					if (data.success) {
+						console.log('Successfully added new admin!');
+					} else {
+						if (data.err === "This username already exists") {
 
-			// }); 
+						} else if (data.err === "Password doesn't match") {
+							this.showAdminErrorPassword = true;
+						}
+					}
+			}); 
 			
 		};
 
@@ -498,16 +549,11 @@
 		}
 
 
-		this.showAdminError = function(error) {
-			if (error === 'username') {
+		this.showAdminErrorUsername = function() {
 				return !this.checkValidUsername();
-			} else if (error === 'password') {
-				//grab password
-				//grab confirm password
-				//return false if same
-				return false;
-			}
 		}
+
+		this.showAdminErrorPassword = false;
 
 	}); //end of angular controller
 
