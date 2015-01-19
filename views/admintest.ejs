@@ -61,7 +61,7 @@
 							<li ng-repeat='time in ctrl.todayTimes();'> <a href='#' ng-click='ctrl.toggleGuests("today", time);'>  
 								{{time}} </a>
 								<table class='today-guests' ng-show='ctrl.showGuests("today", time);'>
-									<tr ng-repeat='guest in ctrl.getGuests("today", time);'> 
+									<tr ng-repeat='guest in ctrl.todayGuests'> 
 											<td>{{guest.name}}</td> <td>{{ctrl.displayYesNo(guest.premade);}}</td>
 									</tr>
 								</table>
@@ -74,7 +74,7 @@
 							<li ng-repeat='time in ctrl.tomorrowTimes();'> <a href='#' ng-click='ctrl.toggleGuests("tomorrow", time);'>  
 								{{time}} </a>
 								<table class='tomorrow-guests' ng-show='ctrl.showGuests("tomorrow", time);'>
-									<tr ng-repeat='guest in ctrl.getGuests("tomorrow", time);'> 
+									<tr ng-repeat='guest in ctrl.tomorrowGuests'> 
 										<td>{{guest.name}}</td> <td>{{ctrl.displayYesNo(guest.premade);}}</td>
 									</tr>
 								</table>

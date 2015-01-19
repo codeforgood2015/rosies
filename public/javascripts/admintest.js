@@ -101,34 +101,34 @@
 			"6:30PM": "19:30"
 		};
 
-		//return list of guests, each of which has a name and a boolean representing premade bag or not
-		//will need to query the database, and filter
-		this.getGuests = function(_day, _time) {
+		this.todayGuests = [];
+		this.tomorrowGuests = [];
+
+		this.getTodayGuestsCallback = function(guests) {
+			this.todayGuests = guests;
+		}
+
+		this.getTomorrowGuestsCallback = function(guests) {
+			this.tomorrowGuests = guests;
+		}
+
+		this.getTodayGuests = function(_time, callback) {
 			// _day is either 'today' or 'tomorrow'
 			// _time is a string of the form "9:00AM" or something like that
 
 			var today = new Date();
-			var tomorrow = new Date();
-		  tomorrow.setDate(tomorrow.getDate() + 1);
-		  if (_day === "today") {
-		  	var date = today;
-		  } else if (_day === "tomorrow") {
-		  	var date = tomorrow;
-		  } else {
-		  	console.log("should never get here")
-		  }
-		  var year = date.getFullYear();
-		  var month = date.getMonth();
-		  var day = date.getDate();
+		  var year = today.getFullYear();
+		  var month = today.getMonth();
+		  var day = today.getDate();
 
 		  var sendDate = new Date(year, month, day, 0, 0, 0, 0);
 		  var timeslot = [this.toMilitary[_time], this.toNextMilitary[_time]];
 
 		  $http.put('/appointments/time', {date: sendDate, timeslot: timeslot}).success(function(data, status, headers, config) {
-		  	return data.content;
+		  	callback(data.content);
 		  }).error(function(data, status, headers, config) {
 		  	console.log(data);
-		  	return [{name: 'error', premade: 'false'}];
+		  	callback([{name: 'error', premade: 'false'}]);
 		  });
 
 			//FAKE DATA
@@ -142,6 +142,22 @@
 			// 	return [{name: 'persona', premade: false}, {name: 'hello', premade: false}];
 			// }
 		};
+
+		this.getTomorrowGuests = function(_time, callback) {
+			var tomorrow = new Date();
+		  tomorrow.setDate(tomorrow.getDate() + 1);
+		  var year = tomorrow.getFullYear();
+		  var month = tomorrow.getMonth();
+		  var day = tomorrow.getDate();
+		  var sendDate = new Date(year, month, day, 0, 0, 0, 0);
+		  var timeslot = [this.toMilitary[_time], this.toNextMilitary[_time]];
+		  $http.put('/appointments/time', {date: sendDate, timeslot: timeslot}).success(function(data, status, headers, config) {
+		  	callback(data.content);
+		  }).error(function(data, status, headers, config) {
+		  	console.log(data);
+		  	callback([{name: 'error', premade: 'false'}]);
+		  });
+		}
 
 		//dumb utility function that is used to populate the showTodayTimes and showTomorrowTimes lists
 		var makeTimeObjects = function(times) {
@@ -164,7 +180,7 @@
 			} else if (day === 'tomorrow') {
 				times = this.showTomorrowTimes;
 			} else {
-				//ERROR should never get here
+				console.log('should never get here');
 			}
 
 			for (var j = 0; j < times.length; j++) {
@@ -173,6 +189,10 @@
 					return t.show;
 				}
 			}
+
+			//update the data in todayGuests and tomorrowGuests
+			this.getTodayGuests();
+			this.getTomorrowGuests();	
  		}
 
 		//determines whether to hide or show the guests under the following time and day
