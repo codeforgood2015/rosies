@@ -72,12 +72,26 @@ router.get('/:time', function(req, res) {
 	var data = {
 		date: new Date(year, month, day),
 		timeslot: dateObj.hour() + ':' + dateObj.minute()
-	}
+	};
 	checkTime(data, function(err, status) {
 		if (err) {
 			utils.sendErrResponse(res, 403, err);
 		} else {
 			utils.sendSuccessResponse(res, status);
+		}
+	});
+});
+
+router.put('/time', function(req, res) {
+	var data = {
+		date: req.body.date,
+		timeslot: req.body.timeslot
+	};
+	Appointment.find(data, function(err, apps) {
+		if (err) {
+			utils.sendErrResponse(res, 403, err);
+		} else {
+			utils.sendSuccessResponse(res, apps);
 		}
 	});
 });
