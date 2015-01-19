@@ -256,14 +256,12 @@
 				}
 				console.log(rtimeFixed, rdateFixed)
 				$http.post('/appointments/', {
-				data: {
 					firstName: user.firstName,
 					lastName: user.lastName,
 					birthday: user.dob,
 					date: rdateFixed,
 					timeslot: rtimeFixed,
 					premade: rbagFixed
-				}
 				}).success(function(data, status, headers, config){
 					$scope.submitSuccess = true;
 				})
