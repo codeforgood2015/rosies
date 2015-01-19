@@ -27,6 +27,8 @@ passport.use('oauth', new OAuth2Strategy({
 // Note that we need two authentication flows for admins compared to guests
 passport.use('guest', new LocalStrategy(function(username, password, done) {
 	console.log('authenticating');
+	//for now, make all usernames uppercase because otherwise things are sad :(
+	username.toUpperCase();
 	Guest.findOne({username: username}, function(err, guest) {
 		if (err) {
 			return done(err);

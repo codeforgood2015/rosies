@@ -29,7 +29,6 @@ db.once('open', function(callback) {
 });
 
 var createDefaultRules = function() {
-	console.log("creating rules");
 	var possibleTimes = [['9:00', '10:00'], ['10:00', '11:00'], ['11:00', '12:00'], ['16:30', '17:30'], ['17:30', '18:30']];
 	var daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday','Sunday'];
 	for(var i = 0; i < daysOfWeek.length; i++){
@@ -190,7 +189,15 @@ app.use('/admin', admin);
 app.use('/appointments', appointments);
 
 app.get('/', function(req, res) {
-	res.render('NewReservation');
+	res.render('NewReservation')
 });
 
+/*var checkLogin = function(req, res, next){
+	if(req.isAuthenticated()){
+		return next();
+	}
+	else{
+		res.render('NewReservation');
+	}
+};*/
 module.exports = app;

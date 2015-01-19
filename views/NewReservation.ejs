@@ -19,15 +19,15 @@
 
 <div ng-show = "currentSelect === -1">
 	<h3>Log In</h3>
-	<form ng-controller = "LoginController as login">
-	<span class = "label"> First Name: </span><input type = "text" ng-model = "user.firstName" placeholder = "type here" required><br>
-	<span class = "label"> Last Name: </span><input type = "text" ng-model = "user.lastName" placeholder = "type here" required><br>
+	<form novalidate>
+	<span class = "label"> First Name: </span><input name = "first" type = "text" ng-model = "user.firstName" placeholder = "type here" required = ""><br>
+	<span class = "label"> Last Name: </span><input name = "last" type = "text" ng-model = "user.lastName" placeholder = "type here" required = ""><br>
 	<span class = "label"> Date of Birth: </span>
-	<select id = "dobyear" ng-model = "user.dob.year" ng-change = "ctrl.updateDates()" required><option ng-repeat = "year in ctrl.years" value = {{year}}>{{year}}</option></select>
-	<select id = "dobmonth" ng-model = "user.dob.month" ng-change = "ctrl.updateDates()" required><option ng-repeat = "month in ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November', 'December']" value = {{month}}>{{month}}</option></select>
-	<select id = "dobdate" ng-model = "user.dob.day" required><option ng-repeat = "day in ctrl.monthDayPairs.January" value = {{day}}>{{day}}</option></select>
+	<select name = "year" id = "dobyear" ng-model = "user.dob.year" ng-change = "ctrl.updateDates()" ng-options = "year for year in ctrl.years" required = ""></select>
+	<select name = "month" id = "dobmonth" ng-model = "user.dob.month" ng-change = "ctrl.updateDates()" ng-options = "month for month in ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November', 'December']" required = ""></select>
+	<select name = "day"id = "dobdate" ng-model = "user.dob.day"required = ""><option ng-repeat = "day in ctrl.monthDayPairs[0]" value = {{day}}>{{day}}</options></select>
 <br><br>
-	<button type = "submit" class = "button-1" ng-click = "login.lookup(user)">next</button>
+	<button type = "submit" ng-disabled = "form.$invalid" class = "button-1" ng-click = "ctrl.lookup(user)">next</button>
 	</form>
 
 </div>
@@ -60,7 +60,7 @@
 	<button class = "button3-1" ng-click = "ctrl.next()" ng-show = "ctrl.allergies">done</button>
 </div> -->
 
-<div ng-show="currentSelect ===3">
+<div ng-show = "currentSelect ===3">
 	<h3>Confirmation</h3>
 	<table>
 		<tr>
@@ -84,7 +84,7 @@
 			<td>{{allergies}}</td>
 		</tr> -->
 	<table>
-	<button class = "button4" ng-click = "">submit</button>
+	<button class = "button4" ng-click = "ctrl.sendReservation(user, ctrl.dateSelect, ctrl.timeSelect, ctrl.bag)">submit</button>
 </div>
 </div>
 
@@ -108,10 +108,11 @@
 	}
 
 	var app = angular.module('dateTime', []);
-	app.controller('LoginController', function($scope){
-		this.lookup = function(user){
-			console.log(user);
-			$.ajax('/auth/guest', {
+	app.controller('LoginController', function($scope, $http){
+		
+
+	});
+/*			$.ajax('/auth/guest', {
 				data: {
 					firstName: user.firstName,
 					lastName: user.lastName, 
@@ -127,11 +128,11 @@
 				} else {
 					// TODO: Generate view for booked appointment
 				}
-			});
-		}
-	});
-	app.controller('datetimeController', function($scope){
+			});*/
+			
+	app.controller('datetimeController', function($scope, $http){
 		$scope.currentSelect = -1;
+
 		this.next = function(){
 			$scope.currentSelect += 1;
 		};
@@ -139,6 +140,29 @@
 			$scope.currentSelect -= 1;
 		};
 
+		this.lookup = function(user){
+			console.log(user);
+			if(user.firstName && user.lastName && user.dob && user.dob.year && user.dob.month && user.dob.day){
+				$http.post('/auth/guest', {
+				data: {
+					firstName: user.firstName,
+					lastName: user.lastName,
+					dob: user.dob
+				}
+			}).success(function(data, status, headers, config){
+				if(data.content){
+					console.log($scope.currentSelect);
+					$scope.currentSelect +=1;
+					console.log($scope.currentSelect);
+				}
+			}).error(function(data, status, headers, config){
+					console.log(status)
+			});
+			}
+			else{
+				console.log("uhoh")
+			}
+		}
 		this.today = new Date(Date.now());
 		this.tomorrow = new Date(Date.now() + 1000*60*60*24)
 		this.dateSlots = [this.today.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'}), this.tomorrow.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})];
@@ -148,18 +172,18 @@
 
 		this.years = range(1900, this.today.getFullYear(), 0);
 		this.monthDayPairs = {
-			'January' : range(1, 31, 1),
-			'February' : range(1, 28, 1),
-			'March' : range(1, 31, 1),
-			'April' : range(1, 30, 1), 
-			'May' : range(1, 31, 1),
-			'June' : range(1, 30, 1),
-			'July' : range(1, 31, 1),
-			'August' : range(1, 31, 1),
-			'September' : range(1, 30, 1),
-			'October' : range(1, 31, 1),
-			'November' : range(1, 30, 1),
-			'December' : range(1, 31, 1)		
+			0 : range(1, 31, 1),
+			1 : range(1, 28, 1),
+			2 : range(1, 31, 1),
+			3 : range(1, 30, 1), 
+			4 : range(1, 31, 1),
+			5 : range(1, 30, 1),
+			6 : range(1, 31, 1),
+			7 : range(1, 31, 1),
+			8 : range(1, 30, 1),
+			9 : range(1, 31, 1),
+			10 : range(1, 30, 1),
+			11 : range(1, 31, 1)		
 		}
 
 		this.updateDates = function(){
@@ -167,16 +191,20 @@
 			myMonth = $("#dobmonth").val();
 			myCurrentDate = $("#dobdate").val();
 			myDates = range(1, 31, 1);
-			if(myYear != undefined && myMonth != undefined){
+			console.log(myYear == '?');
+			console.log(myMonth == '?');
+			if(myYear != '?' && myMonth != '?'){
+				console.log("this");
 				myDates = this.monthDayPairs[myMonth];
-				if(myYear % 4 === 0 && myMonth == 'February'){
+				if(myYear % 4 === 0 && myMonth == 2){
 					myDates = range(1, 29, 1);
 				}
 			}
 			$("#dobdate").empty();
 			$("#dobdate").append("<option></option>");
-			console.log(myDates.length);
+			console.log(myDates);
 			for(var i = 1; i <= myDates.length; i++){
+				console.log(i);
 				$("#dobdate").append("<option value = " + String(i) + ">" + String(i) + "</option>");
 			}
 			if(myDates.indexOf(Number(myCurrentDate)) >= 0){
@@ -191,10 +219,43 @@
 
 		this.allergies = false;
 		this.clearAllergies = function(){$('#allergybox').val(''); this.allergies = false;};
+
+		this.sendReservation = function(user, rdate, rtime, rbag){
+			if(user.firstName && user.lastName && user.dob && user.dob.year && user.dob.month && user.dob.day && rdate && rtime && rbag){
+
+				fixedSlots = [['9:00', '10:00'], ['10:00', '11:00'], ['11:00', '12:00'], ['16:30', '17:30'], ['17:30', '18:30']];
+				rtimeFixed = fixedSlots[this.timeSlots.indexOf(rtime)];
+				fixedDates = [this.today, this.tomorrow];
+				rdateFixed = fixedDates[this.dateSlots.indexOf(rdate)];
+				if(rbag == 'yes'){
+					rbagFixed = true;
+				}
+				else{
+					rbagFixed = false;
+				}
+				console.log(rtimeFixed, rdateFixed)
+				$http.post('/appointments/', {
+				data: {
+					firstName: user.firstName,
+					lastName: user.lastName,
+					birthday: user.dob,
+					date: rdateFixed,
+					timeslot: rtimeFixed,
+					premade: rbagFixed
+				}
+				})
+			}
+			else{
+				console.log("uhoh")
+			}
+		}
 	});
 </script>
 
 <style>
+input.ng-invalid{
+	background-color: lightpink;
+}
 html{
 	background-color: #734866;
 	color:white;
@@ -231,6 +292,10 @@ button:active{
 	border-left: 3px solid gray;
 	border-right: 3px solid lightgray;
 	border-bottom: 3px solid lightgray;	
+}
+
+button.ng-disabled{
+	background-color: black;
 }
 .button0{
 	width: 33%;
