@@ -19,15 +19,21 @@
 
 <div ng-show = "currentSelect === -1">
 	<h3>Log In</h3>
-	<form novalidate>
+	<form name = 'guestForm' novalidate>
 	<span class = "label"> First Name: </span><input name = "first" type = "text" ng-model = "user.firstName" placeholder = "type here" required = ""><br>
+	<span class = "error" ng-show = "ctrl.attempted && !user.firstName">please enter your first name</span><br>
+
 	<span class = "label"> Last Name: </span><input name = "last" type = "text" ng-model = "user.lastName" placeholder = "type here" required = ""><br>
+	<span class = "error" ng-show = "ctrl.attempted && !user.lastName">please enter your last name</span><br>
+
 	<span class = "label"> Date of Birth: </span>
+
 	<select name = "year" id = "dobyear" ng-model = "user.dob.year" ng-change = "ctrl.updateDates()" ng-options = "year for year in ctrl.years" required = ""></select>
 	<select name = "month" id = "dobmonth" ng-model = "user.dob.month" ng-change = "ctrl.updateDates()" ng-options = "month for month in ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November', 'December']" required = ""></select>
-	<select name = "day"id = "dobdate" ng-model = "user.dob.day"required = ""><option ng-repeat = "day in ctrl.monthDayPairs[0]" value = {{day}}>{{day}}</options></select>
+	<select name = "day"id = "dobdate" ng-model = "user.dob.day"required = ""><option ng-repeat = "day in ctrl.monthDayPairs[0]" value = {{day}}>{{day}}</options></select><br>
+	<span class = "error" ng-show = "ctrl.attempted && (!user.dob.day || !user.dob.month || !user.dob.year)">please fill out your date of birth</span>
 <br><br>
-	<button type = "submit" ng-disabled = "form.$invalid" class = "button-1" ng-click = "ctrl.lookup(user)">next</button>
+	<button type = "submit" class = "button-1" ng-click = "ctrl.lookup(user)">next</button>
 	</form>
 
 </div>
@@ -84,9 +90,12 @@
 			<td>{{allergies}}</td>
 		</tr> -->
 	<table>
-	<button class = "button4" ng-click = "ctrl.sendReservation(user, ctrl.dateSelect, ctrl.timeSelect, ctrl.bag)">submit</button>
+	<button class = "button4" ng-click = "ctrl.sendReservation(user, ctrl.dateSelect, ctrl.timeSelect, ctrl.bag)">submit</button><br>
+	<span ng-show = "submitSuccess">Successfully Saved!</span>
 </div>
 </div>
+
+
 
 </body>
 </html>
@@ -132,17 +141,26 @@
 			
 	app.controller('datetimeController', function($scope, $http){
 		$scope.currentSelect = -1;
+		this.attempted = false;
+		$scope.submitSuccess = false;
 
 		this.next = function(){
 			$scope.currentSelect += 1;
 		};
 		this.back = function(){
 			$scope.currentSelect -= 1;
+			if($scope.currentSelect == -1){
+				$scope.user = {};
+				this.dateSelect = '';
+				this.timeSelect = '';
+				this.bag = '';
+				this.attempted = false;
+			}
 		};
 
 		this.lookup = function(user){
 			console.log(user);
-			if(user.firstName && user.lastName && user.dob && user.dob.year && user.dob.month && user.dob.day){
+			if(user && user.firstName && user.lastName && user.dob && user.dob.year && user.dob.month && user.dob.day){
 				$http.post('/auth/guest', {
 				data: {
 					firstName: user.firstName,
@@ -150,6 +168,7 @@
 					dob: user.dob
 				}
 			}).success(function(data, status, headers, config){
+				console.log(data)
 				if(data.content){
 					console.log($scope.currentSelect);
 					$scope.currentSelect +=1;
@@ -160,6 +179,7 @@
 			});
 			}
 			else{
+				this.attempted = true;
 				console.log("uhoh")
 			}
 		}
@@ -243,6 +263,8 @@
 					timeslot: rtimeFixed,
 					premade: rbagFixed
 				}
+				}).success(function(data, status, headers, config){
+					$scope.submitSuccess = true;
 				})
 			}
 			else{
@@ -265,8 +287,9 @@ html{
 	background-image: url('../public/images/background.png');
 	background-size: 100%;
 }
-body{
-
+.error{
+	color:red;
+	font-size:18px;
 
 }
 #logo{
