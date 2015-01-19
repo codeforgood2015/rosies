@@ -7,7 +7,7 @@ var appointmentSchema = mongoose.Schema({
 	timeslot: [String], 
 	firstName: String,
 	lastName: String,
-	birthday: String,
+	birthday: Object,
 	premade: Boolean,
 	waitlist: Boolean
 });

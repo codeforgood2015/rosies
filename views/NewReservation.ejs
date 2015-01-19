@@ -84,7 +84,7 @@
 			<td>{{allergies}}</td>
 		</tr> -->
 	<table>
-	<button class = "button4" ng-click = "">submit</button>
+	<button class = "button4" ng-click = "ctrl.sendReservation(user, ctrl.dateSelect, ctrl.timeSelect, ctrl.bag)">submit</button>
 </div>
 </div>
 
@@ -219,6 +219,36 @@
 
 		this.allergies = false;
 		this.clearAllergies = function(){$('#allergybox').val(''); this.allergies = false;};
+
+		this.sendReservation = function(user, rdate, rtime, rbag){
+			if(user.firstName && user.lastName && user.dob && user.dob.year && user.dob.month && user.dob.day && rdate && rtime && rbag){
+
+				fixedSlots = [['9:00', '10:00'], ['10:00', '11:00'], ['11:00', '12:00'], ['16:30', '17:30'], ['17:30', '18:30']];
+				rtimeFixed = fixedSlots[this.timeSlots.indexOf(rtime)];
+				fixedDates = [this.today, this.tomorrow];
+				rdateFixed = fixedDates[this.dateSlots.indexOf(rdate)];
+				if(rbag == 'yes'){
+					rbagFixed = true;
+				}
+				else{
+					rbagFixed = false;
+				}
+				console.log(rtimeFixed, rdateFixed)
+				$http.post('/appointments/', {
+				data: {
+					firstName: user.firstName,
+					lastName: user.lastName,
+					birthday: user.dob,
+					date: rdateFixed,
+					timeslot: rtimeFixed,
+					premade: rbagFixed
+				}
+				})
+			}
+			else{
+				console.log("uhoh")
+			}
+		}
 	});
 </script>
 
