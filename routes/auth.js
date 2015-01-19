@@ -91,7 +91,7 @@ router.post('/guest', function(req, res) {
 		if (err) {
 			utils.sendErrResponse(res, 403, err);
 		} else {
-			utils.sendSuccessResponse(res, status);
+			utils.sendSuccessResponse(res, {available: status});
 		}
 	});
 });
