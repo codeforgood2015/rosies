@@ -244,7 +244,8 @@
 				fixedSlots = [['9:00', '10:00'], ['10:00', '11:00'], ['11:00', '12:00'], ['16:30', '17:30'], ['17:30', '18:30']];
 				rtimeFixed = fixedSlots[this.timeSlots.indexOf(rtime)];
 				fixedDates = [this.today, this.tomorrow];
-				rdateFixed = fixedDates[this.dateSlots.indexOf(rdate)];
+				rdateFixed = fixedDates[this.dateSlots.indexOf(rdate)].getMilliseconds();
+				console.log(typeof rdateFixed);
 				if(rbag == 'yes'){
 					rbagFixed = true;
 				}

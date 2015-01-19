@@ -24,8 +24,9 @@ router.get('/', function(req, res) {
 	- waitlist: boolean representing whether this is a waitlisted array
 */
 router.post('/', function(req, res) {
+	fixedDate = new Date(req.body.date);
 	var data = {
-		date: req.body.date,
+		date: fixedDate,
 		timeslot: req.body.timeslot,
 		firstName: req.body.firstName,
 		lastName: req.body.lastName,
@@ -34,28 +35,42 @@ router.post('/', function(req, res) {
 		waitlist: req.body.waitlist
 		//allergies: req.body.allergies
 	}; 
-	console.log(req.body);
-	Appointment.find({date: data.date, timeslot: data.timeslot}, function(err, appointments) {
-		// TODO: check if user has already made an appointment
-		// TODO: fetch number of allotted slots
-		// TODO: add this appointment to the timeslot
-		
-		if (appointments.length < 27) {
-			data.waitlist = false;
-			var appointment = new Appointment(data);
-			appointment.save(function(err) {
-				utils.sendSuccessResponse(res, appointment);
-			});
-		} else if (appointments.length < 30) {
-			data.waitlist = true;
-			appointment = new Appointment(data);
-			appointment.save(function(err) {
-				utils.sendSuccessResponse(res, appointment);
-			});
-		} else {
-			res.sendErrResponse(res, 403, 'This timeslot is filled.');
+	console.log(typeof data.date);
+	Rule.findOne({date: dayString(data.date.getDay()), time: data.timeslot}, function(err, rule){
+		if(err){
+			console.log(err)
 		}
+		else if(!rule){
+			console.log("doesn't fit a rule");
+			res.render('NewReservation');
+		}
+		else{
+			console.log(rule);
+			Appointment.find({date: data.date, timeslot: data.timeslot}, function(err, appointments) {
+			// TODO: check if user has already made an appointment
+			// TODO: fetch number of allotted slots
+			// TODO: add this appointment to the timeslot
+			if (err){
+				console.log(err)
+			}
+			else if (appointments.length < rule.maxCap) {
+				data.waitlist = false;
+				var appointment = new Appointment(data);
+				appointment.save(function(err) {
+					utils.sendSuccessResponse(res, appointment);
+				});
+			} else if (appointments.length < rule.maxCap + rule.maxWaitlist) {
+				data.waitlist = true;
+				appointment = new Appointment(data);
+				appointment.save(function(err) {
+					utils.sendSuccessResponse(res, appointment);
+				});
+			} else {
+				res.sendErrResponse(res, 403, 'This timeslot is filled.');
+			}
 	});
+		}
+	})
 });
 
 /*
