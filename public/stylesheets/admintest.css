@@ -3,7 +3,9 @@ html {
 	background-color: #734866;
 	color: white;
 	text-align: center;
-	font-family: Helvetica;
+	font-family: 'Roboto' Helvetica;
+  background-image: url('../public/images/background.png');
+	background-size: 100%;
 }
 
 body {
@@ -84,11 +86,11 @@ input {
 }
 
 .hours {
-	margin-left: 20%;
-	margin-right: 20%;
+	margin-left: 2%;
+	margin-right: 2%;
 }
 
-#default-hours td {
+#default-table td {
  	padding: 10px;
  }
 
@@ -96,23 +98,80 @@ input {
 	height: 25px;
 }
 
+.default {
+	width: 95%;
+	margin-top: 50px;
+	margin-bottom: 50px;
+	border-top: 2pt white solid;
+}
+
+.default-hours {
+	width: 60%;
+	float: left;
+}
+
+.edit-default {
+	float: right;
+	overflow: scroll;
+	max-width: 35%;
+	font-size: 10pt;
+}
+
 .edit-default span {
 	text-decoration: underline;
 	font-size: 20pt;
 }
 
-.remove-time-slot {
-	/*background-color: red;*/
+.special {
+	clear: both;
+	width: 95%;
+	margin-top: 50px;
+	margin-bottom: 50px;
+	border-top: 2pt white solid;
 }
 
-#special-hours {
+.special-hours {
+	width: 60%;
+	float: left;
+}
+
+.edit-special {
+	display: inline-block;
+	float: right;
+	max-width: 35%;
+	overflow: scroll;
+	font-size: 10pt;
+}
+
+#special-table {
 	display: block; /*have to make it block to make it scrollable*/
 	overflow: scroll; 
 	max-height: 300px;
 }
 
-#special-hours td{
+#special-table td{
 	padding: 10px;
+}
+
+.new-special {
+	clear: both;
+	width: 95%;
+	margin-top: 50px;
+	margin-bottom: 50px;
+	border-top: 2pt white solid;
+}
+
+.new-special-hours {
+	width: 30%;
+	float: left;
+}
+
+.add-special {
+	float: right;
+	display: inline-block;
+	max-width: 65%;
+	overflow: scroll;
+	font-size: 10pt;
 }
 
 .admin-list {

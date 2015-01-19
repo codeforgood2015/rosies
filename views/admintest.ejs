@@ -5,6 +5,7 @@
 		<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src='../public/javascripts/admintest.js'></script>
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans|Roboto|Playfair+Display' rel='stylesheet' type='text/css'>
 		<link href='../public/stylesheets/admintest.css' type='text/css' rel='stylesheet'/>
 		<title>
 			Admin Home
@@ -61,7 +62,7 @@
 								{{time}} </a>
 								<table class='today-guests' ng-show='ctrl.showGuests("today", time);'>
 									<tr ng-repeat='guest in ctrl.getGuests("today", time);'> 
-											<td>{{guest.name}}</td> <td>{{ctrl.displayYesNo(guest.premade_bag);}}</td>
+											<td>{{guest.name}}</td> <td>{{ctrl.displayYesNo(guest.premade);}}</td>
 									</tr>
 								</table>
 							</li>
@@ -74,7 +75,7 @@
 								{{time}} </a>
 								<table class='tomorrow-guests' ng-show='ctrl.showGuests("tomorrow", time);'>
 									<tr ng-repeat='guest in ctrl.getGuests("tomorrow", time);'> 
-										<td>{{guest.name}}</td> <td>{{ctrl.displayYesNo(guest.premade_bag);}}</td>
+										<td>{{guest.name}}</td> <td>{{ctrl.displayYesNo(guest.premade);}}</td>
 									</tr>
 								</table>
 							</li>
@@ -86,58 +87,62 @@
 			<!-- Table displaying the current hours, with edit buttons, and a form for new hours, that will appear only if edit button is clicked-->
 			<div class='hours' ng-show='ctrl.currentSection === 3'>
 				<h2>Food Pantry Hours of Operation</h2>
-				<h3 class='left-align'>Manage default hours:</h3>
-				<div> 
-					<table id='default-hours'>
-						<tr ng-repeat="dayHours in ctrl.defaultHours()">
-							<td>{{dayHours.day}} </td>
-							<td ng-repeat='time in dayHours.hours'>{{time}}</td>
-							<td class='edit-default'> <button ng-click='ctrl.editDefaultHours(dayHours.day);'>edit</button></td>'
-						</tr>
-					</table>
-				</div>
-				<!-- Form for new hours.-->
-				<div class='edit-default' ng-show='ctrl.showEditDefaultHours'>
-					<p> Please enter your new desired hours. 
-						<br>
-						<strong>Include the start and end time and capacity of each timeslot.</strong>
-						<br>
-						example - start: 9:00AM end: 10:00AM max-capacity: 27
- 					</p>
- 					<p> New Hours for <span>{{ctrl.editDay}}</span>: </p>
-					<form class='new-default-times'>
-						<div class='slots'>
-							<div class='default-input'>
-								start: <input id='default-start-time' type='text' placeholder='9:00AM'> </input>
-								end: <input id='default-end-time' type='text' placeholder='10:00AM'> </input>
-								max-capacity: <input id='default-max-cap' type='text' placeholder='27'> </input>
-								<button class='add-default-time' ng-click='ctrl.addDefaultTimeslot();'>Add</button>
-							</div>
-							<div>
-								<p>Updated hours: </p> 
-								<p ng-repeat='slot in ctrl.newDefaultTimeslots'>
-									{{slot.start}}--{{slot.end}} ({{slot.cap}})
-									<button class='remove-time-slot' ng-click='ctrl.removeDefaultTimeslot();'>Remove</button>
-								</p>
-							</div>
-						</div> 
-						<button ng-click='ctrl.saveNewDefaultHours();'>Save New Hours</button>
-						<button ng-click='ctrl.cancelNewDefaultHours();'>Cancel</button>
-						<p>Your new default hours won't be saved unless you click "Save New Hours"</p>
-					</form>
+				<div class='default'>
+					<h3 class='left-align'>Manage default hours:</h3>
+					<div class='default-hours'> 
+						<table id='default-table'>
+							<tr ng-repeat="dayHours in ctrl.defaultHours()">
+								<td>{{dayHours.day}} </td>
+								<td ng-repeat='time in dayHours.hours'>{{time}}</td>
+								<td class='edit-default'> <button ng-click='ctrl.editDefaultHours(dayHours.day);'>edit</button></td>'
+							</tr>
+						</table>
+					</div>
+					<!-- Form for new hours.-->
+					<div class='edit-default' ng-show='ctrl.showEditDefaultHours'>
+						<p> Please enter your new desired hours. 
+							<br>
+							<strong>Include the start and end time and capacity of each timeslot.</strong>
+							<br>
+							example - start: 9:00AM end: 10:00AM max-capacity: 27
+	 					</p>
+	 					<p> New Hours for <span>{{ctrl.editDay}}</span>: </p>
+						<form class='new-default-times'>
+							<div class='slots'>
+								<div class='default-input'>
+									start: <input id='default-start-time' type='text' placeholder='9:00AM'> </input>
+									end: <input id='default-end-time' type='text' placeholder='10:00AM'> </input>
+									max-capacity: <input id='default-max-cap' type='text' placeholder='27'> </input>
+									<button class='add-default-time' ng-click='ctrl.addDefaultTimeslot();'>Add</button>
+								</div>
+								<div>
+									<p>Updated hours: </p> 
+									<p ng-repeat='slot in ctrl.newDefaultTimeslots'>
+										{{slot.start}}--{{slot.end}} ({{slot.cap}})
+										<button class='remove-time-slot' ng-click='ctrl.removeDefaultTimeslot();'>Remove</button>
+									</p>
+								</div>
+							</div> 
+							<button ng-click='ctrl.saveNewDefaultHours();'>Save New Hours</button>
+							<button ng-click='ctrl.cancelNewDefaultHours();'>Cancel</button>
+							<p>Your new default hours won't be saved unless you click "Save New Hours"</p>
+						</form>
+					</div>
 				</div>
 				<!-- Current specific date rules -->
-				<div>
-					<h3 class='left-align'>Manage special hours:</h3>
-					<table id='special-hours'>
-						<!--Runs the specialRules function to get a list of rules, each of which contains a date and a list of times -->
-						<tr ng-repeat='rule in ctrl.specialRules()'>
-							<td> <strong> {{rule.date}} </strong> </td>
-							<td ng-repeat='time in rule.times'>{{time}}</td> 
-							<td><button class='edit-special-hours-button' ng-click='ctrl.editSpecialHours(rule.date);'>edit</button></td>
-						</tr>
-					</table> 
-					<!-- Form for editing special hours.-->
+				<div class='special'>
+					<div class='special-hours'>
+						<h3 class='left-align'>Manage special hours:</h3>
+						<table id='special-table'>
+							<!--Runs the specialRules function to get a list of rules, each of which contains a date and a list of times -->
+							<tr ng-repeat='rule in ctrl.specialRules()'>
+								<td> <strong> {{rule.date}} </strong> </td>
+								<td ng-repeat='time in rule.times'>{{time}}</td> 
+								<td><button class='edit-special-hours-button' ng-click='ctrl.editSpecialHours(rule.date);'>edit</button></td>
+							</tr>
+						</table> 
+					</div>
+						<!-- Form for editing special hours.-->
 					<div class='edit-special' ng-show='ctrl.showEditSpecialHours'>
 						<p> Please enter your new desired hours. 
 							<br>
@@ -167,7 +172,10 @@
 							<p>Your new hours won't be saved unless you click "Save New Hours"</p>
 						</form>
 					</div>
-					<div id='new-special-hours'>
+				</div>
+				<div class='new-special'>
+					<div class='new-special-hours'>
+						<h3 class='left-align'> Add a New Special Hours Rule </h3>
 						<p>Add New Special Hours on Date:</p>
 						<select id="select-year">
 							<option ng-repeat = "year in ctrl.years" value = {{year}}>{{year}}</option>
@@ -184,7 +192,7 @@
 						<p ng-show='ctrl.showDateError;'>The date you have entered is invalid. </p>
 					</div>
 					<!-- Form for adding special hours.-->
-					<div id='add-special' ng-show='ctrl.showAddSpecialHours'>
+					<div class='add-special' ng-show='ctrl.showAddSpecialHours'>
 						<p> Please enter your new desired hours. 
 							<br>
 							<strong>Include the start and end time and capacity of each timeslot.</strong>
