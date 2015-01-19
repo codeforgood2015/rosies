@@ -34,6 +34,7 @@ router.post('/', function(req, res) {
 		waitlist: req.body.waitlist
 		//allergies: req.body.allergies
 	}; 
+	console.log(req.body);
 	Appointment.find({date: data.date, timeslot: data.timeslot}, function(err, appointments) {
 		// TODO: check if user has already made an appointment
 		// TODO: fetch number of allotted slots

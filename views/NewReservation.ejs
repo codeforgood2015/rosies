@@ -165,21 +165,18 @@
 			console.log(user);
 			if(user && user.firstName && user.lastName && user.dob && user.dob.year && user.dob.month && user.dob.day){
 				$http.post('/auth/guest', {
-				data: {
 					firstName: user.firstName,
 					lastName: user.lastName,
 					dob: user.dob
-				}
-			}).success(function(data, status, headers, config){
-				console.log(data)
-				console.log($scope.currentSelect);
-				$scope.currentSelect +=1;
-				console.log($scope.currentSelect);
-			}).error(function(data, status, headers, config){
+				}).success(function(data, status, headers, config){
+					console.log(data)
+					console.log($scope.currentSelect);
+					$scope.currentSelect +=1;
+					console.log($scope.currentSelect);
+				}).error(function(data, status, headers, config){
 					console.log(status)
-			});
-			}
-			else{
+				});
+			} else {
 				this.attempted = true;
 				console.log("uhoh")
 			}

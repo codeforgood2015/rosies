@@ -17,7 +17,7 @@ router.get('/default/monday', function(req, res) {
 	Rule.find({date: "Monday"}, function(err, rule) {
 		//TODO: look into the rule and get out the times and capacities only, send them as an array
 		if (err) {
-			utsils.sendErrResponse(res, err);
+			utsils.sendErrResponse(res, 404, err);
 		} else {
 			utils.sendSuccessResponse(res, rule);
 		}
