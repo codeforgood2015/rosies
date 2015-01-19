@@ -89,7 +89,7 @@
 			"4:30PM": "16:30",
 			"5:30PM": "17:30",
 			"6:30PM": "18:30"
-		}
+		};
 
 		this.toNextMilitary = {
 			"9:00AM": "10:00",
@@ -98,34 +98,40 @@
 			"12:00PM": "13:00",
 			"4:30PM": "17:30",
 			"5:30PM": "18:30",
-			"6:30PM": "19:30"			
-		}
+			"6:30PM": "19:30"
+		};
 
 		//return list of guests, each of which has a name and a boolean representing premade bag or not
 		//will need to query the database, and filter
-		this.getGuests = function(day, time) {
+		this.getGuests = function(_day, _time) {
+			// _day is either 'today' or 'tomorrow'
+			// _time is a string of the form "9:00AM" or something like that
+
 			var today = new Date();
 			var tomorrow = new Date();
 		  tomorrow.setDate(tomorrow.getDate() + 1);
-		  var start = this.toMilitary(time);
-		  var end = this.toNextMilitary(time);
-		  var time = [start, end];
-		  if (day === "today") {
+		  if (_day === "today") {
 		  	var date = today;
-		  } else if (day === "tomorrow") {
+		  } else if (_day === "tomorrow") {
 		  	var date = tomorrow;
 		  } else {
 		  	console.log("should never get here")
 		  }
-		  $http.put('/appointments/time', {date: date, time: time}).success(function(data, status, headers, config) {
-		  	return data.content; //returns the list of appointment objects, each of which should have name and premade 
+		  var year = date.getFullYear();
+		  var month = date.getMonth();
+		  var day = date.getDate();
+
+		  var sendDate = new Date(year, month, day, 0, 0, 0, 0);
+		  var timeslot = [this.toMilitary[_time], this.toNextMilitary[_time]];
+
+		  $http.put('/appointments/time', {date: sendDate, timeslot: timeslot}).success(function(data, status, headers, config) {
+		  	return data.content;
 		  }).error(function(data, status, headers, config) {
 		  	console.log(data);
 		  	return [{name: 'error', premade: 'false'}];
 		  });
 
-			//put 'appointments/time'
-			//FAKE DATA AHHH 
+			//FAKE DATA
 			// if (time === "9:00AM") {
 			// 	return [{name: "hanna", premade: false}, {name: "tricia", premade: true}, {name: "shi-ke", premade: false}];
 			// } else if (time === "10:00AM") {
@@ -517,18 +523,18 @@
 			var pass = $('.new-admin-password').value();
 			var passConfirm = $('.new-admin-password').value();
 			//TODO: post request to database
-			$.ajax('/', {type: "POST", data:{username: username, password:password, confirm:passConfirm}}
-				).done(function(data, textStatus, jqXHR) {
-					if (data.success) {
-						console.log('Successfully added new admin!');
-					} else {
-						if (data.err === "This username already exists") {
+			// $.ajax('/', {type: "POST", data:{username: username, password:password, confirm:passConfirm}}
+			// 	).done(function(data, textStatus, jqXHR) {
+			// 		if (data.success) {
+			// 			console.log('Successfully added new admin!');
+			// 		} else {
+			// 			if (data.err === "This username already exists") {
 
-						} else if (data.err === "Password doesn't match") {
-							this.showAdminErrorPassword = true;
-						}
-					}
-			}); 
+			// 			} else if (data.err === "Password doesn't match") {
+			// 				this.showAdminErrorPassword = true;
+			// 			}
+			// 		}
+			// }); 
 			
 		};
 
@@ -543,9 +549,9 @@
 		//TODO: need help with this
 		this.checkValidUsername = function() {
 			var check_user = $('#new-admin-username').val();
-			$.ajax({url:'/check-username', data:{username: check_user}}).done(function(data) {
-				return data.valid;
-			});
+			// $.ajax({url:'/check-username', data:{username: check_user}}).done(function(data) {
+			// 	return data.valid;
+			// });
 		}
 
 
