@@ -37,6 +37,7 @@ router.post('/', function(req, res) {
 	Appointment.find({date: data.date, timeslot: data.timeslot}, function(err, appointments) {
 		// TODO: check if user has already made an appointment
 		// TODO: fetch number of allotted slots
+		// TODO: add this appointment to the timeslot
 		
 		if (appointments.length < 27) {
 			data.waitlist = false;
