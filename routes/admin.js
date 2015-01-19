@@ -25,18 +25,36 @@ router.post('/', function(req,res) {
 	var data = {
 		username: req.body.username,
 		password: req.body.password,
+		confirm: req.body.confirm
 	};
 	Admin.find({username: data.username}, function(err, admins) {
 		// TODO: check whether we need to check for null on admins
 		if (admins && admins.length > 0) {
 			utils.sendErrResponse(res, 403, 'This username already exists');
-		} else {
+		} else if (password !== confirm {
+			utils.sendErrResponse(res, 402, "Password doesn't match");
+		}else {
 			admin = new Admin(data);
 			admin.save(function(err) {
 				utils.sendErrResponse(res, 404, err);
 			});
 		}
 	});
+});
+
+// checks whether a given username is taken or not 
+//returns an error response if username is taken, returns success response with valid:true if username is available
+//to be called whenever admin types in a new username, so that an error message can display right underneath the text box
+router.post('/check-username', function(req, res) {
+	var check_username = req.body.username;
+	Admin.find({username: check_username}, function(err, admins) {
+		if (admins && admins.length > 0) {
+			var response = {valid:false};
+		} else {
+			var response = {valid: true};
+		}
+		utils.sendSuccessResponse(res, response); 
+	})
 });
 
 module.exports = router;

@@ -474,10 +474,11 @@
 			var username = $('.new-admin-username').value();
 			var pass = $('.new-admin-password').value();
 			var passConfirm = $('.new-admin-password').value();
-			//TODO: check that username isn't already taken
-			if (pass !== passConfirm) {
-				//have an error message show (use another boolean to control whether it's hidden or not)
-			}
+			//TODO: post request to database
+			// $.ajax('/', [type: "POST", data:{username: username, password:password, confirm:passConfirm}]).done(function(data, textStatus, jqXHR) {
+
+			// }); 
+			
 		};
 
 		this.cancelNewAdminAccount = function() {
@@ -488,12 +489,14 @@
 			$('#new-admin-confirm-password').val('');
 		}
 
+		//TODO: need help with this
 		this.checkValidUsername = function() {
-			//true if the username is valid 
-			//TODO grab the username field
-			//check against database
-			return true;
+			var check_user = $('#new-admin-username').val();
+			$.ajax({url:'/check-username', data:{username: check_user}}).done(function(data) {
+				return data.valid;
+			});
 		}
+
 
 		this.showAdminError = function(error) {
 			if (error === 'username') {

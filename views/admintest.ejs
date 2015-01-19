@@ -240,7 +240,8 @@
 						<input class='not-disappear' id='new-admin' type='button' value='Save New Admin Account' ng-click="ctrl.addNewAdmin();"></input>
 						<button ng-click='ctrl.cancelNewAdminAccount();'>Cancel</button>
 					</form>
-					<p ng-show='ctrl.showAdminError("username");'>The username you have requested is already taken, select a differnet one.</p>
+					<p> hello:{{ctrl.checkValidUsername("");}} </p>
+					<p ng-show='ctrl.showAdminError("username");'>The username you have requested is already taken, select a different one.</p>
 					<p ng-show='ctrl.showAdminError("password");'>Please ensure that you have typed the same password twice.</p>
 				</div>
 			</div>
