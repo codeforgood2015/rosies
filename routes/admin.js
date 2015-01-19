@@ -31,7 +31,7 @@ router.post('/', function(req,res) {
 		// TODO: check whether we need to check for null on admins
 		if (admins && admins.length > 0) {
 			utils.sendErrResponse(res, 403, 'This username already exists');
-		} else if (password !== confirm {
+		} else if (password !== confirm) {
 			utils.sendErrResponse(res, 402, "Password doesn't match");
 		}else {
 			admin = new Admin(data);

@@ -79,7 +79,6 @@ var agenda = new Agenda({
 
 
 agenda.define('update timeslots', function(job, done) {
-	console.log("got here 0");
 	var today = new Date(Date.now());
 	var yesterday = new Date(Date.now() - 1000*60*60*24);
 	var tomorrow = new Date(Date.now() + 1000*60*60*24);
@@ -155,7 +154,7 @@ agenda.define('update timeslots', function(job, done) {
 });
 
 //cron format: minute, hour, dayOfMonth, monthOfYear, dayOfWeek, Year, * means any
-agenda.every('10 seconds', 'update timeslots');
+agenda.every('10 minutes', 'update timeslots');
 agenda.on('fail', function(err, job){
 	console.log(err.message)
 })
