@@ -94,7 +94,6 @@ router.post('/availability', function(req, res) {
 			var passData = _.after(rules.length, function(){console.log(timesToday); console.log(timesTomorrow); res.json([timesToday, timesTomorrow])});
 			for(var i = 0; i < rules.length; i++){
 				//find appointments that correspond to the rule
-				console.log(rules[i]);
 				if(rules[i].date == dayString(today.getDay())){
 					closedRules(rules[i], today, passData, timesToday);
 				}

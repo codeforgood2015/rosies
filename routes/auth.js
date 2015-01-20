@@ -85,12 +85,14 @@ router.post('/guest', function(req, res) {
 	var data = {
 		firstName: req.body.firstName,
 		lastName: req.body.lastName,
-		dob: req.body.dob
+		birthday: req.body.dob
 	};
 	checkUser(data, function(err, status) {
 		if (err) {
 			utils.sendErrResponse(res, 403, err);
 		} else {
+			console.log('sending success')
+			console.log(status)
 			utils.sendSuccessResponse(res, {available: status});
 		}
 	});
@@ -102,11 +104,12 @@ router.get('/guest', function(req, res) {
 
 
 var checkUser = function(data, callback) {
+	console.log(data)
 	Appointment.find({
 		firstName: data.firstName,
-		lastName: data.lastName,
-		birthday: data.birthday
+		lastName: data.lastName
 	}, function(err, appointments) {
+		console.log(appointments)
 		if (appointments.length > 0) {
 			callback(err, false);
 		} else {

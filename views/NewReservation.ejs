@@ -156,28 +156,32 @@
 					lastName: user.lastName,
 					dob: user.dob
 				}).success(function(data, status, headers, config){
-					$scope.currentSelect +=1;
-					$scope.submitSuccess = false;
-					$http.post('/appointments/availability').success(function(data, status, headers, config){
-						$scope.timeSlots = [];
-						$scope.timeSlots[0] = data[0];
-						$scope.timeSlots[0].sort(function(a, b){
-							var atemp = a[0][0].split(':');
-							var btemp = b[0][0].split(':');
-							console.log(atemp[0], btemp[0])
-							return Number(atemp[0]) - Number(btemp[0])
-						});
-						$scope.timeSlots[1] = data[1];
-						$scope.timeSlots[1].sort(function(a, b){
-							var atemp = a[0][0].split(':');
-							var btemp = b[0][0].split(':');
-							console.log(atemp[0], btemp[0])
-							return Number(atemp[0]) - Number(btemp[0])
-						});
+					if (data.content.available) {
+						$scope.currentSelect +=1;
+						$scope.submitSuccess = false;
+						$http.post('/appointments/availability').success(function(data, status, headers, config){
+							$scope.timeSlots = [];
+							$scope.timeSlots[0] = data[0];
+							$scope.timeSlots[0].sort(function(a, b){
+								var atemp = a[0][0].split(':');
+								var btemp = b[0][0].split(':');
+								console.log(atemp[0], btemp[0])
+								return Number(atemp[0]) - Number(btemp[0])
+							});
+							$scope.timeSlots[1] = data[1];
+							$scope.timeSlots[1].sort(function(a, b){
+								var atemp = a[0][0].split(':');
+								var btemp = b[0][0].split(':');
+								console.log(atemp[0], btemp[0])
+								return Number(atemp[0]) - Number(btemp[0])
+							});
 
-					}).error(function(data, status, headers, config){
-						console.log(status)
-					})
+						}).error(function(data, status, headers, config){
+						})
+					} else {
+						console.log(data)
+						alert('You have an appointment!');
+					}
 				}).error(function(data, status, headers, config){
 					console.log(status)
 				});
@@ -247,6 +251,7 @@
 			}
 			$("#dobdate").empty();
 			$("#dobdate").append("<option></option>");
+
 			for(var i = 1; i <= myDates.length; i++){
 				$("#dobdate").append("<option value = " + String(i) + ">" + String(i) + "</option>");
 			}
