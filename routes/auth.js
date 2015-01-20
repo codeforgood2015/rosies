@@ -85,7 +85,7 @@ router.post('/guest', function(req, res) {
 	var data = {
 		firstName: req.body.firstName,
 		lastName: req.body.lastName,
-		dob: req.body.dob
+		birthday: req.body.birthday
 	};
 	checkUser(data, function(err, status) {
 		if (err) {
