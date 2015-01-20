@@ -27,7 +27,8 @@ router.get('/', function(req, res) {
 router.post('/', function(req, res) {
 	//takes the string and only saves the year, month, and day
 	tempDate = new Date(req.body.date);
-	fixedDate = new Date(tempDate.getYear(), tempDate.getMonth(), tempDate.getDay());
+	console.log(tempDate)
+	fixedDate = new Date(tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate());
 	var data = {
 		date: fixedDate,
 		timeslot: req.body.timeslot,
@@ -38,7 +39,7 @@ router.post('/', function(req, res) {
 		waitlist: req.body.waitlist
 		//allergies: req.body.allergies
 	}; 
-	console.log(typeof data.date);
+	console.log(data)
 	Rule.findOne({date: dayString(data.date.getDay()), time: data.timeslot}, function(err, rule){
 		if(err){
 			console.log(err)
@@ -147,11 +148,14 @@ router.get('/:time', function(req, res) {
 });
 
 router.put('/time', function(req, res) {
+	var fixedDate = new Date(req.body.date);
 	var data = {
-		date: req.body.date,
+		date: fixedDate,
 		timeslot: req.body.timeslot
 	};
+	console.log(data)
 	Appointment.find(data, function(err, apps) {
+		console.log(apps)
 		if (err) {
 			utils.sendErrResponse(res, 403, err);
 		} else {
