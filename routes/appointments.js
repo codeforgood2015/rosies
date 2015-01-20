@@ -4,6 +4,7 @@ var Appointment = require('../models/appointment').Appointment;
 var Rule = require('../models/rule').Rule;
 var utils = require('../utils/utils');
 var moment = require('moment');
+var _ = require('underscore');
 
 // GET /appointments - get all appointments
 // TODO: should check that an admin is logged in
@@ -24,7 +25,9 @@ router.get('/', function(req, res) {
 	- waitlist: boolean representing whether this is a waitlisted array
 */
 router.post('/', function(req, res) {
-	fixedDate = new Date(req.body.date);
+	//takes the string and only saves the year, month, and day
+	tempDate = new Date(req.body.date);
+	fixedDate = new Date(tempDate.getYear(), tempDate.getMonth(), tempDate.getDay());
 	var data = {
 		date: fixedDate,
 		timeslot: req.body.timeslot,
@@ -48,8 +51,6 @@ router.post('/', function(req, res) {
 			console.log(rule);
 			Appointment.find({date: data.date, timeslot: data.timeslot}, function(err, appointments) {
 			// TODO: check if user has already made an appointment
-			// TODO: fetch number of allotted slots
-			// TODO: add this appointment to the timeslot
 			if (err){
 				console.log(err)
 			}
@@ -72,6 +73,54 @@ router.post('/', function(req, res) {
 		}
 	})
 });
+
+
+router.post('/availability', function(req, res) {
+	var temptoday = new Date(Date.now());
+	var temptomorrow = new Date(Date.now() + 1000*60*60*24);
+	var today = new Date(temptoday.getYear(), temptoday.getMonth(), temptoday.getDay());
+	var tomorrow = new Date(temptomorrow.getYear(), temptomorrow.getMonth(), temptomorrow.getDay());
+
+	Rule.find({date: {$in: [dayString(today.getDay()), dayString(tomorrow.getDay())]}}, function(err, rules){
+		if(err){
+			console.log(err);
+		}
+		else if (!rules || rules == []){
+			console.log("didn't find any rules");
+		}
+		else{
+			var timesToday = [];
+			var timesTomorrow = [];
+			var passData = _.after(rules.length, function(){console.log(timesToday); console.log(timesTomorrow); res.json([timesToday, timesTomorrow])});
+			for(var i = 0; i < rules.length; i++){
+				//find appointments that correspond to the rule
+				console.log(rules[i]);
+				if(rules[i].date == dayString(today.getDay())){
+					closedRules(rules[i], today, passData, timesToday);
+				}
+				else if(rules[i].date == dayString(tomorrow.getDay())){
+					closedRules(rules[i], tomorrow, passData, timesTomorrow);
+				}
+			}
+
+		}
+	});
+
+});
+
+var closedRules = function(myRule, day, passData, times){
+	Appointment.find({date: day, timeslot: myRule.time}, function(err, appointments){
+		if(err || !appointments){
+			console.log(err);
+		}
+		else{
+			times.push([myRule.time, checkRule(appointments.length, myRule)]);		
+		}
+		passData();	
+	})
+};
+
+
 
 /*
 	GET /:time - given an input time as a URL param, return status of timeslot

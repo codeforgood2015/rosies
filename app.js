@@ -186,7 +186,7 @@ app.get('/dev', dev.testDev);
 //app.get('/dev/set', dev.createDefaultRules);
 app.use('/admin', admin);
 app.use('/appointments', appointments);
-
+//this function needs to pass through timeslots
 app.get('/', function(req, res) {
 	res.render('NewReservation')
 });

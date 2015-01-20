@@ -41,13 +41,13 @@
 <div ng-show = "currentSelect === 0">
 <h3>Select a Date</h3>
 	<br>
-	<button class = "button0" ng-click="ctrl.selectDate(0); ctrl.next()"><b>{{ctrl.dateSlots[0]}}</b><br>(today)</button>
-	<button class = "button0" ng-click="ctrl.selectDate(1);ctrl.next()"><b>{{ctrl.dateSlots[1]}}</b><br>(tomorrow)</button>
+	<button class = "button0" ng-click="ctrl.dateIndex = 0; ctrl.selectDate(0); ctrl.next()"><b>{{ctrl.dateSlots[0]}}</b><br>(today)</button>
+	<button class = "button0" ng-click="ctrl.dateIndex = 1; ctrl.selectDate(1);ctrl.next()"><b>{{ctrl.dateSlots[1]}}</b><br>(tomorrow)</button>
 </div>
 
 <div ng-show = "currentSelect === 1">
 <h3>Select a Time</h3>
-<div ng-repeat="time in ctrl.timeSlots"><button class = "button1" ng-click="ctrl.selectTime(time); ctrl.next()">{{time}}</button></div>
+<div ng-repeat="time in timeSlots[ctrl.dateIndex]"><button class = "button1" class = {{time[1]}} ng-click="ctrl.selectTime(time); ctrl.next()">{{ctrl.timeArrayToString(time[0])}}</button></div>
 </div>
 
 <div ng-show = "currentSelect === 2">
@@ -79,7 +79,7 @@
 		</tr>
 		<tr>
 			<td>Time: </td>
-			<td>{{ctrl.timeSelect}}</td>
+			<td>{{ctrl.timeArrayToString(ctrl.timeSelect[0])}}</td>
 		</tr>
 		<tr>
 			<td>Pre-made Bag: </td>
@@ -121,28 +121,15 @@
 		
 
 	});
-/*			$.ajax('/auth/guest', {
-				data: {
-					firstName: user.firstName,
-					lastName: user.lastName, 
-					dob: user.dob
-				},
-				type: 'POST'
-			}).done(function(data, textStatus, jqXHR) {
-				console.log(data);
-				if (data.success && data.content) {
-					console.log($scope.currentSelect);
-					$scope.currentSelect += 1;
-					console.log($scope.currentSelect);
-				} else {
-					// TODO: Generate view for booked appointment
-				}
-			});*/
 			
 	app.controller('datetimeController', function($scope, $http){
 		$scope.currentSelect = -1;
 		this.attempted = false;
 		$scope.submitSuccess = false;
+		$scope.timeSlots = [['9:00 am to 10:00 am', '10:00 am  to 11:00 am', '11:00 am to 12:00 noon', '4:30 pm to 5:30 pm', '5:30 pm to 6:30 pm'],['9:00 am to 10:00 am', '10:00 am  to 11:00 am', '11:00 am to 12:00 noon', '4:30 pm to 5:30 pm', '5:30 pm to 6:30 pm']];
+		this.dateIndex = 0;
+		this.timeSelect = ['not Selected', ''];
+
 		this.reset = function(){
 			$scope.currentSelect = -1;
 			$scope.user = {};
@@ -169,10 +156,28 @@
 					lastName: user.lastName,
 					dob: user.dob
 				}).success(function(data, status, headers, config){
-					console.log(data)
-					console.log($scope.currentSelect);
 					$scope.currentSelect +=1;
-					console.log($scope.currentSelect);
+					$scope.submitSuccess = false;
+					$http.post('/appointments/availability').success(function(data, status, headers, config){
+						$scope.timeSlots = [];
+						$scope.timeSlots[0] = data[0];
+						$scope.timeSlots[0].sort(function(a, b){
+							var atemp = a[0][0].split(':');
+							var btemp = b[0][0].split(':');
+							console.log(atemp[0], btemp[0])
+							return Number(atemp[0]) - Number(btemp[0])
+						});
+						$scope.timeSlots[1] = data[1];
+						$scope.timeSlots[1].sort(function(a, b){
+							var atemp = a[0][0].split(':');
+							var btemp = b[0][0].split(':');
+							console.log(atemp[0], btemp[0])
+							return Number(atemp[0]) - Number(btemp[0])
+						});
+
+					}).error(function(data, status, headers, config){
+						console.log(status)
+					})
 				}).error(function(data, status, headers, config){
 					console.log(status)
 				});
@@ -180,12 +185,36 @@
 				this.attempted = true;
 				console.log("uhoh")
 			}
-		}
+		};
+
+		this.timeArrayToString = function(timeArray){
+			start = timeArray[0].split(':');
+			end = timeArray[1].split(':');
+			if(Number(start[0]) > 12){
+				start[0] = Number(start[0]) - 12;
+				start[0] = String(start[0]);
+				start[2] = 'PM';
+			}
+			else{
+				start[2] = 'AM';
+			}
+			if(Number(end[0]) > 12){
+				end[0] = Number(end[0]) - 12;
+				end[0] = String(end[0]);
+				end[2] = 'PM';
+			}
+			else{
+				end[2] = 'PM';
+			}
+			return(start[0] + ':' + start[1] + ' ' + start[2] + ' to ' + end[0] + ':' + end[1] + ' ' + end[2])
+		};
+
 		this.today = new Date(Date.now());
 		this.tomorrow = new Date(Date.now() + 1000*60*60*24)
 		this.dateSlots = [this.today.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'}), this.tomorrow.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})];
 		this.selectDate = function(dateChoice){
 			this.dateSelect = this.dateSlots[dateChoice];
+			this.dateIndex = dateChoice;
 		};
 
 		this.years = range(1900, this.today.getFullYear(), 0);
@@ -209,10 +238,8 @@
 			myMonth = $("#dobmonth").val();
 			myCurrentDate = $("#dobdate").val();
 			myDates = range(1, 31, 1);
-			console.log(myYear == '?');
-			console.log(myMonth == '?');
+
 			if(myYear != '?' && myMonth != '?'){
-				console.log("this");
 				myDates = this.monthDayPairs[myMonth];
 				if(myYear % 4 === 0 && myMonth == 2){
 					myDates = range(1, 29, 1);
@@ -220,9 +247,7 @@
 			}
 			$("#dobdate").empty();
 			$("#dobdate").append("<option></option>");
-			console.log(myDates);
 			for(var i = 1; i <= myDates.length; i++){
-				console.log(i);
 				$("#dobdate").append("<option value = " + String(i) + ">" + String(i) + "</option>");
 			}
 			if(myDates.indexOf(Number(myCurrentDate)) >= 0){
@@ -230,8 +255,16 @@
 			}
 
 		}
-		this.timeSlots = ['9:00 am to 10:00 am', '10:00 am  to 11:00 am', '11:00 am to 12:00 noon', '4:30 pm to 5:30 pm', '5:30 pm to 6:30 pm'];
 		this.selectTime = function(timeChoice){this.timeSelect = timeChoice;};
+
+		this.checkAdditional = function(status){
+			if(status == 'closed'){
+				return 'disabled'
+			}
+			else if (status == 'waitlist'){
+				return 'ng-click = "showWaitlistInfo()"'
+			}
+		}
 
 		this.selectBag = function(bagChoice){this.bag = bagChoice;};
 
@@ -240,25 +273,20 @@
 
 		this.sendReservation = function(user, rdate, rtime, rbag){
 			if(user.firstName && user.lastName && user.dob && user.dob.year && user.dob.month && user.dob.day && rdate && rtime && rbag){
-
-				fixedSlots = [['9:00', '10:00'], ['10:00', '11:00'], ['11:00', '12:00'], ['16:30', '17:30'], ['17:30', '18:30']];
-				rtimeFixed = fixedSlots[this.timeSlots.indexOf(rtime)];
 				fixedDates = [this.today, this.tomorrow];
-				rdateFixed = fixedDates[this.dateSlots.indexOf(rdate)].getMilliseconds();
-				console.log(typeof rdateFixed);
+				rdateFixed = fixedDates[this.dateIndex].getMilliseconds();
 				if(rbag == 'yes'){
 					rbagFixed = true;
 				}
 				else{
 					rbagFixed = false;
 				}
-				console.log(rtimeFixed, rdateFixed)
 				$http.post('/appointments/', {
 					firstName: user.firstName,
 					lastName: user.lastName,
 					birthday: user.dob,
 					date: rdateFixed,
-					timeslot: rtimeFixed,
+					timeslot: rtime,
 					premade: rbagFixed
 				}).success(function(data, status, headers, config){
 					$scope.submitSuccess = true;
@@ -314,7 +342,13 @@ button:active{
 	border-bottom: 3px solid lightgray;	
 }
 
-button.ng-disabled{
+button:disabled{
+	background-color: black;
+}
+.waitlist{
+	background-color: lightblue;
+}
+.closed{
 	background-color: black;
 }
 .button0{
@@ -326,7 +360,7 @@ button.ng-disabled{
 
 .button1{
 	width: 500px;
-	height: 75px;
+	height: 65px;
 	margin: 20px;
 	margin-top: 0px;
 }
