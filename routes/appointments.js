@@ -148,7 +148,9 @@ router.get('/:time', function(req, res) {
 });
 
 router.put('/time', function(req, res) {
+	console.log(req.body.date)
 	var fixedDate = new Date(req.body.date);
+	console.log(fixedDate)
 	var data = {
 		date: fixedDate,
 		timeslot: req.body.timeslot
@@ -159,7 +161,9 @@ router.put('/time', function(req, res) {
 		if (err) {
 			utils.sendErrResponse(res, 403, err);
 		} else {
-			utils.sendSuccessResponse(res, apps);
+			console.log(apps)
+			//utils.sendSuccessResponse(res, {data: apps});
+			res.json(apps);
 		}
 	});
 });

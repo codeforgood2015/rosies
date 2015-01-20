@@ -11,6 +11,7 @@
 			Admin Home
 		</title>
 	</head>
+
 	<body>
 		<div ng-controller='AdminController as ctrl'>
 			<!-- back button -->
@@ -58,11 +59,11 @@
 					<!-- Today -->
 					<li> <a href='#' ng-click='ctrl.toggleToday();'>Today </a>
 						<ul class='today-times' ng-show='ctrl.showToday'> 							
-							<li ng-repeat='time in ctrl.todayTimes();'> <a href='#' ng-click='ctrl.toggleGuests("today", time);'>  
+							<li ng-repeat='time in ctrl.todayTimes();'> <a href='#' ng-click='ctrl.showGuests("today", time);'>  
 								{{time}} </a>
-								<table class='today-guests' ng-show='ctrl.showGuests("today", time);'>
-									<tr ng-repeat='guest in ctrl.todayGuests'> 
-											<td>{{guest.name}}</td> <td>{{ctrl.displayYesNo(guest.premade);}}</td>
+								<table class='today-guests'>
+									<tr ng-repeat='guest in todayGuests[ctrl.toMilitary[time]]'> 
+											<td>Name: {{guest.firstName}} {{guest.lastName}}</td> <td>Bag: {{ctrl.displayYesNo(guest.premade);}}</td>
 									</tr>
 								</table>
 							</li>
@@ -71,11 +72,11 @@
 					<!-- Tomorrow -->
 					<li> <a href='#' ng-click='ctrl.toggleTomorrow();'>Tomorrow </a>
 						<ul class='tomorrow-times' ng-show='ctrl.showTomorrow'> 
-							<li ng-repeat='time in ctrl.tomorrowTimes();'> <a href='#' ng-click='ctrl.toggleGuests("tomorrow", time);'>  
+							<li ng-repeat='time in ctrl.tomorrowTimes();'> <a href='#' ng-click='ctrl.showGuests("tomorrow", time);'>  
 								{{time}} </a>
-								<table class='tomorrow-guests' ng-show='ctrl.showGuests("tomorrow", time);'>
-									<tr ng-repeat='guest in ctrl.tomorrowGuests'> 
-										<td>{{guest.name}}</td> <td>{{ctrl.displayYesNo(guest.premade);}}</td>
+								<table class='tomorrow-guests'>
+									<tr ng-repeat='guest in tomorrowGuests[ctrl.toMilitary[time]]'> 
+										<td>Name: {{guest.firstName}} {{guest.lastName}}</td> <td>Bag: {{ctrl.displayYesNo(guest.premade);}}</td>
 									</tr>
 								</table>
 							</li>
