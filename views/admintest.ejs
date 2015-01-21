@@ -18,16 +18,17 @@
 			<button id='back-button' ng-click='ctrl.back();' ng-show="ctrl.currentSection>0"> back </button>
 			<!-- logo -->
 			<img id='logo' src='../public/images/logo.png'/>
-			
+			<h1> Food Pantry Admin Site </h1>
+
 			<!-- form for login -->
 			<div class='login' ng-show='ctrl.currentSection === 0'>
-				<h1> Food Pantry Admin Site </h1>
+				<h3>Admin Log In</h3>
 				<form>
 					username:<input type='text'></input>
 					<br>
 					password:<input type='password'></input>
 					<br>
-					<input class='-not-disappear' id='login-button' type='button' value='Login' ng-click="ctrl.login();"</input>
+					<input class='-not-disappear' id='login-button' type='button' value='Login' ng-click="ctrl.login();"></input>
 				</form>
 				<div class='login-error' ng-show='ctrl.loginError'>
 					<p> Error: Sorry, incorrect username or password combination. </p>
@@ -37,7 +38,7 @@
 			
 			<!-- Buttons for different actions admins can take -->
 			<div class='actions' ng-show='ctrl.currentSection === 1'>
-				<h2>I would like to ... <h2>
+				<h3>Menu</h3>
 				<button class='select-action-button' ng-click='ctrl.toSignupView();'>
 					View current food pantry signups.
 				</button>
@@ -53,7 +54,7 @@
 			
 			<!-- Interactive view for the current guest signups for today or tomorrow. JQuery and show/hidden tags -->
 			<div class='viewguests' ng-show="ctrl.currentSection === 2">
-				<h2> View guests currently signed up for each time slot: </h2>
+				<h3> View guests </h3>
 				<p> Click on a day and a time to see a list of guests and whether or not they require a pre-made bag. </p>
 				<ul id='times'>
 					<!-- Today -->
@@ -87,9 +88,9 @@
 
 			<!-- Table displaying the current hours, with edit buttons, and a form for new hours, that will appear only if edit button is clicked-->
 			<div class='hours' ng-show='ctrl.currentSection === 3'>
-				<h2>Food Pantry Hours of Operation</h2>
+				<h3>Food Pantry Hours of Operation</h3>
 				<div class='default'>
-					<h3 class='left-align'>Manage default hours:</h3>
+					<h4 class='left-align'>Manage default hours:</h4>
 					<div class='default-hours'> 
 						<table id='default-table'>
 							<tr ng-repeat="dayHours in ctrl.defaultHours()">
@@ -133,7 +134,7 @@
 				<!-- Current specific date rules -->
 				<div class='special'>
 					<div class='special-hours'>
-						<h3 class='left-align'>Manage special hours:</h3>
+						<h4 class='left-align'>Manage special hours:</h4>
 						<table id='special-table'>
 							<!--Runs the specialRules function to get a list of rules, each of which contains a date and a list of times -->
 							<tr ng-repeat='rule in ctrl.specialRules()'>
@@ -176,7 +177,7 @@
 				</div>
 				<div class='new-special'>
 					<div class='new-special-hours'>
-						<h3 class='left-align'> Add a New Special Hours Rule </h3>
+						<h4 class='left-align'> Add a New Special Hours Rule </h4>
 						<p>Add New Special Hours on Date:</p>
 						<select id="select-year">
 							<option ng-repeat = "year in ctrl.years" value = {{year}}>{{year}}</option>

@@ -38,15 +38,15 @@
 		this.back = function() {
 			//hide the guests in viewgusts
 			this.resetShowTimesAndGuests();
-			this.clearDefaultTimeslotsInput();
-			this.clearEditedSpecialTimeslots();
+			//this.clearDefaultTimeslotsInput();
+			//this.clearEditedSpecialTimeslots();
 			if (this.currentSection > 1) {
 				this.toSelectAction(); //return to the select action screen
 			} else {
 				this.currentSection = 0;
 			}
 			//if the user goes back, the editing and adding buttons disappear and their fields should be cleared
-			this.showEditDefaultHours = false;
+			//this.showEditDefaultHours = false;
 			this.showNewAdmin = false;
 			$("input :not(type=text)").val('');
 			//TODO: remove the additional slots that have been created
@@ -111,13 +111,23 @@
 		for(var i = 0; i < this.tomorrowTimes().length; i++){
 			$scope.tomorrowGuests[this.toMilitary[this.tomorrowTimes()[i]]] = [];
 		}
+		var me = this;
+
 		this.getTodayGuestsCallback = function(guests) {
+			$scope.todayGuests = {};
+			for(var i = 0; i < me.todayTimes().length; i++){
+				$scope.todayGuests[me.toMilitary[me.todayTimes()[i]]] = [];
+			}
 			for(var i = 0; i <guests.length; i++){
 				$scope.todayGuests[guests[i].timeslot[0]].push(guests[i]);
 			}
 		}
 
 		this.getTomorrowGuestsCallback = function(guests) {
+			$scope.tomorrowGuests = {};
+			for(var i = 0; i < me.tomorrowTimes().length; i++){
+				$scope.tomorrowGuests[me.toMilitary[me.tomorrowTimes()[i]]] = [];
+			}
 			for(var i = 0; i <guests.length; i++){
 				$scope.tomorrowGuests[guests[i].timeslot[0]].push(guests[i]);
 			}			

@@ -4,12 +4,28 @@ html {
 	color: white;
 	text-align: center;
 	font-family: 'Roboto' Helvetica;
-  background-image: url('../public/images/background.png');
+  background-image: url('../images/admin-background.png');
 	background-size: 100%;
+	font-size: 25px;
+
 }
 
 body {
 	margin-bottom: 50px;
+}
+
+h1{
+	margin: 0px;
+	color: #d973aa;
+	font-family: 'Playfair Display';
+	font-size: 18px;
+}
+h3{
+	width: 100%;
+	font-size: 75px;
+	margin-bottom: 20px;
+	margin-top: 25px;
+	font-family: 'Playfair Display';
 }
 
 /*trying to work on animations...currently doesn't work*/
@@ -31,15 +47,22 @@ body {
 
 #logo {
 	width: 150px;
-	margin-bottom: 50px;
+	margin-top: 50px;
 }
 
 input {
 	margin: 10px;
 }
 
+
 #login-button {
 	font-size: 24pt;
+	border-radius: 12px;
+	padding: 10px;
+}
+
+button:focus{
+	outline:0;
 }
 
 .login-error {
@@ -77,12 +100,25 @@ input {
 
 .viewguests a {
  	text-decoration: none;
- 	color: white;
+ 	color:white;
 }
 
 .viewguests td {
 	padding-right: 10px;
 	padding-left: 10px;
+}
+.viewguests tr{
+	background-color: white;
+	color: navy;
+	border-radius: 12px;
+}
+
+.viewguests td:first-child{
+	border-radius: 12px 0 0 12px;
+}
+
+.viewguests td:last-child{
+	border-radius: 0 12px 12px 0;
 }
 
 .hours {
