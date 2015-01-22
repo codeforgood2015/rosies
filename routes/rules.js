@@ -6,10 +6,6 @@ var Timeslot = require('../models/timeslot').Timeslot;
 var utils = require('../utils/utils');
 var moment = require('moment'); //for parsing and handling dates
 
-/****************/
-/* GET Requests */
-/****************/
-
 /*
 	GET /default/:day - given an input day as a URL param, return all rules associated
 	    with that day of week by default
@@ -19,11 +15,10 @@ var moment = require('moment'); //for parsing and handling dates
 	- rules: Array of rule Documents
 */
 router.get('/default/:day', function(req, res) {
-	var daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-	if (daysOfWeek.indexOf(req.params.day) == -1) {
+	if (checkDayOfWeek(req.params.day)) {
 		utils.sendErrResponse(res, 400, 'Input string was not a day of the week.');
 	} else {
-		Rule.find({date: req.params.day}, function(err, rules) {
+		Rule.find({$and [{type: true},{date: req.params.day}]}, function(err, rules) {
 			if (err) {
 				utils.sendErrResponse(res, 404, err);
 			} else {
@@ -33,6 +28,14 @@ router.get('/default/:day', function(req, res) {
 	}
 });
 
+/*
+	Helper function to avoid duplicating this code elsewhere. Given
+	an input of a String, returns whether it is a day of the week.
+*/
+var checkDayOfWeek = function(day) {
+	var daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+	return (daysOfWeek.indexOf(req.params.day) == -1)
+}
 
 /*
 	GET /special - returns all special hours
@@ -51,6 +54,29 @@ router.get('/special', function(req, res) {
 			utils.sendSuccessResponse(res, rules);
 		}
 	})
+});
+
+/*
+	POST /special - create new special rule
+	Request Body
+	- maxCap: number representing maximum capacity of the timeslot
+	- maxWaitlist: number representing maximum waitlist capacity
+	- startTime: String representing start time of the timeslot as HH:MM in military time
+	- duration: number representing the length of the timeslot in hours
+	- date: String representing 
+	Returns
+	- rule: newly created rule
+*/
+router.post('/special/', function(req, res) {
+	var data = {
+		maxCap: Number, 
+		maxWaitlist: Number,
+		startTime: String, // military time string
+		duration: Number, // in hours, should be 1 by default
+		date: String, // either day of week or a date string
+		repeat: Boolean, //true if rule should repeat yearly
+		type: false
+	}
 });
 
 /*
@@ -87,15 +113,6 @@ router.get('/special/timeslot', function(req, res) {
 		}
 	});
 });
-
-// /*****************/
-// /* POST Requests */
-// /*****************/
-
-// //new special hours rule 
-// router.post('/special/new', function(req, res) {
-
-// });
 
 // /****************/
 // /* PUT Requests */
