@@ -56,9 +56,10 @@
 			<div class='viewguests' ng-show="ctrl.currentSection === 2">
 				<h3> View guests </h3>
 				<p> Click on a day and a time to see a list of guests and whether or not they require a pre-made bag. </p>
+				<button id = 'print' ng-click = 'ctrl.printPage()'>Print Page</button>
 				<ul id='times'>
 					<!-- Today -->
-					<li> <a href='#' ng-click='ctrl.toggleToday();'>Today </a>
+					<li> <a href='#' ng-click='ctrl.toggleToday();'>Today </a> <button class= 'showDays' id = 'showtoday' ng-click = 'ctrl.showAll("today")'>Show All</button>
 						<ul class='today-times' ng-show='ctrl.showToday'> 							
 							<li ng-repeat='time in ctrl.todayTimes();'> <a href='#' ng-click='ctrl.showGuests("today", time);'>  
 								{{time}} </a>
@@ -71,7 +72,7 @@
 						</ul>
 					</li>
 					<!-- Tomorrow -->
-					<li> <a href='#' ng-click='ctrl.toggleTomorrow();'>Tomorrow </a>
+					<li> <a href='#' ng-click='ctrl.toggleTomorrow();'>Tomorrow </a> <button class = 'showDays' id = 'showtomorrow' ng-click = 'ctrl.showAll("tomorrow")'>Show All</button>
 						<ul class='tomorrow-times' ng-show='ctrl.showTomorrow'> 
 							<li ng-repeat='time in ctrl.tomorrowTimes();'> <a href='#' ng-click='ctrl.showGuests("tomorrow", time);'>  
 								{{time}} </a>

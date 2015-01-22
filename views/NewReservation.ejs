@@ -66,7 +66,7 @@
 	<button class = "button3-1" ng-click = "ctrl.next()" ng-show = "ctrl.allergies">done</button>
 </div> -->
 
-<div ng-show = "currentSelect ===3">
+<div ng-show = "currentSelect ===3" id = "confirmationPage">
 	<h3>Confirmation</h3>
 	<table>
 		<tr>
@@ -91,7 +91,7 @@
 		</tr> -->
 	<table>
 	<button class = "button4" ng-show = '!submitSuccess' ng-click = "ctrl.sendReservation(user, ctrl.dateSelect, ctrl.timeSelect, ctrl.bag)">submit</button><br>
-	<span ng-show = "submitSuccess">Successfully Saved!<br><button class = 'button5' ng-click = 'ctrl.reset()'>exit</button></span>
+	<span ng-show = "submitSuccess">Successfully Saved!<br><button class = 'button5' ng-click = 'ctrl.print()'>print page</button><br><button class = 'button5' ng-click = 'ctrl.reset()'>exit</button></span>
 </div>
 </div>
 
@@ -275,6 +275,10 @@
 
 		this.allergies = false;
 		this.clearAllergies = function(){$('#allergybox').val(''); this.allergies = false;};
+
+		this.print = function(){
+			window.print();
+		}
 
 		this.sendReservation = function(user, rdate, rtime, rbag){
 			if(user.firstName && user.lastName && user.dob && user.dob.year && user.dob.month && user.dob.day && rdate && rtime && rbag){
@@ -491,5 +495,24 @@ table tr td:nth-child(odd){
 		margin: 20px;
 	}
 
+}
+
+@media only print{
+	html{
+		background-image: none;
+		background-color: white;
+		color: black;
+	}
+	h3{
+		font-size: 25px;
+	}
+
+	#back{
+		display: none;
+	}
+
+	.button5{
+		display:none;
+	}
 }
 </style>

@@ -114,20 +114,11 @@
 		var me = this;
 
 		this.getTodayGuestsCallback = function(guests) {
-			$scope.todayGuests = {};
-			for(var i = 0; i < me.todayTimes().length; i++){
-				$scope.todayGuests[me.toMilitary[me.todayTimes()[i]]] = [];
-			}
 			for(var i = 0; i <guests.length; i++){
 				$scope.todayGuests[guests[i].timeslot[0]].push(guests[i]);
 			}
-		}
-
+		}			
 		this.getTomorrowGuestsCallback = function(guests) {
-			$scope.tomorrowGuests = {};
-			for(var i = 0; i < me.tomorrowTimes().length; i++){
-				$scope.tomorrowGuests[me.toMilitary[me.tomorrowTimes()[i]]] = [];
-			}
 			for(var i = 0; i <guests.length; i++){
 				$scope.tomorrowGuests[guests[i].timeslot[0]].push(guests[i]);
 			}			
@@ -136,7 +127,6 @@
 		this.getTodayGuests = function(_time, callback) {
 			// _day is either 'today' or 'tomorrow'
 			// _time is a string of the form "9:00AM" or something like that
-			console.log("getting today's")
 			var today = new Date();
 		  var year = today.getFullYear();
 		  var month = today.getMonth();
@@ -145,7 +135,7 @@
 		  var sendDate = new Date(year, month, day, 0, 0, 0, 0).getTime();
 		  var timeslot = [this.toMilitary[_time], this.toNextMilitary[_time]];
 		  $http.put('/appointments/time', {date: sendDate, timeslot: timeslot}).success(function(data, status, headers, config) {
-		  	console.log(data)
+		  	$scope.todayGuests[me.toMilitary[_time]] = [];
 		  	callback(data);
 		  }).error(function(data, status, headers, config) {
 		  	console.log(data);
@@ -165,7 +155,6 @@
 		};
 
 		this.getTomorrowGuests = function(_time, callback) {
-			console.log("getting tomorrow")
 			var tomorrow = new Date();
 		  tomorrow.setDate(tomorrow.getDate() + 1);
 		  var year = tomorrow.getFullYear();
@@ -174,7 +163,7 @@
 		  var sendDate = new Date(year, month, day, 0, 0, 0, 0).getTime();
 		  var timeslot = [this.toMilitary[_time], this.toNextMilitary[_time]];
 		  $http.put('/appointments/time', {date: sendDate, timeslot: timeslot}).success(function(data, status, headers, config) {
-		  	console.log(data)
+		  	$scope.tomorrowGuests[me.toMilitary[_time]] = [];
 		  	callback(data);
 		  }).error(function(data, status, headers, config) {
 		  	console.log(data);
@@ -196,7 +185,6 @@
 		this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes());
 
 		this.showGuests = function(day, _time) {
-			console.log("showing")
 			//determine whether or not the guests for day and time should be shown right now
 			//update the data in todayGuests and tomorrowGuests
 			var times = [];
@@ -255,6 +243,46 @@
 			this.showTomorrow = false;
 			this.showTodayTimes = makeTimeObjects(this.todayTimes());
 			this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes());
+		}
+
+		//hides or shows all reservations for a given day
+		this.showAll = function(day){
+			var hideOrShow = $('#show' + day).text();
+			if(day == 'today'){
+				if(hideOrShow == 'Show All'){
+					me.showToday =  true;
+					for(var i = 0; i < me.todayTimes().length; i++){
+						me.showGuests("today", me.todayTimes()[i]);
+					}
+					$('#show' + day).text('Hide All');
+				}
+				else{
+					me.showToday = false;
+					$('#show' + day).text('Show All');
+
+				}
+
+			}
+			else if (day == 'tomorrow'){
+				if(hideOrShow == 'Show All'){
+					me.showTomorrow = true;
+					for(var i = 0; i < me.tomorrowTimes().length; i++){
+						me.showGuests("tomorrow", me.tomorrowTimes()[i]);
+					}
+					$('#show' + day).text('Hide All');
+
+				}
+				else{
+					me.showTomrrow = false;
+					$('#show' + day).text('Show All');
+
+				}
+			}
+		}
+
+		//opens print dialogue
+		this.printPage = function(){
+			window.print();
 		}
 
 		// /******************/

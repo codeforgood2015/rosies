@@ -53,16 +53,32 @@ h3{
 input {
 	margin: 10px;
 }
+button:focus{
+	outline:0;
+}
+button{
+	color: #3c84d5;
+	font-size: 40px;
+	border-radius: 10px;
+	font-family: 'Roboto';
+	background-color: white;
+	border-top: 3px solid lightgray;
+	border-left: 3px solid lightgray;
+	border-right: 3px solid gray;
+	border-bottom: 3px solid gray;
+}
 
+button:active{
+	border-top: 3px solid gray;
+	border-left: 3px solid gray;
+	border-right: 3px solid lightgray;
+	border-bottom: 3px solid lightgray;	
+}
 
 #login-button {
 	font-size: 24pt;
 	border-radius: 12px;
 	padding: 10px;
-}
-
-button:focus{
-	outline:0;
 }
 
 .login-error {
@@ -83,6 +99,12 @@ button:focus{
 
 }
 
+#print{
+	position: fixed;
+	top: 5px;
+	right: 5px;
+}
+
 .select-action-button {
 	border-radius: 10px;
 	background-color: white;
@@ -91,7 +113,10 @@ button:focus{
 	margin: 10px;
 	font-size: 24pt;
 }
-
+.showDays{
+	font-size: 15px;
+	vertical-align: middle;
+}
 .viewguests {
 	max-width: 50%;
 	margin: auto;
@@ -237,4 +262,30 @@ tr:nth-child(odd) {
 
 .admin-edit-buttons {
 	font-size: 18pt;
+}
+
+@media only print{
+	html{
+		background-image: none;
+		background-color: white;
+		font-size: 18px;
+		color: black;
+	}
+
+	button{
+		display: none;
+	}
+
+	h3{
+		font-size: 25px;
+	}
+
+	.viewguests{
+		max-width: 100%;
+	}
+
+	.viewguests a{
+		color: black;
+	}
+
 }
