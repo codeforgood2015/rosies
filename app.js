@@ -167,6 +167,7 @@ var auth = require('./routes/auth');
 var admin = require('./routes/admin');
 var dev = require('./routes/dev');
 var appointments = require('./routes/appointments');
+var rules = require('./routes/rules');
 
 var app = express();
 
@@ -186,6 +187,7 @@ app.get('/dev', dev.testDev);
 //app.get('/dev/set', dev.createDefaultRules);
 app.use('/admin', admin);
 app.use('/appointments', appointments);
+app.use('/rules', rules);
 //this function needs to pass through timeslots
 app.get('/', function(req, res) {
 	res.render('NewReservation')
