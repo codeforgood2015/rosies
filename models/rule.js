@@ -5,11 +5,9 @@ var ObjectId = Schema.ObjectId();
 var rulesSchema = mongoose.Schema({
 	maxCap: Number, 
 	maxWaitlist: Number,
-	startTime: String, // military time string
-	duration: Number, // in hours, should be 1 by default
+	time: [String], // military time string, should be size 2
 	date: String, // either day of week or a date string
-	repeat: Boolean, //true if rule should repeat yearly
-	type: Boolean // type of rule, should be true for default rules
+	repeat: Boolean //true if rule should repeat yearly
 });
 
 module.exports.Rule = mongoose.model('Rule', rulesSchema);
