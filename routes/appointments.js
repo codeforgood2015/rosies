@@ -6,7 +6,9 @@ var utils = require('../utils/utils');
 var moment = require('moment');
 var _ = require('underscore');
 
-// GET /appointments - get all appointments
+/*
+	GET /appointments: Return all appointments
+*/
 // TODO: should check that an admin is logged in
 router.get('/', function(req, res) {
 	Appointment.find({}, function(err, appointments) {
@@ -37,7 +39,6 @@ router.post('/', function(req, res) {
 		birthday: req.body.birthday,
 		premade: req.body.premade,
 		waitlist: req.body.waitlist
-		//allergies: req.body.allergies
 	}; 
 	console.log(data)
 	Rule.findOne({date: dayString(data.date.getDay()), time: data.timeslot}, function(err, rule){
@@ -76,6 +77,7 @@ router.post('/', function(req, res) {
 });
 
 
+// TODO: Move to rules route
 router.post('/availability', function(req, res) {
 	var temptoday = new Date(Date.now());
 	var temptomorrow = new Date(Date.now() + 1000*60*60*24);
@@ -119,7 +121,6 @@ var closedRules = function(myRule, day, passData, times){
 		passData();	
 	})
 };
-
 
 
 /*
