@@ -2,6 +2,9 @@
 	(function(){var app = angular.module('admin', []); //create a new app with a name and list of dependencies
 	//make a new controller
 	app.controller('AdminController', function($http, $scope) {
+
+		var me = this;
+
 		/***********/
 		/*  LOGIN  */
 		/***********/
@@ -75,43 +78,37 @@
 
 		//FAKE DATA ... the below two functions should actually figure out the times for today and tomorrow
 		this.todayTimes = function() {
-			return ["9:00AM", "10:00AM", "11:00AM", "4:30PM", "5:30PM"];
+			return ["9:00 AM", "10:00 AM", "11:00 AM", "4:30 PM", "5:30 PM"];
 		}
 		this.tomorrowTimes = function() {
-			return ["9:00AM", "10:00AM", "11:00AM", "4:30PM", "5:30PM"];
+			return ["9:00 AM", "10:00 AM", "11:00 AM", "4:30 PM", "5:30 PM"];
 		}
 
-		this.toMilitary = {
-			"9:00AM": "9:00",
-			"10:00AM": "10:00",
-			"11:00AM": "11:00",
-			"12:00PM": "12:00",
-			"4:30PM": "16:30",
-			"5:30PM": "17:30",
-			"6:30PM": "18:30"
-		};
-
-		this.toNextMilitary = {
-			"9:00AM": "10:00",
-			"10:00AM": "11:00",
-			"11:00AM": "12:00",
-			"12:00PM": "13:00",
-			"4:30PM": "17:30",
-			"5:30PM": "18:30",
-			"6:30PM": "19:30"
-		};
+		//converts string of form 'h:mm AM|PM' to 'h:mm' military time; e.g. "5:30 PM" -> "17:30"
+		this.convertToMilitary = function(time) {
+			//get hours and minutes with regex
+			var hours = Number(time.match(/^(\d+)/)[1]);
+			var minutes = Number(time.match(/:(\d+)/)[1]);
+			var ampm = time.match(/\s(.*)$/)[1];
+			//convert hours to 0 if it's 12 AM, and convert any afternoon times by adding 12
+			if (ampm === 'AM' && hours === 12) {hours -= 12};
+			if (ampm === 'PM' && hours < 12) {hours += 12};
+			var sHours = hours.toString();
+			var sMinutes = minutes.toString();
+			var military = sHours + ":" + sMinutes;
+			return military;
+		}
 
 		$scope.todayGuests = {};
 		$scope.tomorrowGuests = {};
 
 		for(var i = 0; i < this.todayTimes().length; i++){
-			$scope.todayGuests[this.toMilitary[this.todayTimes()[i]]] = [];
+			$scope.todayGuests[this.convertToMilitary(this.todayTimes()[i])] = [];
 		}
 
 		for(var i = 0; i < this.tomorrowTimes().length; i++){
-			$scope.tomorrowGuests[this.toMilitary[this.tomorrowTimes()[i]]] = [];
+			$scope.tomorrowGuests[this.convertToMilitary(this.tomorrowTimes()[i])] = [];
 		}
-		var me = this;
 
 		this.getTodayGuestsCallback = function(guests) {
 			for(var i = 0; i <guests.length; i++){
@@ -124,34 +121,25 @@
 			}			
 		}
 
+		//getTodayGuests and getTomorrowGuesets populate the this.todayGuests and this.tomorrowGuests lists by querying the database
+		//when sending data,
+			//date: the date to send, represented as a dateobject.getTime(), so will be represented as some number of milliseconds 
+			//startTime: string representation of starting time of the timeslot, in military time form, e.g. '17:00'
 		this.getTodayGuests = function(_time, callback) {
-			// _day is either 'today' or 'tomorrow'
-			// _time is a string of the form "9:00AM" or something like that
 			var today = new Date();
 		  var year = today.getFullYear();
 		  var month = today.getMonth();
 		  var day = today.getDate();
 
 		  var sendDate = new Date(year, month, day, 0, 0, 0, 0).getTime();
-		  var timeslot = [this.toMilitary[_time], this.toNextMilitary[_time]];
-		  $http.put('/appointments/time', {date: sendDate, timeslot: timeslot}).success(function(data, status, headers, config) {
-		  	$scope.todayGuests[me.toMilitary[_time]] = [];
+		  var time = this.convertToMilitary(_time);
+		  $http.put('/appointments/time', {date: sendDate, startTime: time}).success(function(data, status, headers, config) {
+		  	$scope.todayGuests[me.convertToMilitary(_time)] = [];
 		  	callback(data);
 		  }).error(function(data, status, headers, config) {
 		  	console.log(data);
 		  	callback([{name: 'error', premade: 'false'}]);
 		  });
-
-			//FAKE DATA
-			// if (time === "9:00AM") {
-			// 	return [{name: "hanna", premade: false}, {name: "tricia", premade: true}, {name: "shi-ke", premade: false}];
-			// } else if (time === "10:00AM") {
-			// 	return [{name: "person 1", premade: false}, {name: "person 2", premade: true}];
-			// } else if (time === "4:30PM") {
-			// 	return [{name: "abc", premade: true}, {name: "def", premade: false}];
-			// } else {
-			// 	return [{name: 'persona', premade: false}, {name: 'hello', premade: false}];
-			// }
 		};
 
 		this.getTomorrowGuests = function(_time, callback) {
@@ -161,9 +149,9 @@
 		  var month = tomorrow.getMonth();
 		  var day = tomorrow.getDate();
 		  var sendDate = new Date(year, month, day, 0, 0, 0, 0).getTime();
-		  var timeslot = [this.toMilitary[_time], this.toNextMilitary[_time]];
-		  $http.put('/appointments/time', {date: sendDate, timeslot: timeslot}).success(function(data, status, headers, config) {
-		  	$scope.tomorrowGuests[me.toMilitary[_time]] = [];
+		  var time = this.convertToMilitary(_time);
+		  $http.put('/appointments/time', {date: sendDate, startTime: time}).success(function(data, status, headers, config) {
+		  	$scope.tomorrowGuests[me.convertToMilitary(_time)] = [];
 		  	callback(data);
 		  }).error(function(data, status, headers, config) {
 		  	console.log(data);
@@ -180,6 +168,7 @@
 			}
 			return result
 		}
+
 		//these two should be populated with the appropriate time slots for today and tomorrow, along with whether or not to currently display them
 		this.showTodayTimes = makeTimeObjects(this.todayTimes());
 		this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes());
@@ -228,7 +217,7 @@
 			return t.show;
 		};
 
-		//helper function, takes true/false and turns it into yes/no
+		//dumb helper function, takes true/false and turns it into yes/no
 		this.displayYesNo = function(trueOrFalse) {
 			if (trueOrFalse) {
 				return 'yes';
@@ -237,7 +226,7 @@
 			}
 		}
 
-		//hides everything, to be called when the back button is pressed
+		//hides everything in the viewguests tree, to be called when the back button is pressed
 		this.resetShowTimesAndGuests = function() {
 			this.showToday = false;
 			this.showTomorrow = false;
@@ -280,17 +269,16 @@
 			}
 		}
 
-		//opens print dialogue
+		//opens print dialogue, we need to also display a printer friendly version
 		this.printPage = function(){
 			window.print();
 		}
 
-		// /******************/
-		// /*  DEFAULT HOURS */
-		// /******************/
-		// //default times TODO: change this to reflect the actual times, from the backend
+		/******************/
+		/*  DEFAULT HOURS */
+		/******************/
 
-		// //      FAAAAAAAAKE DATAAAAAAAAAAA, use $.ajax to query the database
+		//FAKE DATA, replace soon plz 
 		// this.mondayDefault = function() {return ['4:30 PM', '5:30 PM'];};
 		// this.tuesdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
 		// this.wednesdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
@@ -299,68 +287,78 @@
 		// this.saturdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
 		// this.sundayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
 
-		// this.defaultHours = function() {
-		// 	return [{"day":"Monday", "hours": this.mondayDefault()}, 
-		// 										{"day":"Tuesday", "hours": this.tuesdayDefault()}, 
-		// 										{"day":"Wednesday", "hours": this.wednesdayDefault()}, 
-		// 										{"day":"Thursday", "hours": this.thursdayDefault()},
-		// 										{"day":"Friday", "hours": this.fridayDefault()},
-		// 										{"day":"Saturday", "hours": this.saturdayDefault()},
-		// 										{"day":"Sunday", "hours": this.sundayDefault()}];
-		// };
 
-		// this.daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-		// //for editing default hours
-		// this.showEditDefaultHours = false;
-		// this.editDay = ''; //will reflect which day they are editing
+
+		//populates this.defaultHours list by querying database
+		//should be called either with a refresh button or every time the page loads
+		this.getDefaultHours = function() {
+			//for each day of the week, get that day's default hours as a list of 
+		}
+
+		this.defaultHours = function() {
+			return [{"day":"Monday", "hours": this.mondayDefault()}, 
+												{"day":"Tuesday", "hours": this.tuesdayDefault()}, 
+												{"day":"Wednesday", "hours": this.wednesdayDefault()}, 
+												{"day":"Thursday", "hours": this.thursdayDefault()},
+												{"day":"Friday", "hours": this.fridayDefault()},
+												{"day":"Saturday", "hours": this.saturdayDefault()},
+												{"day":"Sunday", "hours": this.sundayDefault()}];
+		};
+
+		this.daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 		
-		// this.newDefaultTimeslots = [];
+		//for editing default hours
+		this.showEditDefaultHours = false; //true when the sidebar with the add timeslots form should appear
+		
+		this.editDay = ''; //will reflect which day they are editing, so when they click submit, we know which day's data to change
+		
+		this.newDefaultTimeslots = []; //array for us to save things to do when they add timeslots; will send to database when they click 'save'
 
-		// this.editDefaultHours = function(day) {
-		// 	this.clearDefaultTimeslotsInput(); //clear when the user changes days
-		// 	this.showEditDefaultHours = true;
-		// 	this.editDay = day;
-		// };
+		this.editDefaultHours = function(day) {
+			this.clearDefaultTimeslotsInput(); //clear when the user changes days
+			this.showEditDefaultHours = true;
+			this.editDay = day;
+		};
 
-		// this.clearDefaultTimeslotsInput = function() {
-		// 	//to be called when a different edit button, or the cancel button, is pressed
-		// 	$('#default-start-time').val('');
-		// 	$('#default-end-time').val('');
-		// 	$('#default-max-cap').val('');
-		// 	this.newDefaultTimeslots = [];
-		// };
+		this.clearDefaultTimeslotsInput = function() {
+			//to be called when a different edit button, or the cancel button, is pressed
+			$('#default-start-time').val('');
+			$('#default-end-time').val('');
+			$('#default-max-cap').val('');
+			this.newDefaultTimeslots = [];
+		};
 
-		// this.addDefaultTimeslot = function() {
-		// 	//jQuery to grab the info in the text boxes, add them to this.newDefaultTimeslots
-		// 	var s = $('#default-start-time').val();
-		// 	var e = $('#default-end-time').val();
-		// 	var c = $('#default-max-cap').val();
-		// 	var timeslot = {
-		// 		start: s, end: e, cap: c
-		// 	}
-		// 	this.newDefaultTimeslots.push(timeslot);
-		// };
+		this.addDefaultTimeslot = function() {
+			//jQuery to grab the info in the text boxes, add them to this.newDefaultTimeslots
+			var s = $('#default-start-time').val();
+			var e = $('#default-end-time').val();
+			var c = $('#default-max-cap').val();
+			var timeslot = {
+				start: s, end: e, cap: c
+			}
+			this.newDefaultTimeslots.push(timeslot);
+		};
 
-		// this.removeDefaultTimeslot = function() {
-		// 	//figure out how to associate the remove button with the timeslots it's related to
-		// };
+		this.removeDefaultTimeslot = function() {
+			//figure out how to associate the remove button with the timeslots it's related to
+		};
 
-		// this.saveNewDefaultHours = function() {
-		// 	var day = this.editDay;
+		this.saveNewDefaultHours = function() {
+			var day = this.editDay;
 
-		// 	//current editDay should be the correct day, selected when the user pressed an edit button
-		// 	//need to go through the text in the input fields in class='slots' and save their info to database, then clear their text
-		// 	//TODO: some parsing stuff, and accounting for user error
+			//current editDay should be the correct day, selected when the user pressed an edit button
+			//need to go through the text in the input fields in class='slots' and save their info to database, then clear their text
+			//TODO: some parsing stuff, and accounting for user error
 
-		// 	//...
-		// 	this.clearDefaultTimeslotsInput();
-		// };
+			//...
+			this.clearDefaultTimeslotsInput();
+		};
 
-		// this.cancelNewDefaultHours = function() {
-		// 	this.clearDefaultTimeslotsInput(); //clear 
-		// 	this.showEditDefaultHours = false;
-		// 	this.editDay = '';
-		// };
+		this.cancelNewDefaultHours = function() {
+			this.clearDefaultTimeslotsInput(); //clear 
+			this.showEditDefaultHours = false;
+			this.editDay = '';
+		};
 		// /******************/
 		// /*  SPECIAL HOURS */
 		// /******************/
