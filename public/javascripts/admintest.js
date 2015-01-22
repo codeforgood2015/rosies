@@ -128,19 +128,20 @@
 			// _day is either 'today' or 'tomorrow'
 			// _time is a string of the form "9:00AM" or something like that
 			var today = new Date();
-		  var year = today.getFullYear();
-		  var month = today.getMonth();
-		  var day = today.getDate();
+		  	var year = today.getFullYear();
+		  	var month = today.getMonth();
+		  	var day = today.getDate();
 
-		  var sendDate = new Date(year, month, day, 0, 0, 0, 0).getTime();
-		  var timeslot = [this.toMilitary[_time], this.toNextMilitary[_time]];
-		  $http.put('/appointments/time', {date: sendDate, timeslot: timeslot}).success(function(data, status, headers, config) {
-		  	$scope.todayGuests[me.toMilitary[_time]] = [];
-		  	callback(data);
-		  }).error(function(data, status, headers, config) {
-		  	console.log(data);
-		  	callback([{name: 'error', premade: 'false'}]);
-		  });
+		  	var sendDate = new Date(year, month, day, 0, 0, 0, 0).getTime();
+		  	var timeslot = [this.toMilitary[_time], this.toNextMilitary[_time]];
+		  	$http.put('/appointments/time', {date: sendDate, timeslot: timeslot})
+		  	.success(function(data, status, headers, config) {
+		  		console.log(data)
+		  		callback(data);
+		  	}).error(function(data, status, headers, config) {
+			  	console.log(data);
+		  		callback([{name: 'error', premade: 'false'}]);
+		  	});
 
 			//FAKE DATA
 			// if (time === "9:00AM") {
@@ -156,19 +157,20 @@
 
 		this.getTomorrowGuests = function(_time, callback) {
 			var tomorrow = new Date();
-		  tomorrow.setDate(tomorrow.getDate() + 1);
-		  var year = tomorrow.getFullYear();
-		  var month = tomorrow.getMonth();
-		  var day = tomorrow.getDate();
-		  var sendDate = new Date(year, month, day, 0, 0, 0, 0).getTime();
-		  var timeslot = [this.toMilitary[_time], this.toNextMilitary[_time]];
-		  $http.put('/appointments/time', {date: sendDate, timeslot: timeslot}).success(function(data, status, headers, config) {
-		  	$scope.tomorrowGuests[me.toMilitary[_time]] = [];
-		  	callback(data);
-		  }).error(function(data, status, headers, config) {
-		  	console.log(data);
-		  	callback([{name: 'error', premade: 'false'}]);
-		  });
+		  	tomorrow.setDate(tomorrow.getDate() + 1);
+		  	var year = tomorrow.getFullYear();
+		  	var month = tomorrow.getMonth();
+		  	var day = tomorrow.getDate();
+		  	var sendDate = new Date(year, month, day, 0, 0, 0, 0).getTime();
+		  	var timeslot = [this.toMilitary[_time], this.toNextMilitary[_time]];
+			$http.put('/appointments/time', {date: sendDate, timeslot: timeslot})
+			.success(function(data, status, headers, config) {
+		  		$scope.tomorrowGuests[me.toMilitary[_time]] = [];
+		  		callback(data);
+		  	}).error(function(data, status, headers, config) {
+		  		console.log(data);
+		  		callback([{name: 'error', premade: 'false'}]);
+		  	});
 		}
 
 		//dumb utility function that is used to populate the showTodayTimes and showTomorrowTimes lists
