@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId();
 
-var rulesSchema = mongoose.Schema( {
+var rulesSchema = mongoose.Schema({
 	maxCap: Number, 
 	maxWaitlist: Number,
 	startTime: String, // military time string

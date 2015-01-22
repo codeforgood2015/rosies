@@ -6,9 +6,29 @@ var Timeslot = require('../models/timeslot').Timeslot;
 var utils = require('../utils/utils');
 var moment = require('moment'); //for parsing and handling dates
 
-/****************/
-/* GET Requests */
-/****************/
+/*
+	GET /default - returns all default hours for days of the week
+	Returns
+	- rules: Array of rule Documents
+*/
+router.get('/default', function(req, res) {
+	Rule.find({type: true}, function(err, rules) {
+		if (err) {
+			utils.sendErrResponse(res, 404, err);
+		} else {
+			utils.sendSuccessResponse(res, rules);
+		}
+	});
+});
+
+/*
+	Helper function to avoid duplicating this code elsewhere. Given
+	an input of a String, returns whether it is a day of the week.
+*/
+var checkDayOfWeek = function(day) {
+	var daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+	return (daysOfWeek.indexOf(req.params.day) == -1)
+};
 
 /*
 	GET /default/:day - given an input day as a URL param, return all rules associated
@@ -19,11 +39,10 @@ var moment = require('moment'); //for parsing and handling dates
 	- rules: Array of rule Documents
 */
 router.get('/default/:day', function(req, res) {
-	var daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-	if (daysOfWeek.indexOf(req.params.day) == -1) {
+	if (checkDayOfWeek(req.params.day)) {
 		utils.sendErrResponse(res, 400, 'Input string was not a day of the week.');
 	} else {
-		Rule.find({date: req.params.day}, function(err, rules) {
+		Rule.find({$and: [{type: true},{date: req.params.day}]}, function(err, rules) {
 			if (err) {
 				utils.sendErrResponse(res, 404, err);
 			} else {
@@ -31,6 +50,18 @@ router.get('/default/:day', function(req, res) {
 			}
 		})
 	}
+});
+
+/*
+	PUT /default/:day - given an input day as a URL param, modify a rule associated
+	    with that day of week by default
+	Request body/Parameters:
+	- day: String, must be one of "Monday", "Tuesday", etc.
+	Returns
+	- rules: Array of rule Documents
+*/
+router.put('/default/:day', function(req, res) {
+
 });
 
 
@@ -54,6 +85,38 @@ router.get('/special', function(req, res) {
 });
 
 /*
+	POST /special - create new special rule
+	Request Body
+	- maxCap: number representing maximum capacity of the timeslot
+	- maxWaitlist: number representing maximum waitlist capacity
+	- startTime: String representing start time of the timeslot as HH:MM in military time
+	- duration: number representing the length of the timeslot in hours
+	- date: String representing day for the rule, in YYYY-MM-DD format
+	- repeat: boolean representing whether the rule should repeat.
+	Returns
+	- rule: newly created rule
+*/
+router.post('/special/', function(req, res) {
+	var data = {
+		maxCap: req.body.maxCap,
+		maxWaitlist: req.body.maxWaitlist,
+		startTime: req.body.startTime,
+		duration: req.body.duration,
+		date: req.body.date,
+		repeat: req.body.repeat,
+		type: false
+	};
+	var rule = new Rule(data);
+	rule.save(function(err) {
+		if (err) {
+			utils.sendErrResponse(res, 404, err);
+		} else {
+			utils.sendSuccessResponse(res, rule);
+		}
+	});
+});
+
+/*
 	GET /special/:date - returns special hours associated with the input date
 	Request Body/Parameters
 	- date: String representing a date, in YYYY-MM-DD format
@@ -61,7 +124,7 @@ router.get('/special', function(req, res) {
 	- rules: Array of rule Documents
 */
 router.get('/special/:date', function(req, res) {
-	Rule.find({$and: [{type: false}, {date: req.params.date}], function(err, rules) {
+	Rule.find({$and: [{type: false}, {date: req.params.date}]}, function(err, rules) {
 		if (err) {
 			utils.sendErrResponse(res, 404, err);
 		} else {
@@ -88,28 +151,11 @@ router.get('/special/timeslot', function(req, res) {
 	});
 });
 
-// /*****************/
-// /* POST Requests */
-// /*****************/
 
-// //new special hours rule 
-// router.post('/special/new', function(req, res) {
+//edit special hours rule
+router.put('/special/edit', function(req, res) {
 
-// });
-
-// /****************/
-// /* PUT Requests */
-// /****************/
-
-// //edit default hour for monday...sunday
-// router.put('/default/edit', function(req, res) {
-
-// });
-
-// //edit special hours rule
-// router.put('/special/edit', function(req, res) {
-
-// });
+});
 
 // /*******************/
 // /* DELETE Requests */
