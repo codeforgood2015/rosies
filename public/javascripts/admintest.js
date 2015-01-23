@@ -44,6 +44,9 @@
 			if (!this.loginError) this.currentSection = 4;
 			this.getAdminUsernames();
 		};
+		this.toAddGuestsView = function() {
+			if (!this.loginError) this.currentSection = 5;
+		}
 		//back button
 		this.back = function() {
 			//hide the guests in viewgusts
@@ -549,20 +552,20 @@
 		// }
 
 		// //* ADD SPECIAL HOURS FORM */
-		// var range = function(start, end, up){
-		// result = [];
-		// if (up === 1){
-		// 	for(var i = start; i <= end; i++){
-		// 	result.push(i);
-		// 	}
-		// }
-		// else{
-		// 	for(var i = end; i >= start; i--){
-		// 	result.push(i)
-		// 	}
-		// };
-		// return result
-		// }
+		var range = function(start, end, up){
+		result = [];
+		if (up === 1){
+			for(var i = start; i <= end; i++){
+			result.push(i);
+			}
+		}
+		else{
+			for(var i = end; i >= start; i--){
+			result.push(i)
+			}
+		};
+		return result
+		}
 
 		// this.years = range(2015, 2200, 1);
 	 // 	this.monthDayPairs = {
@@ -785,6 +788,84 @@
 
 		// 	});
 		// }
+
+		/***************/
+		/*  ADD GUESTS */
+		/***************/
+
+		this.attempted = false;
+		this.createSuccess = false;
+
+		this.years = range(1900, this.today.getFullYear()-14, 0);
+		this.monthDayPairs = {
+			0 : range(1, 31, 1),
+			1 : range(1, 28, 1),
+			2 : range(1, 31, 1),
+			3 : range(1, 30, 1), 
+			4 : range(1, 31, 1),
+			5 : range(1, 30, 1),
+			6 : range(1, 31, 1),
+			7 : range(1, 31, 1),
+			8 : range(1, 30, 1),
+			9 : range(1, 31, 1),
+			10 : range(1, 30, 1),
+			11 : range(1, 31, 1)		
+		}
+
+		this.updateDates = function(){
+			myYear = $("#dobyear").val();
+			myMonth = $("#dobmonth").val();
+			myCurrentDate = $("#dobdate").val();
+			myDates = range(1, 31, 1);
+
+			if(myYear != '?' && myMonth != '?'){
+				myDates = this.monthDayPairs[myMonth];
+				if(myYear % 4 === 0 && myMonth == 2){
+					myDates = range(1, 29, 1);
+				}
+			}
+			$("#dobdate").empty();
+			$("#dobdate").append("<option></option>");
+
+			for(var i = 1; i <= myDates.length; i++){
+				$("#dobdate").append("<option value = " + String(i) + ">" + String(i) + "</option>");
+			}
+			if(myDates.indexOf(Number(myCurrentDate)) >= 0){
+				$("#dobdate").val(myCurrentDate);
+			}
+
+		}
+
+		this.create = function(user){
+		if(user && user.firstName && user.lastName && user.dob && user.dob.year && user.dob.month && user.dob.day){
+			$http.post('/guest/add', {
+				firstName: user.firstName,
+				lastName: user.lastName,
+				birthday: user.dob
+			}).success(function(data, status, headers, config){
+				if(data.content == 'done'){
+					me.createSuccess = true;	
+				}
+				else if (data.content == 'exists'){
+					window.alert('this guest is already in the database');
+				}
+				else{
+					window.alert('something went wrong. please contact cfgrp@mit.edu');
+				}
+
+			}).error(function(data, status, headers, config){
+				console.log(status)
+			});
+		} else {
+			this.attempted = true;
+		}
+		};
+
+		this.resetCreate = function(){
+			me.attempted = false;
+			$scope.user = {};
+			me.createSuccess = false;
+		};
 
 	}); //end of angular controller
 
