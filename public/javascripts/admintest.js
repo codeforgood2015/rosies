@@ -198,6 +198,34 @@
 			return military;
 		}
 
+	  //HELPER FUNCTION FOR BUTTON RENDERING
+	  //changes an array [String, String] where strings are times in military time
+	  //to a readable string 'TIME TO TIME'
+	  this.timeArrayToString = function(timeArray){
+      start = timeArray[0].split(':');
+      end = timeArray[1].split(':');
+      if(Number(start[0]) > 12){
+        start[0] = Number(start[0]) - 12;
+        start[0] = String(start[0]);
+        start[2] = 'PM';
+      } else if (Number(start[0]) == 12){
+        start[2] = 'PM'
+      } else{
+        start[2] = 'AM';
+      }
+      
+      if(Number(end[0]) > 12){
+        end[0] = Number(end[0]) - 12;
+        end[0] = String(end[0]);
+        end[2] = 'PM';
+      } else if (Number(end[0]) == 12){
+        end[2] = 'PM';
+      } else{
+        end[2] = 'AM';
+      }
+      return(start[0] + ':' + start[1] + ' ' + start[2] + ' to ' + end[0] + ':' + end[1] + ' ' + end[2]);
+	  };
+
 		//arrays to store guest objects for each day
 		//format is _time: [list of guests], where _time is a rule object returned from query, and each guest is an appointment object
 		$scope.todayGuests = {};
@@ -217,7 +245,7 @@
 		//callback functions used in getTodayGuests and getTomorrowGuests below
 		//populate the arrays in todayGuests and tomorrowGuests with the guests returned from the database query
 		this.getTodayGuestsCallback = function(guests) {
-			for(var i = 0; i <guests.length; i++){
+			for(var i = 0; i <guests.length; i++) {
 				$scope.todayGuests[guests[i].timeslot].push(guests[i]); //match each guest to the time they belong in 
 			}
 		}			

@@ -25,7 +25,7 @@ passport.use('oauth', new OAuth2Strategy({
 // until we get Salesforce working, create a local strategy for
 // authenticating users with accounts in our database.
 // Note that we need two authentication flows for admins compared to guests
-passport.use('guest', new LocalStrategy(function(username, password, done) {
+/*passport.use('guest', new LocalStrategy(function(username, password, done) {
 	console.log('authenticating');
 	//for now, make all usernames uppercase because otherwise things are sad :(
 	username.toUpperCase();
@@ -42,7 +42,7 @@ passport.use('guest', new LocalStrategy(function(username, password, done) {
 		}
 		return done(null, guest);
 	});
-}));
+}));*/
 
 passport.use('admin', new LocalStrategy(function(username, password, done) {
 	console.log('test');
@@ -80,22 +80,35 @@ router.post('/guest', function(req, res) {
 		utils.sendSuccessResponse(res, 'New user created');
 	});
 });*/
+var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 router.post('/guest', function(req, res) {
+	birthday = new Date(req.body.dob.year, months.indexOf(req.body.dob.month), req.body.dob.day);
+	console.log(birthday)
 	var data = {
-		firstName: req.body.firstName,
-		lastName: req.body.lastName,
-		birthday: req.body.dob
+		firstName: req.body.firstName.toUpperCase(),
+		lastName: req.body.lastName.toUpperCase(),
+		birthday: birthday
 	};
-	checkUser(data, function(err, status) {
-		if (err) {
+	Guest.findOne(data, function(err, guest){
+		if(err){
 			utils.sendErrResponse(res, 403, err);
-		} else {
-			console.log('sending success')
-			console.log(status)
-			utils.sendSuccessResponse(res, {available: status});
 		}
-	});
+		else if(!guest){
+			utils.sendSuccessResponse(res, {available: 'notFound'});
+		}
+		else{
+			checkUser(data, function(err, status) {
+				if (err) {
+					utils.sendErrResponse(res, 403, err);
+				} else {
+					console.log('sending success')
+					console.log(status)
+					utils.sendSuccessResponse(res, {available: status});
+				}
+			});
+		}
+	})
 });
 
 router.get('/guest', function(req, res) {
@@ -105,13 +118,10 @@ router.get('/guest', function(req, res) {
 
 var checkUser = function(data, callback) {
 	console.log(data)
-	Appointment.find({
-		firstName: data.firstName,
-		lastName: data.lastName
-	}, function(err, appointments) {
-		console.log(appointments)
-		if (appointments.length > 0) {
-			callback(err, false);
+	Appointment.findOne(data, function(err, appointment) {
+		console.log(appointment)
+		if (appointment) {
+			callback(err, [appointment.date.getTime(), appointment.timeslot]);
 		} else {
 			callback(err, true);
 		}

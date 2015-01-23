@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var Rule = require('../models/rule').Rule;
 var Appointment = require('../models/appointment').Appointment;
-var Timeslot = require('../models/timeslot').Timeslot;
 var utils = require('../utils/utils');
 var moment = require('moment'); //for parsing and handling dates
 
@@ -166,15 +165,20 @@ router.put('/:id', function(req, res) {
 	})
 });
 
-// /*******************/
-// /* DELETE Requests */
-// /*******************/
-
-// //remove special hours rule
-// router.put('/special/delete', function(req, res) {
-
-// });
-
+/*
+	DELETE /:id - Remove the rules specified by the Object ID
+	Returns
+	- rule: the deleted rule document
+*/
+router.delete('/:id', function(req, res) {
+	Rule.remove({id: req.params.id}, function(err, rule) {
+		if (err) {
+			utils.sendErrResponse(res, 404, err);
+		} else {
+			utils.sendSuccessResponse(res, rule);
+		}
+	});
+});
 
 /* Export */
 module.exports = router;
