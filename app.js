@@ -109,6 +109,7 @@ var admin = require('./routes/admin');
 var dev = require('./routes/dev');
 var appointments = require('./routes/appointments');
 var rules = require('./routes/rules');
+var guest = require('./routes/guest');
 
 var app = express();
 
@@ -129,7 +130,8 @@ app.get('/dev', dev.testDev);
 app.use('/admin', admin);
 app.use('/appointments', appointments);
 app.use('/rules', rules);
-//this function needs to pass through timeslots
+app.use('/guest', guest);
+
 app.get('/', function(req, res) {
 	res.render('NewReservation')
 });

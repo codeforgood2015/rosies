@@ -50,6 +50,10 @@
 				<button class='select-action-button' ng-click='ctrl.toAccountsView();'>
 					Manage admin accounts.
 				</button>
+				<br>
+				<button class = 'select-action-button' ng-click = 'ctrl.toAddGuestsView();'>
+					Add guests.
+				</button>
 			</div>
 			
 			<!-- Interactive view for the current guest signups for today or tomorrow. JQuery and show/hidden tags -->
@@ -255,7 +259,35 @@
 						<button ng-click='ctrl.hideNewAdminAccountView();'>Cancel</button>
 					</form>
 					<p ng-show='ctrl.showAdminErrorUsername'>The username you have requested is already taken, select a different one.</p>
-					<p ng-show='ctrl.showAdminErrorPassword'>Please ensure that you have typed the same password twice.
+					<p ng-show='ctrl.showAdminErrorPassword'>Please ensure that you have typed the same password twice.</p>
+				</div>
+			</div>
+
+			<div class = 'guests' ng-show = 'ctrl.currentSection === 5'>
+				<form name = 'guestForm' novalidate ng-show = '!ctrl.createSuccess'>
+				<h3>Add a guest</h3>
+				<span class = "label"> First Name: </span><input name = "first" type = "text" ng-model = "user.firstName" placeholder = "type here" required = ""><br>
+				<span class = "error" ng-show = "ctrl.attempted && !user.firstName">please enter guest's first name</span><br>
+
+				<span class = "label"> Last Name: </span><input name = "last" type = "text" ng-model = "user.lastName" placeholder = "type here" required = ""><br>
+				<span class = "error" ng-show = "ctrl.attempted && !user.lastName">please enter guest's last name</span><br>
+
+				<span class = "label"> Date of Birth: </span>
+
+				<select name = "year" id = "dobyear" ng-model = "user.dob.year" ng-change = "ctrl.updateDates()" ng-options = "year for year in ctrl.years" required = ""></select>
+				<select name = "month" id = "dobmonth" ng-model = "user.dob.month" ng-change = "ctrl.updateDates()" ng-options = "month for month in ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November', 'December']" required = ""></select>
+				<select name = "day"id = "dobdate" ng-model = "user.dob.day"required = ""><option ng-repeat = "day in ctrl.monthDayPairs[0]" value = {{day}}>{{day}}</options></select><br>
+				<span class = "error" ng-show = "ctrl.attempted && (!user.dob.day || !user.dob.month || !user.dob.year)">please fill out guest's date of birth</span>
+				<br><br>
+				<button type = "submit" class = "button-1" ng-click = "ctrl.create(user)">create</button>
+				</form>
+				<div ng-show = 'ctrl.createSuccess'>
+				<h3>Success!</h3>
+				Added a guest.<br><br>
+				First Name: {{user.firstName}}<br>
+				Last Name: {{user.lastName}}<br>
+				Date of Birth: {{user.dob.year}} {{user.dob.month}} {{user.dob.day}}<br>
+				<button class = 'button-1' ng-click = 'ctrl.resetCreate()'>add another</button>
 				</div>
 			</div>
 		</div>
