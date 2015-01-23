@@ -74,76 +74,72 @@
 		this.toggleToday = function() {
 			this.showToday = !this.showToday;
 			//hide all guests in today section
-			this.showTodayTimes = makeTimeObjects(this.todayTimes());
+			this.showTodayTimes = makeTimeObjects(this.todayTimes);
 		}
 		this.toggleTomorrow = function() {
 			this.showTomorrow = !this.showTomorrow;
 			//hide all guests in tomorrow section
-			this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes());
+			this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes);
 		}
 
-		//FAKE DATA ... the below two functions should actually figure out the times for today and tomorrow
-		//grab start and end times, display them with "9:00 AM - 10:00 AM"
-		this.todayTimes = function() {
-			return ["9:00 AM", "10:00 AM", "11:00 AM", "4:30 PM", "5:30 PM"];
-		}
-		this.tomorrowTimes = function() {
-			return ["9:00 AM", "10:00 AM", "11:00 AM", "4:30 PM", "5:30 PM"];
-		}
+		//HELPER FUNCTION FOR BUTTON RENDERING
+		//changes an array [String, String] where strings are times in military time
+		//to a readable string 'TIME TO TIME'
+		this.timeArrayToString = function(timeArray){
+			start = timeArray[0].split(':');
+			end = timeArray[1].split(':');
+			if(Number(start[0]) > 12){
+				start[0] = Number(start[0]) - 12;
+				start[0] = String(start[0]);
+				start[2] = 'PM';
+			}
+			else if (Number(start[0]) == 12){
+				start[2] = 'PM'
+			}
+			else{
+				start[2] = 'AM';
+			}
+			if(Number(end[0]) > 12){
+				end[0] = Number(end[0]) - 12;
+				end[0] = String(end[0]);
+				end[2] = 'PM';
+			}
+			else if (Number(end[0]) == 12){
+				end[2] = 'PM';
+			}
+			else{
+				end[2] = 'AM';
+			}
+			return(start[0] + ':' + start[1] + ' ' + start[2] + ' to ' + end[0] + ':' + end[1] + ' ' + end[2])
+		};
 
-		this.toMilitary = {
-			'9:00 AM': '9:00',
-			'10:00 AM': '10:00',
-			'11:00 AM': '11:00',
-			'12:00 PM': '12:00',
-			'4:30 PM': '16:30',
-			'5:30 PM': '17:30',
-		}
 
-		this.toNextMilitary = {
-			'9:00 AM': '10:00',
-			'10:00 AM': '11:00',
-			'11:00 AM': '12:00',
-			'12:00 PM': '13:00',
-			'4:30 PM': '17:30',
-			'5:30 PM': '18:30',
-		}
-
-
-		//converts string of form 'h:mm AM|PM' to 'h:mm' military time; e.g. "5:30 PM" -> "17:30"
-		this.convertToMilitary = function(time) {
-			//get hours and minutes with regex
-			var hours = Number(time.match(/^(\d+)/)[1]);
-			var minutes = Number(time.match(/:(\d+)/)[1]);
-			var ampm = time.match(/\s(.*)$/)[1];
-			//convert hours to 0 if it's 12 AM, and convert any afternoon times by adding 12
-			if (ampm === 'AM' && hours === 12) {hours -= 12};
-			if (ampm === 'PM' && hours < 12) {hours += 12};
-			var sHours = hours.toString();
-			var sMinutes = minutes.toString();
-			var military = sHours + ":" + sMinutes;
-			return military;
-		}
+		//Default Times
+		//TODO: update when admin selects the option to view guests
+		this.todayTimes = [['9:00', '10:00'], ['10:00', '11:00'], ['11:00', '12:00'], ['16:30', '17:30'], ['17:30', '18:30']];
+		
+		this.tomorrowTimes = [['9:00', '10:00'], ['10:00', '11:00'], ['11:00', '12:00'], ['16:30', '17:30'], ['17:30', '18:30']];
 
 		$scope.todayGuests = {};
 		$scope.tomorrowGuests = {};
 
-		for(var i = 0; i < this.todayTimes().length; i++){
-			$scope.todayGuests[this.convertToMilitary(this.todayTimes()[i])] = [];
+		for(var i = 0; i < this.todayTimes.length; i++){
+			$scope.todayGuests[this.todayTimes[i]] = [];
 		}
 
-		for(var i = 0; i < this.tomorrowTimes().length; i++){
-			$scope.tomorrowGuests[this.convertToMilitary(this.tomorrowTimes()[i])] = [];
+		for(var i = 0; i < this.tomorrowTimes.length; i++){
+			$scope.tomorrowGuests[this.tomorrowTimes[i]] = [];
 		}
 
 		this.getTodayGuestsCallback = function(guests) {
+			console.log($scope.todayGuests)
 			for(var i = 0; i <guests.length; i++){
-				$scope.todayGuests[guests[i].timeslot[0]].push(guests[i]);
+				$scope.todayGuests[guests[i].timeslot].push(guests[i]);
 			}
 		}			
 		this.getTomorrowGuestsCallback = function(guests) {
 			for(var i = 0; i <guests.length; i++){
-				$scope.tomorrowGuests[guests[i].timeslot[0]].push(guests[i]);
+				$scope.tomorrowGuests[guests[i].timeslot].push(guests[i]);
 			}			
 		}
 
@@ -174,10 +170,10 @@
 		  	var day = today.getDate();
 
 		  	var sendDate = new Date(year, month, day, 0, 0, 0, 0).getTime();
-		  	var timeslot = [this.toMilitary[_time], this.toNextMilitary[_time]];
+		  	var timeslot = _time;
 		  	$http.put('/appointments/time', {date: sendDate, timeslot: timeslot})
 		  	.success(function(data, status, headers, config) {
-		  		console.log(data)
+		  		$scope.todayGuests[_time] = [];
 		  		callback(data);
 		  	}).error(function(data, status, headers, config) {
 			  	console.log(data);
@@ -209,10 +205,10 @@
 		  	var month = tomorrow.getMonth();
 		  	var day = tomorrow.getDate();
 		  	var sendDate = new Date(year, month, day, 0, 0, 0, 0).getTime();
-		  	var timeslot = [this.toMilitary[_time], this.toNextMilitary[_time]];
+		  	var timeslot = _time;
 			$http.put('/appointments/time', {date: sendDate, timeslot: timeslot})
 			.success(function(data, status, headers, config) {
-		  		$scope.tomorrowGuests[me.toMilitary[_time]] = [];
+		  		$scope.tomorrowGuests[_time] = [];
 		  		callback(data);
 		  	}).error(function(data, status, headers, config) {
 		  		console.log(data);
@@ -231,8 +227,8 @@
 		}
 
 		//these two should be populated with the appropriate time slots for today and tomorrow, along with whether or not to currently display them
-		this.showTodayTimes = makeTimeObjects(this.todayTimes());
-		this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes());
+		this.showTodayTimes = makeTimeObjects(this.todayTimes);
+		this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes);
 
 		this.showGuests = function(day, _time) {
 			//determine whether or not the guests for day and time should be shown right now
@@ -291,8 +287,8 @@
 		this.resetShowTimesAndGuests = function() {
 			this.showToday = false;
 			this.showTomorrow = false;
-			this.showTodayTimes = makeTimeObjects(this.todayTimes());
-			this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes());
+			this.showTodayTimes = makeTimeObjects(this.todayTimes);
+			this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes);
 		}
 
 		//hides or shows all reservations for a given day
@@ -301,8 +297,8 @@
 			if(day == 'today'){
 				if(hideOrShow == 'Show All'){
 					me.showToday =  true;
-					for(var i = 0; i < me.todayTimes().length; i++){
-						me.showGuests("today", me.todayTimes()[i]);
+					for(var i = 0; i < me.todayTimes.length; i++){
+						me.showGuests("today", me.todayTimes[i]);
 					}
 					$('#show' + day).text('Hide All');
 				}
@@ -316,8 +312,8 @@
 			else if (day == 'tomorrow'){
 				if(hideOrShow == 'Show All'){
 					me.showTomorrow = true;
-					for(var i = 0; i < me.tomorrowTimes().length; i++){
-						me.showGuests("tomorrow", me.tomorrowTimes()[i]);
+					for(var i = 0; i < me.tomorrowTimes.length; i++){
+						me.showGuests("tomorrow", me.tomorrowTimes[i]);
 					}
 					$('#show' + day).text('Hide All');
 

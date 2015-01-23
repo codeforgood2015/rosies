@@ -65,10 +65,10 @@
 					<!-- Today -->
 					<li> <a href='#' ng-click='ctrl.toggleToday();'>Today </a> <button class= 'showDays' id = 'showtoday' ng-click = 'ctrl.showAll("today")'>Show All</button>
 						<ul class='today-times' ng-show='ctrl.showToday'> 							
-							<li ng-repeat='time in ctrl.todayTimes();'> <a href='#' ng-click='ctrl.showGuests("today", time);'>  
-								{{time}} </a>
+							<li ng-repeat='time in ctrl.todayTimes;'> <a href='#' ng-click='ctrl.showGuests("today", time);'>  
+								{{ctrl.timeArrayToString(time)}} </a>
 								<table class='today-guests'>
-									<tr ng-repeat='guest in todayGuests[ctrl.toMilitary[time]]'> 
+									<tr ng-repeat='guest in todayGuests[time]'> 
 											<td>Name: {{guest.firstName}} {{guest.lastName}}</td> <td>Bag: {{ctrl.displayYesNo(guest.premade);}}</td>
 									</tr>
 								</table>
@@ -78,10 +78,10 @@
 					<!-- Tomorrow -->
 					<li> <a href='#' ng-click='ctrl.toggleTomorrow();'>Tomorrow </a> <button class = 'showDays' id = 'showtomorrow' ng-click = 'ctrl.showAll("tomorrow")'>Show All</button>
 						<ul class='tomorrow-times' ng-show='ctrl.showTomorrow'> 
-							<li ng-repeat='time in ctrl.tomorrowTimes();'> <a href='#' ng-click='ctrl.showGuests("tomorrow", time);'>  
-								{{time}} </a>
+							<li ng-repeat='time in ctrl.tomorrowTimes;'> <a href='#' ng-click='ctrl.showGuests("tomorrow", time);'>  
+								{{ctrl.timeArrayToString(time)}} </a>
 								<table class='tomorrow-guests'>
-									<tr ng-repeat='guest in tomorrowGuests[ctrl.toMilitary[time]]'> 
+									<tr ng-repeat='guest in tomorrowGuests[time]'> 
 										<td>Name: {{guest.firstName}} {{guest.lastName}}</td> <td>Bag: {{ctrl.displayYesNo(guest.premade);}}</td>
 									</tr>
 								</table>
