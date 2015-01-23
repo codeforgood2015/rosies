@@ -96,7 +96,14 @@ router.put('/', function(req, res) {
 				if (result) {
 					req.session.name = req.body.username;
 					req.session.userId = admin._id;
-					utils.sendSuccessResponse(res, 'Logged in.');
+					/*req.session.save(function(err) {
+						if (err) {
+							utils.sendErrResponse(res, 404, err);
+						} else {
+							utils.sendSuccessResponse(res, req.session);
+							//utils.sendSuccessResponse(res, 'Logged in.');
+						}
+					});*/utils.sendSuccessResponse(res, 'Logged in');
 				} else {
 					utils.sendErrResponse(res, 401, 'Incorrect password.');
 				}
@@ -111,16 +118,24 @@ router.get('/check', function(req, res) {
 	utils.sendSuccessResponse(res, {name: req.session.name, id: req.session.userId});
 });
 
+router.get('/session', function(req, res) {
+	utils.sendSuccessResponse(res, req.session);
+});
+
 /*
 	PUT /admin/logout - logs out a user and clears session cookies
 	Returns: 
 	String: 'Successfully logged out.'
 */
-router.put('/logout', function(req, res) {
-	req.session.name = null;
-	req.session.userId = null;
-	utils.sendSuccessResponse(res, 'Successfully logged out.')
-})
+router.get('/logout', function(req, res) {
+	if (req.session.name) {
+		req.session.name = null;
+		req.session.userId = null;
+		utils.sendSuccessResponse(res, 'Successfully logged out.');
+	} else {
+		utils.sendSuccessResponse(res, 'Already logged out.');
+	}
+});
 
 // checks whether a given username is taken or not; might need to be fixed 
 //returns an error response if username is taken, returns success response with valid:true if username is available

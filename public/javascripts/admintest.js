@@ -10,6 +10,14 @@
 		/***********/
 		this.loginError = false;
 		this.login = function() {
+			// TESTING CODE TO CHECK FUNCTIONALITY OF ADMIN AUTHORIZATION
+			/*$http.put('/admin', {username: "'test'", password:"'test'"})
+				.success(function(data, status, headers, config) {
+					console.log(data);
+				})
+				.error(function(data, status, headers, config){
+
+				});*/
 			var valid = true; //TODO actually validate login information
 			if (valid) {
 				this.toSelectAction();

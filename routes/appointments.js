@@ -138,6 +138,7 @@ router.post('/cancel', function(req, res){
 	Appointment.find(data).remove().exec(
 		utils.sendSuccessResponse(res, 'done'))
 })
+
 /*
 	GET /:time - given an input time as a URL param, return status of timeslot
 	Request body/Parameters:

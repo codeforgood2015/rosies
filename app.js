@@ -1,8 +1,10 @@
 var express = require('express');
 var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
 var path = require('path');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 var http = require('http');
 var Agenda = require('agenda');
 var Rule = require('./models/rule').Rule;
@@ -112,12 +114,6 @@ var app = express();
 
 app.set('port', process.env.PORT || 3000);
 
-app.use(session({
-	secret: "rosie's place",
-	resave: false,
-	saveUninitialized: true
-}));
-
 // setup view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -126,6 +122,17 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/public', express.static(path.join(__dirname, 'public')));
+
+app.use(cookieParser());
+app.use(session({
+	secret: "rosie's place",
+	resave: false,
+	saveUninitialized: true,
+	store: new MongoStore({
+		mongooseConnection: mongoose.connection
+	})
+}));
+
 
 app.use('/auth', auth);
 app.get('/dev', dev.testDev);
