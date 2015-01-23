@@ -230,30 +230,32 @@
 			<!-- Scrollable table with current admins and delete buttons-->
 			<!-- Form for new admin -->
 			<div class='accounts' ng-show='ctrl.currentSection === 4'>
+				<button ng-click='ctrl.getAdminUsernames();'> Refresh Admin Accounts </button>
 				<h3>Manage admin accounts</h3>
 				<table class='admin-list' >
-					<tr ng-repeat='admin in ctrl.getAdminUsernames()'>
-						<td width='50%'> {{admin}} </td>
-						<td width='50%'> <button ng-click='ctrl.removeAdmin(admin)'> remove </button></td>
+					<tr ng-repeat='admin in ctrl.allUsernames'>
+						<td width='50%'> {{admin.username}} </td>
+						<td width='50%'> <button ng-click='ctrl.removeAdmin(admin._id)'> remove </button></td>
 					</tr>
 				</table>
 				<button ng-click='ctrl.toAddNewAdmin();'>Add New Admin Account</button>
 				<div class='new-admin' ng-show='ctrl.showNewAdmin'>
 					<form>
 						new username:<input id='new-admin-username' type='text'></input>
-						<p class='admin-error-username' ng-show="ctrl.checkValidUsername();">That username is available!</p>
-						<p class='admin-error-username' ng-show='!ctrl.checkValidUsername();'>That username is already taken, please choose another one.</p>
+						<!--<p class='admin-error-username' ng-show="$('#new-admin-username').val().length>0 && ctrl.validUsername)">That username is available!</p>
+						<p class='admin-error-username' ng-show='!ctrl.validUsername;'>That username is already taken, please choose another one.</p>-->
 						<br>
 						new password:<input id='new-admin-password' type='password'></input>
 						<br>
 						confirm new password:<input id='new-admin-confirm-password' type='password'></input>
 						<br>
-						<input class='not-disappear' id='new-admin' type='button' value='Save New Admin Account' ng-click="ctrl.addNewAdmin();"></input>
-						<button ng-click='ctrl.cancelNewAdminAccount();'>Cancel</button>
+						admin type, 'admin' or 'volunteer': <input id='new-admin-type' type='text'></input>
+						<br>
+						<button class='not-disappear' id='new-admin' ng-click="ctrl.addNewAdmin();">Save New Admin Account</button>
+						<button ng-click='ctrl.hideNewAdminAccountView();'>Cancel</button>
 					</form>
-					<p> hello:{{ctrl.checkValidUsername("");}} </p>
-					<p ng-show='ctrl.showAdminError("username");'>The username you have requested is already taken, select a different one.</p>
-					<p ng-show='ctrl.showAdminError("password");'>Please ensure that you have typed the same password twice.</p>
+					<p ng-show='ctrl.showAdminErrorUsername'>The username you have requested is already taken, select a different one.</p>
+					<p ng-show='ctrl.showAdminErrorPassword'>Please ensure that you have typed the same password twice.
 				</div>
 			</div>
 		</div>

@@ -36,6 +36,7 @@
 		};
 		this.toAccountsView = function() {
 			if (!this.loginError) this.currentSection = 4;
+			this.getAdminUsernames();
 		};
 		//back button
 		this.back = function() {
@@ -50,7 +51,8 @@
 			}
 			//if the user goes back, the editing and adding buttons disappear and their fields should be cleared
 			//this.showEditDefaultHours = false;
-			this.showNewAdmin = false;
+			//hide the edit admin side
+			this.hideNewAdminAccountView();
 			$("input :not(type=text)").val('');
 			//TODO: remove the additional slots that have been created
 
@@ -77,6 +79,7 @@
 		}
 
 		//FAKE DATA ... the below two functions should actually figure out the times for today and tomorrow
+		//grab start and end times, display them with "9:00 AM - 10:00 AM"
 		this.todayTimes = function() {
 			return ["9:00 AM", "10:00 AM", "11:00 AM", "4:30 PM", "5:30 PM"];
 		}
@@ -627,66 +630,91 @@
 		/*  ADMIN PAGE */
 		/***************/
 		//admin account stuff, returns list of admin accounts, retrieved from database
+
+		this.allUsernames = []; //to be displayed in the list, populated by getAdminUsernames()
+
+		//populates this.allUsernames by querying database
+		//should be called once when page loads, and whenever an admin account is successfully added or deleted, so that display represents most updated admin list
 		this.getAdminUsernames = function() { 
-			return ['admin', 'account1', 'account2', 'account3', 'scroll!!!!', 'account5', 'im bored', 'clearly',
-			'hello world', 'hehehehehe', 'code for good', 'yayayayayay', 'rosies place', 'these are getting longer haha'];
+			//get request should return object 
+			$http.get('/admin/usernames').success(function(data, status, headers, config) {
+				me.allUsernames = data.content; //data.content is an array of all usernames in the database currently
+			}).error(function(data, status, headers, config) {
+
+			});
 		};
 
-		this.removeAdmin = function(username) {
-			//remove from database		
+		//handler connected to each 'remove' button, that will remove the admin account associated with adminID 
+		this.removeAdmin = function(adminID) {
+			//for some reason doing $http.delete didn't work, so doing it as a post
+			$http.post('/admin/delete', {_id: adminID}).success(function(data, status, headers, config) {
+				me.getAdminUsernames(); //refreshes the admin list to reflect this delete
+			}).error(function(data, status ,headers, config) {
+				//popup an error message or something? haven't decided
+			});	
 		};
 
 		this.showNewAdmin = false; //change to true to display the new admin form
 
+		//called on ng-click for the add admin button
 		this.toAddNewAdmin = function() {
 			this.showNewAdmin= true;
 		};
 
-		this.addNewAdmin = function() {
-			//read the text fields
-			var username = $('.new-admin-username').value();
-			var pass = $('.new-admin-password').value();
-			var passConfirm = $('.new-admin-password').value();
-			//TODO: post request to database
-			// $.ajax('/', {type: "POST", data:{username: username, password:password, confirm:passConfirm}}
-			// 	).done(function(data, textStatus, jqXHR) {
-			// 		if (data.success) {
-			// 			console.log('Successfully added new admin!');
-			// 		} else {
-			// 			if (data.err === "This username already exists") {
+		this.showAdminErrorUsername = false;
+		this.showAdminErrorPassword = false;
 
-			// 			} else if (data.err === "Password doesn't match") {
-			// 				this.showAdminErrorPassword = true;
-			// 			}
-			// 		}
-			// }); 
-			
+		//called when user clicks 'save new admin account' button
+		this.addNewAdmin = function() {
+			//read the input text
+			var newUsername = $('#new-admin-username').val();
+			var newPass = $('#new-admin-password').val();
+			var newPassConfirm = $('#new-admin-confirm-password').val();
+			var newType = $('#new-admin-type').val();
+
+			if(newPass !== newPassConfirm) {
+				this.showAdminErrorPassword = true;
+				return;
+			}
+
+			var newAdmin = {username: newUsername, password: newPass, type: newType};
+			console.log(newAdmin);
+			//post request to database
+			$http.post('/admin', newAdmin).success(function(data, status, headers, config) {
+				me.getAdminUsernames(); //refresh the admin list to reflect newly added account
+			}).error(function(data, status, headers, config) {
+				if (status === '403') {
+					me.showAdminErrorUsername = true;
+				} 
+			});			
 		};
 
-		this.cancelNewAdminAccount = function() {
+		this.hideNewAdminAccountView = function() {
 			this.showNewAdmin = false;
-			//clear text fields
 			$('#new-admin-username').val('');
 			$('#new-admin-password').val('');
 			$('#new-admin-confirm-password').val('');
+			$('#new-admin-type').val('');
+			this.showAdminErrorPassword = false;
+			this.showAdminErrorUsername = false;			
 		}
 
-		//TODO: need help with this
-		this.checkValidUsername = function() {
-			var check_user = $('#new-admin-username').val();
-			// $.ajax({url:'/check-username', data:{username: check_user}}).done(function(data) {
-			// 	return data.valid;
-			// });
-		}
+		// this.validUsername = true;
 
+		// this.checkValidUsername = function() {
+		// 	var check_user = $('#new-admin-username').val();
+		// 	$http.post('/admin/check-username', {username: check_user}).success(function(data, status, headers, config) {
+		// 		if (data.content.valid) {
+		// 			this.validUsername = true;
+		// 		} else {
+		// 			this.validUsername = false;
+		// 		}
+		// 	}).error(function(data, status, headers, config) {
 
-		this.showAdminErrorUsername = function() {
-				return !this.checkValidUsername();
-		}
-
-		this.showAdminErrorPassword = false;
+		// 	});
+		// }
 
 	}); //end of angular controller
 
 
-}()); //end and run function
+}()); //end of closure, and run function

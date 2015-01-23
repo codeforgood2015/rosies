@@ -27,10 +27,23 @@ router.get('/usernames', function(req, res) {
 			utils.sendErrResponse(res, 404, err);
 		} else {
 			var usernames = [];
-			for (admin in admins) {
-				usernames.push({username: admin.username, _id: admin._id});
+			for (var i = 0; i < admins.length; i ++) {
+				usernames.push({username: admins[i].username, _id: admins[i]._id});
 			}
 			utils.sendSuccessResponse(res, usernames);
+		}
+	});
+});
+
+
+//DELETE /admin/delete - deletes an admin account based on its _id
+router.post('/delete', function(req, res) {
+	var myID = req.body._id;
+	Admin.remove({_id:myID}, function(err, admin) {
+		if (err) {
+			utils.sendErrResponse(res, 400, 'Could not remove account');
+		} else {
+			utils.sendSuccessResponse(res, admin);
 		}
 	});
 });
@@ -52,6 +65,8 @@ router.post('/', function(req,res) {
 			admin.save(function(err) {
 				if (err) {
 					utils.sendErrResponse(res, 404, err);
+				} else {
+					utils.sendSuccessResponse(res, admin);
 				}
 			});
 		}
