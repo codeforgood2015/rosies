@@ -48,7 +48,7 @@
 
 <div ng-show = "currentSelect === 1">
 <h3>Select a Time</h3>
-<div ng-repeat="time in timeSlots[ctrl.dateIndex]"><button class = "button1" class = {{time[1]}} ng-click="ctrl.selectTime(time); ctrl.next()">{{ctrl.timeArrayToString(time[0])}}</button></div>
+<div><button ng-repeat="time in timeSlots[ctrl.dateIndex]" class = "button1 {{time[1]}}" ng-disabled = {{ctrl.disableClosed(time)}} ng-click="ctrl.selectTime(time); ctrl.next()">{{ctrl.timeArrayToString(time[0])}}</button></div>
 </div>
 
 <div ng-show = "currentSelect === 2">
