@@ -61,10 +61,10 @@
 					<!-- Today -->
 					<li> <a href='#' ng-click='ctrl.toggleToday();'>Today </a> <button class= 'showDays' id = 'showtoday' ng-click = 'ctrl.showAll("today")'>Show All</button>
 						<ul class='today-times' ng-show='ctrl.showToday'> 							
-							<li ng-repeat='time in ctrl.todayTimes();'> <a href='#' ng-click='ctrl.showGuests("today", time);'>  
-								{{time}} </a>
+							<li ng-repeat='time in ctrl.todayTimes;'> <a href='#' ng-click='ctrl.showGuests("today", time);'>  
+								{{time.time[0]}}-{{time.time[1]}} </a>
 								<table class='today-guests'>
-									<tr ng-repeat='guest in todayGuests[ctrl.toMilitary[time]]'> 
+									<tr ng-repeat='guest in todayGuests[time.time]'> 
 											<td>Name: {{guest.firstName}} {{guest.lastName}}</td> <td>Bag: {{ctrl.displayYesNo(guest.premade);}}</td>
 									</tr>
 								</table>
@@ -74,10 +74,10 @@
 					<!-- Tomorrow -->
 					<li> <a href='#' ng-click='ctrl.toggleTomorrow();'>Tomorrow </a> <button class = 'showDays' id = 'showtomorrow' ng-click = 'ctrl.showAll("tomorrow")'>Show All</button>
 						<ul class='tomorrow-times' ng-show='ctrl.showTomorrow'> 
-							<li ng-repeat='time in ctrl.tomorrowTimes();'> <a href='#' ng-click='ctrl.showGuests("tomorrow", time);'>  
-								{{time}} </a>
+							<li ng-repeat='time in ctrl.tomorrowTimes;'> <a href='#' ng-click='ctrl.showGuests("tomorrow", time);'>  
+								{{time.time[0]}}-{{time.time[1]}} </a>
 								<table class='tomorrow-guests'>
-									<tr ng-repeat='guest in tomorrowGuests[ctrl.toMilitary[time]]'> 
+									<tr ng-repeat='guest in tomorrowGuests[time.time]'> 
 										<td>Name: {{guest.firstName}} {{guest.lastName}}</td> <td>Bag: {{ctrl.displayYesNo(guest.premade);}}</td>
 									</tr>
 								</table>
@@ -234,8 +234,9 @@
 				<h3>Manage admin accounts</h3>
 				<table class='admin-list' >
 					<tr ng-repeat='admin in ctrl.allUsernames'>
-						<td width='50%'> {{admin.username}} </td>
-						<td width='50%'> <button ng-click='ctrl.removeAdmin(admin._id)'> remove </button></td>
+						<td width='33%'> {{admin.username}} </td>
+						<td width='33%'> ({{admin.type}}) </td>
+						<td width='33%'> <button ng-click='ctrl.removeAdmin(admin._id)'> remove </button></td>
 					</tr>
 				</table>
 				<button ng-click='ctrl.toAddNewAdmin();'>Add New Admin Account</button>
@@ -249,7 +250,7 @@
 						<br>
 						confirm new password:<input id='new-admin-confirm-password' type='password'></input>
 						<br>
-						admin type, 'admin' or 'volunteer': <input id='new-admin-type' type='text'></input>
+						account type: <select id='new-admin-type'><option val='admin'>admin</option><option val='volunteer'>volunteer</option></select>
 						<br>
 						<button class='not-disappear' id='new-admin' ng-click="ctrl.addNewAdmin();">Save New Admin Account</button>
 						<button ng-click='ctrl.hideNewAdminAccountView();'>Cancel</button>

@@ -6,7 +6,7 @@ var Timeslot = require('../models/timeslot').Timeslot;
 var utils = require('../utils/utils');
 var moment = require('moment'); //for parsing and handling dates
 
-var daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+var daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 /*
 	GET /default - returns all default hours for days of the week
 	Returns
@@ -31,7 +31,10 @@ router.get('/default', function(req, res) {
 	- rules: Array of rule Documents
 */
 router.get('/default/:day', function(req, res) {
-	if (daysOfWeek.indexOf(req.params.day)) {
+	console.log(req.params);
+	console.log(daysOfWeek);
+	console.log(daysOfWeek.indexOf(req.params.day));
+	if (daysOfWeek.indexOf(req.params.day) == -1) {
 		utils.sendErrResponse(res, 400, 'Input string was not a day of the week.');
 	} else {
 		Rule.find({date: req.params.day}, function(err, rules) {

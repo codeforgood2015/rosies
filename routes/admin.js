@@ -28,7 +28,7 @@ router.get('/usernames', function(req, res) {
 		} else {
 			var usernames = [];
 			for (var i = 0; i < admins.length; i ++) {
-				usernames.push({username: admins[i].username, _id: admins[i]._id});
+				usernames.push({username: admins[i].username, _id: admins[i]._id, type: admins[i].type});
 			}
 			utils.sendSuccessResponse(res, usernames);
 		}

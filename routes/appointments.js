@@ -149,22 +149,19 @@ router.get('/:time', function(req, res) {
 });
 
 router.put('/time', function(req, res) {
-	console.log(req.body.date)
 	var fixedDate = new Date(req.body.date);
-	console.log(fixedDate)
 	var data = {
 		date: fixedDate,
 		timeslot: req.body.timeslot
 	};
-	console.log(data)
 	Appointment.find(data, function(err, apps) {
 		console.log(apps)
 		if (err) {
 			utils.sendErrResponse(res, 403, err);
 		} else {
 			console.log(apps)
-			//utils.sendSuccessResponse(res, {data: apps});
-			res.json(apps);
+			utils.sendSuccessResponse(res, apps);
+			//res.json(apps);
 		}
 	});
 });
