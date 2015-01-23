@@ -1,9 +1,14 @@
 var Rule = require('../models/rule').Rule;
 var Appointment = require('../models/appointment').Appointment;
+var Guest = require('../models/guest').Guest;
 
 exports.testDev = function(req, res){
 	Appointment.find().exec(function(err, appointments){console.log(appointments)})
-
+	/*Guest.find().remove().exec()*/
+/*	birthday = new Date(1995, 4, 23);
+	beginningOftime = new Date (1950, 1, 1);
+	(new Guest({firstName: 'TRICIA', lastName: 'SHI', birthday: birthday, lastVisit: beginningOftime})).save();*/
+	Guest.find().exec(function(err, guests){console.log(guests)})
 	res.render('error');
 }
 

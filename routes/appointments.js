@@ -31,12 +31,17 @@ router.post('/', function(req, res) {
 	tempDate = new Date(req.body.date);
 	console.log(tempDate)
 	fixedDate = new Date(tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate());
+	//saves birthday as a date as well
+	var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+	birthday = new Date(req.body.birthday.year, months.indexOf(req.body.birthday.month), req.body.birthday.day);
+
+
 	var data = {
 		date: fixedDate,
 		timeslot: req.body.timeslot,
-		firstName: req.body.firstName,
-		lastName: req.body.lastName,
-		birthday: req.body.birthday,
+		firstName: req.body.firstName.toUpperCase(),
+		lastName: req.body.lastName.toUpperCase(),
+		birthday: birthday,
 		premade: req.body.premade,
 		waitlist: req.body.waitlist
 	}; 
@@ -122,7 +127,17 @@ var closedRules = function(myRule, day, passData, times){
 	})
 };
 
-
+router.post('/cancel', function(req, res){
+	var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+	birthday = new Date(req.body.birthday.year, months.indexOf(req.body.birthday.month), req.body.birthday.day);
+	var data = {
+		firstName: req.body.firstName.toUpperCase(),
+		lastName: req.body.lastName.toUpperCase(),
+		birthday: birthday
+	}
+	Appointment.find(data).remove().exec(
+		utils.sendSuccessResponse(res, 'done'))
+})
 /*
 	GET /:time - given an input time as a URL param, return status of timeslot
 	Request body/Parameters:

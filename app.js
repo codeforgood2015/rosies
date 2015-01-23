@@ -78,10 +78,18 @@ var agenda = new Agenda({
 
 // job processors
 agenda.define('prune appointments', function(job, done) {
+	var today = new Date(Date.now());
 	var yesterday = new Date(Date.now() - 1000*60*60*24);
-
-	// Appointment.find({date: });
-
+	var tomorrow = new Date(Date.now() + 1000*60*60*24);
+	var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+	//console.log("got here 1");
+	//delete yesterday's appointments
+	Appointment.find({dayOfWeek: weekdays[yesterday.getDay()]})
+	.exec(function(err, appointments){
+		if(!err && appointments.length > 0){
+			Appointment.find({dayOfWeek: weekdays[yesterday.getDay()]}).remove().exec()
+		}
+	})
  	done();
 });
 
@@ -98,6 +106,7 @@ var admin = require('./routes/admin');
 var dev = require('./routes/dev');
 var appointments = require('./routes/appointments');
 var rules = require('./routes/rules');
+var guest = require('./routes/guest');
 
 var app = express();
 
@@ -124,7 +133,8 @@ app.get('/dev', dev.testDev);
 app.use('/admin', admin);
 app.use('/appointments', appointments);
 app.use('/rules', rules);
-//this function needs to pass through timeslots
+app.use('/guest', guest);
+
 app.get('/', function(req, res) {
 	res.render('NewReservation')
 });

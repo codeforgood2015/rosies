@@ -36,6 +36,11 @@
 		};
 		this.toAccountsView = function() {
 			if (!this.loginError) this.currentSection = 4;
+			this.getAdminUsernames();
+		};
+
+		this.toAddGuestsView = function(){
+			if(!this.loginError) this.currentSection = 5;
 		};
 		//back button
 		this.back = function() {
@@ -50,7 +55,8 @@
 			}
 			//if the user goes back, the editing and adding buttons disappear and their fields should be cleared
 			//this.showEditDefaultHours = false;
-			this.showNewAdmin = false;
+			//hide the edit admin side
+			this.hideNewAdminAccountView();
 			$("input :not(type=text)").val('');
 			//TODO: remove the additional slots that have been created
 
@@ -68,75 +74,72 @@
 		this.toggleToday = function() {
 			this.showToday = !this.showToday;
 			//hide all guests in today section
-			this.showTodayTimes = makeTimeObjects(this.todayTimes());
+			this.showTodayTimes = makeTimeObjects(this.todayTimes);
 		}
 		this.toggleTomorrow = function() {
 			this.showTomorrow = !this.showTomorrow;
 			//hide all guests in tomorrow section
-			this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes());
+			this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes);
 		}
 
-		//FAKE DATA ... the below two functions should actually figure out the times for today and tomorrow
-		this.todayTimes = function() {
-			return ["9:00 AM", "10:00 AM", "11:00 AM", "4:30 PM", "5:30 PM"];
-		}
-		this.tomorrowTimes = function() {
-			return ["9:00 AM", "10:00 AM", "11:00 AM", "4:30 PM", "5:30 PM"];
-		}
+		//HELPER FUNCTION FOR BUTTON RENDERING
+		//changes an array [String, String] where strings are times in military time
+		//to a readable string 'TIME TO TIME'
+		this.timeArrayToString = function(timeArray){
+			start = timeArray[0].split(':');
+			end = timeArray[1].split(':');
+			if(Number(start[0]) > 12){
+				start[0] = Number(start[0]) - 12;
+				start[0] = String(start[0]);
+				start[2] = 'PM';
+			}
+			else if (Number(start[0]) == 12){
+				start[2] = 'PM'
+			}
+			else{
+				start[2] = 'AM';
+			}
+			if(Number(end[0]) > 12){
+				end[0] = Number(end[0]) - 12;
+				end[0] = String(end[0]);
+				end[2] = 'PM';
+			}
+			else if (Number(end[0]) == 12){
+				end[2] = 'PM';
+			}
+			else{
+				end[2] = 'AM';
+			}
+			return(start[0] + ':' + start[1] + ' ' + start[2] + ' to ' + end[0] + ':' + end[1] + ' ' + end[2])
+		};
 
-		this.toMilitary = {
-			'9:00 AM': '9:00',
-			'10:00 AM': '10:00',
-			'11:00 AM': '11:00',
-			'12:00 PM': '12:00',
-			'4:30 PM': '16:30',
-			'5:30 PM': '17:30',
-		}
 
-		this.toNextMilitary = {
-			'9:00 AM': '10:00',
-			'10:00 AM': '11:00',
-			'11:00 AM': '12:00',
-			'12:00 PM': '13:00',
-			'4:30 PM': '17:30',
-			'5:30 PM': '18:30',
-		}
-
-
-		//converts string of form 'h:mm AM|PM' to 'h:mm' military time; e.g. "5:30 PM" -> "17:30"
-		this.convertToMilitary = function(time) {
-			//get hours and minutes with regex
-			var hours = Number(time.match(/^(\d+)/)[1]);
-			var minutes = Number(time.match(/:(\d+)/)[1]);
-			var ampm = time.match(/\s(.*)$/)[1];
-			//convert hours to 0 if it's 12 AM, and convert any afternoon times by adding 12
-			if (ampm === 'AM' && hours === 12) {hours -= 12};
-			if (ampm === 'PM' && hours < 12) {hours += 12};
-			var sHours = hours.toString();
-			var sMinutes = minutes.toString();
-			var military = sHours + ":" + sMinutes;
-			return military;
-		}
+		//Default Times
+		//TODO: update when admin selects the option to view guests
+		this.todayTimes = [['9:00', '10:00'], ['10:00', '11:00'], ['11:00', '12:00'], ['16:30', '17:30'], ['17:30', '18:30']];
+		
+		this.tomorrowTimes = [['9:00', '10:00'], ['10:00', '11:00'], ['11:00', '12:00'], ['16:30', '17:30'], ['17:30', '18:30']];
 
 		$scope.todayGuests = {};
 		$scope.tomorrowGuests = {};
 
-		for(var i = 0; i < this.todayTimes().length; i++){
-			$scope.todayGuests[this.convertToMilitary(this.todayTimes()[i])] = [];
+		for(var i = 0; i < this.todayTimes.length; i++){
+			$scope.todayGuests[this.todayTimes[i]] = [];
 		}
 
-		for(var i = 0; i < this.tomorrowTimes().length; i++){
-			$scope.tomorrowGuests[this.convertToMilitary(this.tomorrowTimes()[i])] = [];
+		for(var i = 0; i < this.tomorrowTimes.length; i++){
+			$scope.tomorrowGuests[this.tomorrowTimes[i]] = [];
 		}
 
 		this.getTodayGuestsCallback = function(guests) {
+			console.log($scope.todayGuests)
 			for(var i = 0; i <guests.length; i++){
-				$scope.todayGuests[guests[i].timeslot[0]].push(guests[i]);
+				$scope.todayGuests[guests[i].timeslot].push(guests[i]);
 			}
 		}			
 		this.getTomorrowGuestsCallback = function(guests) {
 			for(var i = 0; i <guests.length; i++){
-				$scope.tomorrowGuests[guests[i].timeslot[0]].push(guests[i]);
+				$scope.tomorrowGuests[guests[i].timeslot].push(guests[i]);
 			}			
 		}
 
@@ -167,10 +170,10 @@
 		  	var day = today.getDate();
 
 		  	var sendDate = new Date(year, month, day, 0, 0, 0, 0).getTime();
-		  	var timeslot = [this.toMilitary[_time], this.toNextMilitary[_time]];
+		  	var timeslot = _time;
 		  	$http.put('/appointments/time', {date: sendDate, timeslot: timeslot})
 		  	.success(function(data, status, headers, config) {
-		  		console.log(data)
+		  		$scope.todayGuests[_time] = [];
 		  		callback(data);
 		  	}).error(function(data, status, headers, config) {
 			  	console.log(data);
@@ -202,10 +205,10 @@
 		  	var month = tomorrow.getMonth();
 		  	var day = tomorrow.getDate();
 		  	var sendDate = new Date(year, month, day, 0, 0, 0, 0).getTime();
-		  	var timeslot = [this.toMilitary[_time], this.toNextMilitary[_time]];
+		  	var timeslot = _time;
 			$http.put('/appointments/time', {date: sendDate, timeslot: timeslot})
 			.success(function(data, status, headers, config) {
-		  		$scope.tomorrowGuests[me.toMilitary[_time]] = [];
+		  		$scope.tomorrowGuests[_time] = [];
 		  		callback(data);
 		  	}).error(function(data, status, headers, config) {
 		  		console.log(data);
@@ -224,8 +227,8 @@
 		}
 
 		//these two should be populated with the appropriate time slots for today and tomorrow, along with whether or not to currently display them
-		this.showTodayTimes = makeTimeObjects(this.todayTimes());
-		this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes());
+		this.showTodayTimes = makeTimeObjects(this.todayTimes);
+		this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes);
 
 		this.showGuests = function(day, _time) {
 			//determine whether or not the guests for day and time should be shown right now
@@ -284,8 +287,8 @@
 		this.resetShowTimesAndGuests = function() {
 			this.showToday = false;
 			this.showTomorrow = false;
-			this.showTodayTimes = makeTimeObjects(this.todayTimes());
-			this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes());
+			this.showTodayTimes = makeTimeObjects(this.todayTimes);
+			this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes);
 		}
 
 		//hides or shows all reservations for a given day
@@ -294,8 +297,8 @@
 			if(day == 'today'){
 				if(hideOrShow == 'Show All'){
 					me.showToday =  true;
-					for(var i = 0; i < me.todayTimes().length; i++){
-						me.showGuests("today", me.todayTimes()[i]);
+					for(var i = 0; i < me.todayTimes.length; i++){
+						me.showGuests("today", me.todayTimes[i]);
 					}
 					$('#show' + day).text('Hide All');
 				}
@@ -309,8 +312,8 @@
 			else if (day == 'tomorrow'){
 				if(hideOrShow == 'Show All'){
 					me.showTomorrow = true;
-					for(var i = 0; i < me.tomorrowTimes().length; i++){
-						me.showGuests("tomorrow", me.tomorrowTimes()[i]);
+					for(var i = 0; i < me.tomorrowTimes.length; i++){
+						me.showGuests("tomorrow", me.tomorrowTimes[i]);
 					}
 					$('#show' + day).text('Hide All');
 
@@ -482,23 +485,23 @@
 		// }
 
 		// //* ADD SPECIAL HOURS FORM */
-		// this.today = new Date();
-		// this.tomorrow = new Date();
-		// this.tomorrow.setDate(this.tomorrow.getDate() + 1);
-		// var range = function(start, end, up){
-		// result = [];
-		// if (up === 1){
-		// 	for(var i = start; i <= end; i++){
-		// 	result.push(i);
-		// 	}
-		// }
-		// else{
-		// 	for(var i = end; i >= start; i--){
-		// 	result.push(i)
-		// 	}
-		// };
-		// return result
-		// }
+		this.today = new Date();
+		this.tomorrow = new Date();
+		this.tomorrow.setDate(this.tomorrow.getDate() + 1);
+		var range = function(start, end, up){
+		result = [];
+		if (up === 1){
+			for(var i = start; i <= end; i++){
+			result.push(i);
+			}
+		}
+		else{
+			for(var i = end; i >= start; i--){
+			result.push(i)
+			}
+		};
+		return result
+		}
 
 		// this.years = range(2015, 2200, 1);
 	 // 	this.monthDayPairs = {
@@ -627,66 +630,170 @@
 		/*  ADMIN PAGE */
 		/***************/
 		//admin account stuff, returns list of admin accounts, retrieved from database
+
+		this.allUsernames = []; //to be displayed in the list, populated by getAdminUsernames()
+
+		//populates this.allUsernames by querying database
+		//should be called once when page loads, and whenever an admin account is successfully added or deleted, so that display represents most updated admin list
 		this.getAdminUsernames = function() { 
-			return ['admin', 'account1', 'account2', 'account3', 'scroll!!!!', 'account5', 'im bored', 'clearly',
-			'hello world', 'hehehehehe', 'code for good', 'yayayayayay', 'rosies place', 'these are getting longer haha'];
+			//get request should return object 
+			$http.get('/admin/usernames').success(function(data, status, headers, config) {
+				me.allUsernames = data.content; //data.content is an array of all usernames in the database currently
+			}).error(function(data, status, headers, config) {
+
+			});
 		};
 
-		this.removeAdmin = function(username) {
-			//remove from database		
+		//handler connected to each 'remove' button, that will remove the admin account associated with adminID 
+		this.removeAdmin = function(adminID) {
+			//for some reason doing $http.delete didn't work, so doing it as a post
+			$http.post('/admin/delete', {_id: adminID}).success(function(data, status, headers, config) {
+				me.getAdminUsernames(); //refreshes the admin list to reflect this delete
+			}).error(function(data, status ,headers, config) {
+				//popup an error message or something? haven't decided
+			});	
 		};
 
 		this.showNewAdmin = false; //change to true to display the new admin form
 
+		//called on ng-click for the add admin button
 		this.toAddNewAdmin = function() {
 			this.showNewAdmin= true;
 		};
 
-		this.addNewAdmin = function() {
-			//read the text fields
-			var username = $('.new-admin-username').value();
-			var pass = $('.new-admin-password').value();
-			var passConfirm = $('.new-admin-password').value();
-			//TODO: post request to database
-			// $.ajax('/', {type: "POST", data:{username: username, password:password, confirm:passConfirm}}
-			// 	).done(function(data, textStatus, jqXHR) {
-			// 		if (data.success) {
-			// 			console.log('Successfully added new admin!');
-			// 		} else {
-			// 			if (data.err === "This username already exists") {
+		this.showAdminErrorUsername = false;
+		this.showAdminErrorPassword = false;
 
-			// 			} else if (data.err === "Password doesn't match") {
-			// 				this.showAdminErrorPassword = true;
-			// 			}
-			// 		}
-			// }); 
-			
+		//called when user clicks 'save new admin account' button
+		this.addNewAdmin = function() {
+			//read the input text
+			var newUsername = $('#new-admin-username').val();
+			var newPass = $('#new-admin-password').val();
+			var newPassConfirm = $('#new-admin-confirm-password').val();
+			var newType = $('#new-admin-type').val();
+
+			if(newPass !== newPassConfirm) {
+				this.showAdminErrorPassword = true;
+				return;
+			}
+
+			var newAdmin = {username: newUsername, password: newPass, type: newType};
+			console.log(newAdmin);
+			//post request to database
+			$http.post('/admin', newAdmin).success(function(data, status, headers, config) {
+				me.getAdminUsernames(); //refresh the admin list to reflect newly added account
+			}).error(function(data, status, headers, config) {
+				if (status === '403') {
+					me.showAdminErrorUsername = true;
+				} 
+			});			
 		};
 
-		this.cancelNewAdminAccount = function() {
+		this.hideNewAdminAccountView = function() {
 			this.showNewAdmin = false;
-			//clear text fields
 			$('#new-admin-username').val('');
 			$('#new-admin-password').val('');
 			$('#new-admin-confirm-password').val('');
+			$('#new-admin-type').val('');
+			this.showAdminErrorPassword = false;
+			this.showAdminErrorUsername = false;			
 		}
 
-		//TODO: need help with this
-		this.checkValidUsername = function() {
-			var check_user = $('#new-admin-username').val();
-			// $.ajax({url:'/check-username', data:{username: check_user}}).done(function(data) {
-			// 	return data.valid;
-			// });
+		// this.validUsername = true;
+
+		// this.checkValidUsername = function() {
+		// 	var check_user = $('#new-admin-username').val();
+		// 	$http.post('/admin/check-username', {username: check_user}).success(function(data, status, headers, config) {
+		// 		if (data.content.valid) {
+		// 			this.validUsername = true;
+		// 		} else {
+		// 			this.validUsername = false;
+		// 		}
+		// 	}).error(function(data, status, headers, config) {
+
+		// 	});
+		// }
+
+		/***************/
+		/*  ADD GUESTS */
+		/***************/
+
+		this.attempted = false;
+		this.createSuccess = false;
+
+		this.years = range(1900, this.today.getFullYear()-14, 0);
+		this.monthDayPairs = {
+			0 : range(1, 31, 1),
+			1 : range(1, 28, 1),
+			2 : range(1, 31, 1),
+			3 : range(1, 30, 1), 
+			4 : range(1, 31, 1),
+			5 : range(1, 30, 1),
+			6 : range(1, 31, 1),
+			7 : range(1, 31, 1),
+			8 : range(1, 30, 1),
+			9 : range(1, 31, 1),
+			10 : range(1, 30, 1),
+			11 : range(1, 31, 1)		
 		}
 
+		this.updateDates = function(){
+			myYear = $("#dobyear").val();
+			myMonth = $("#dobmonth").val();
+			myCurrentDate = $("#dobdate").val();
+			myDates = range(1, 31, 1);
 
-		this.showAdminErrorUsername = function() {
-				return !this.checkValidUsername();
+			if(myYear != '?' && myMonth != '?'){
+				myDates = this.monthDayPairs[myMonth];
+				if(myYear % 4 === 0 && myMonth == 2){
+					myDates = range(1, 29, 1);
+				}
+			}
+			$("#dobdate").empty();
+			$("#dobdate").append("<option></option>");
+
+			for(var i = 1; i <= myDates.length; i++){
+				$("#dobdate").append("<option value = " + String(i) + ">" + String(i) + "</option>");
+			}
+			if(myDates.indexOf(Number(myCurrentDate)) >= 0){
+				$("#dobdate").val(myCurrentDate);
+			}
+
 		}
 
-		this.showAdminErrorPassword = false;
+		this.create = function(user){
+		if(user && user.firstName && user.lastName && user.dob && user.dob.year && user.dob.month && user.dob.day){
+			$http.post('/guest/add', {
+				firstName: user.firstName,
+				lastName: user.lastName,
+				birthday: user.dob
+			}).success(function(data, status, headers, config){
+				if(data.content == 'done'){
+					me.createSuccess = true;	
+				}
+				else if (data.content == 'exists'){
+					window.alert('this guest is already in the database');
+				}
+				else{
+					window.alert('something went wrong. please contact cfgrp@mit.edu');
+				}
+
+			}).error(function(data, status, headers, config){
+				console.log(status)
+			});
+		} else {
+			this.attempted = true;
+		}
+		};
+
+		this.resetCreate = function(){
+			me.attempted = false;
+			$scope.user = {};
+			me.createSuccess = false;
+		};
+
 
 	}); //end of angular controller
 
 
-}()); //end and run function
+}()); //end of closure, and run function

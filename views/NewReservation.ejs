@@ -18,6 +18,40 @@
 <h1>Food Pantry Sign Up</h1>
 </div>
 
+<!-- ERROR: GUEST NOT FOUND -->
+<div ng-show = "currentSelect === -10" id = "notFound">
+	<h3>Error</h3>
+	<p>Your information was not found in the database.<br>Please try again or call Patricia Jones in Rosie’s Place Pantry at 617-318-0236 for assistance.</p>
+	<button class = 'button5' ng-click = 'ctrl.reset()'>exit</button>
+</div>
+
+<!--ERROR: PAST APPOINTMENT -->
+<div ng-show = "currentSelect === -9" id = "tooMany">
+	<h3></h3>
+	<p>You have visited in the past 30 days!</p>
+	<!-- need a cancel button -->
+</div>
+
+<!--ERROR: UPCOMING APPOINTMENT -->
+<div ng-show = "currentSelect === -8" id = "tooSoon">
+	<h3>Reminder</h3>
+	<p>You are signed up for {{ctrl.lastVisit.date}}.</p>
+	<p>Your timeslot is {{ctrl.lastVisit.timeSlot}}. </p>
+	<p>Press "cancel" to cancel this sign up and make a new one</p>
+	<p>Press "exit" to close</p>
+	<button class = 'button5' ng-click = 'ctrl.cancel(user)'>cancel</button>
+	<button class = 'button5' ng-click = 'ctrl.reset()'>exit</button>
+</div>
+
+<!--WAITLIST INFO -->
+<div ng-show = 'currentSelect === -7' id = 'waitlistInfo'>
+	<h3>Waitlist</h3>
+	<p>Waitlist means you can show up, and you will get a spot if anyone with an appointment does not show up.</p>
+	<button class = 'button-7' ng-click = 'currentSelect = 0'>select a different time</button>
+	<button class = 'button-7' ng-click = 'user.waitlist = true; currentSelect = 2'>continue anyways</button>
+</div>
+
+<!-- NORMAL FLOW -->
 <div ng-show = "currentSelect === -1">
 	<h3>Log In</h3>
 	<form name = 'guestForm' novalidate>
@@ -48,7 +82,7 @@
 
 <div ng-show = "currentSelect === 1">
 <h3>Select a Time</h3>
-<div ng-repeat="time in timeSlots[ctrl.dateIndex]"><button class = "button1" class = {{time[1]}} ng-click="ctrl.selectTime(time); ctrl.next()">{{ctrl.timeArrayToString(time[0])}}</button></div>
+<div><button ng-repeat="time in timeSlots[ctrl.dateIndex]" class = "button1 {{time[1]}}" ng-disabled = {{ctrl.disableClosed(time)}} ng-click="ctrl.selectTime(time); ctrl.next()">{{ctrl.timeArrayToString(time[0])}}</button></div>
 </div>
 
 <div ng-show = "currentSelect === 2">
@@ -86,6 +120,10 @@
 			<td>Pre-made Bag: </td>
 			<td>{{ctrl.bag}}</td>
 		</tr>
+		<tr ng-show = 'user.waitlist'>
+			<td>Waitlist:</td>
+			<td>Yes</td>
+		</tr>
 <!-- 		<tr>
 			<td>Dietary constraints: </td>
 			<td>{{allergies}}</td>
@@ -94,7 +132,8 @@
 	<button class = "button4" ng-show = '!submitSuccess' ng-click = "ctrl.sendReservation(user, ctrl.dateSelect, ctrl.timeSelect, ctrl.bag)">submit</button><br>
 	<span ng-show = "submitSuccess">Successfully Saved!<br><button class = 'button5' ng-click = 'ctrl.print()'>print page</button><br><button class = 'button5' ng-click = 'ctrl.reset()'>exit</button></span>
 </div>
-</div>
 
+
+</div>
 </body>
 </html>
