@@ -1,7 +1,6 @@
 /**************************/
 /*INCLUSIVE RANGE FUNCTION*/
 /**************************/
-
 var range = function(start, end, up){
 	result = [];
 	if (up === 1){
@@ -152,13 +151,19 @@ app.controller('datetimeController', function($scope, $http){
 		return(start[0] + ':' + start[1] + ' ' + start[2] + ' to ' + end[0] + ':' + end[1] + ' ' + end[2])
 	};
 
+	//shows the waitlist info page
+	this.showWaitlist = function(){
+		$scope.currentSelect = -7;
+	}
+
 	//helper function to close buttons
-	//first sets all timeslots that have passed to closed
+	//first sets all properties of waitlists
+	//then sets all timeslots that have passed to closed
 	//then disables all closed buttons
 	//timeArray = [[start, end], status]
 	this.disableClosed = function(timeArray){
 
-	if(me.dateIndex == 0){
+		if(me.dateIndex == 0){
 			end = timeArray[0][1].split(':');
 			rightNow = new Date(Date.now());
 			if((end[0] < rightNow.getHours() || (end[0] == rightNow.getHours() && end[1] < rightNow.getMinutes()))|| timeArray[1] == 'closed'){
@@ -172,6 +177,7 @@ app.controller('datetimeController', function($scope, $http){
 		//$(".closed").prop('ng-click', '');
 		return false;
 	};
+
 
 	//binds date to button click because angular doesn't like buttons
 	this.today = new Date(Date.now());

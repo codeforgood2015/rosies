@@ -43,6 +43,14 @@
 	<button class = 'button5' ng-click = 'ctrl.reset()'>exit</button>
 </div>
 
+<!--WAITLIST INFO -->
+<div ng-show = 'currentSelect === -7' id = 'waitlistInfo'>
+	<h3>Waitlist</h3>
+	<p>Waitlist means you can show up, and you will get a spot if anyone with an appointment does not show up.</p>
+	<button class = 'button-7' ng-click = 'currentSelect = 0'>select a different time</button>
+	<button class = 'button-7' ng-click = 'user.waitlist = true; currentSelect = 2'>continue anyways</button>
+</div>
+
 <!-- NORMAL FLOW -->
 <div ng-show = "currentSelect === -1">
 	<h3>Log In</h3>
@@ -111,6 +119,10 @@
 		<tr>
 			<td>Pre-made Bag: </td>
 			<td>{{ctrl.bag}}</td>
+		</tr>
+		<tr ng-show = 'user.waitlist'>
+			<td>Waitlist:</td>
+			<td>Yes</td>
 		</tr>
 <!-- 		<tr>
 			<td>Dietary constraints: </td>
