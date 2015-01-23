@@ -29,6 +29,7 @@ app.controller('LoginController', function($scope, $http){
 });
 		
 app.controller('datetimeController', function($scope, $http){
+	var me = this;
 	$scope.currentSelect = -1;
 	this.attempted = false;
 	$scope.submitSuccess = false;
@@ -121,6 +122,9 @@ app.controller('datetimeController', function($scope, $http){
 			start[0] = String(start[0]);
 			start[2] = 'PM';
 		}
+		else if (Number(start[0]) == 12){
+			start[2] = 'PM'
+		}
 		else{
 			start[2] = 'AM';
 		}
@@ -129,10 +133,34 @@ app.controller('datetimeController', function($scope, $http){
 			end[0] = String(end[0]);
 			end[2] = 'PM';
 		}
-		else{
+		else if (Number(end[0]) == 12){
 			end[2] = 'PM';
 		}
+		else{
+			end[2] = 'AM';
+		}
 		return(start[0] + ':' + start[1] + ' ' + start[2] + ' to ' + end[0] + ':' + end[1] + ' ' + end[2])
+	};
+
+	//helper function to close buttons
+	//first sets all timeslots that have passed to closed
+	//then disables all closed buttons
+	//timeArray = [[start, end], status]
+	this.disableClosed = function(timeArray){
+
+	if(me.dateIndex == 0){
+			end = timeArray[0][1].split(':');
+			rightNow = new Date(Date.now());
+			if((end[0] < rightNow.getHours() || (end[0] == rightNow.getHours() && end[1] < rightNow.getMinutes()))|| timeArray[1] == 'closed'){
+				timeArray[1] = 'closed';
+				return true;
+			}
+		}
+
+
+		//$(".closed").prop('disabled', true);
+		//$(".closed").prop('ng-click', '');
+		return false;
 	};
 
 	//binds date to button click because angular doesn't like buttons
@@ -189,16 +217,7 @@ app.controller('datetimeController', function($scope, $http){
 	//binds button click for time select to model because angular doesn't like buttons
 	this.selectTime = function(timeChoice){this.timeSelect = timeChoice;};
 
-	
-	//appends different information needs to be attached to class
-/*	this.checkAdditional = function(status){
-		if(status == 'closed'){
-			return 'disabled'
-		}
-		else if (status == 'waitlist'){
-			return 'ng-click = "showWaitlistInfo()"'
-		}
-	}*/
+
 
 	//binds button click for premade bags to model because angular doesn't like buttons
 	this.selectBag = function(bagChoice){this.bag = bagChoice;};
