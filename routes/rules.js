@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var Rule = require('../models/rule').Rule;
 var Appointment = require('../models/appointment').Appointment;
-var Timeslot = require('../models/timeslot').Timeslot;
 var utils = require('../utils/utils');
 var moment = require('moment'); //for parsing and handling dates
 

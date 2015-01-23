@@ -1,5 +1,4 @@
 var Rule = require('../models/rule').Rule;
-var Timeslot = require('../models/timeslot').Timeslot;
 var Appointment = require('../models/appointment').Appointment;
 
 exports.testDev = function(req, res){
