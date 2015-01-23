@@ -6,6 +6,7 @@ var http = require('http');
 var Agenda = require('agenda');
 var Rule = require('./models/rule').Rule;
 var Timeslot = require('./models/timeslot').Timeslot;
+var Appointment = require('./models/appointment').Appointment;
 
 var mongoose = require('mongoose');
 var connection_string = 'localhost/rosies';
@@ -76,85 +77,25 @@ var agenda = new Agenda({
 	}
 });
 // job processors
-
-
-agenda.define('update timeslots', function(job, done) {
+agenda.define('prune appointments', function(job, done) {
 	var today = new Date(Date.now());
 	var yesterday = new Date(Date.now() - 1000*60*60*24);
 	var tomorrow = new Date(Date.now() + 1000*60*60*24);
 	var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 	//console.log("got here 1");
-	//delete yesterday's timeslots
-	Timeslot.find({dayOfWeek: weekdays[yesterday.getDay()]}).exec(function(err, timeslots){
-		if(!err && timeslots.length > 0){
-			Timeslot.find({dayOfWeek: weekdays[yesterday.getDay()]}).remove().exec()
-		}
-	})
-	//create today's timeslots if they're not there
-	//right now only searches for the weekly timeslots
-	Timeslot.find({dayOfWeek: weekdays[today.getDay()]}).exec(function(err, timeslots){
-		if(!err && timeslots.length == 0){
-			console.log("why are these missing, creating today's dates anyways");
-			Rule.find({date: weekdays[today.getDay()]}).exec(function(err, rules){
-				if(err || !rules || rules.length == 0){
-					console.log("uhoh")
-				}
-				else{
-					for(var i = 0; i < rules.length; i++){
-						timeslot = new Timeslot({
-							dayOfWeek: weekdays[today.getDay()],
-							date: today,
-							time: rules[i].time,
-							maxCapacity: rules[i].maxCap,
-							maxWaitlist: rules[i].maxWaitlist,
-							guests: [],
-							waitlist: []
-						});
-						timeslot.save();
-					}
-				}
-			})
+	//delete yesterday's appointments
+	Appointment.find({dayOfWeek: weekdays[yesterday.getDay()]}).exec(function(err, appointments){
+		if(!err && appointments.length > 0){
+			Appointment.find({dayOfWeek: weekdays[yesterday.getDay()]}).remove().exec()
 		}
 	})
 
-	//create today's timeslots if they're not there
-	//right now only searches for the weekly timeslots
-	Timeslot.find({dayOfWeek: weekdays[tomorrow.getDay()]}).exec(function(err, timeslots){
-		if(!err && timeslots.length == 0){
-			console.log("creating tomorrow's slots");
-			Rule.find({date: weekdays[tomorrow.getDay()]}).exec(function(err, rules){
-				if(err || !rules || rules.length == 0){
-					console.log("uhoh")
-				}
-				else{
-					for(var i = 0; i < rules.length; i++){
-						timeslot = new Timeslot({
-							dayOfWeek: weekdays[tomorrow.getDay()],
-							date: today,
-							time: rules[i].time,
-							maxCapacity: rules[i].maxCap,
-							maxWaitlist: rules[i].maxWaitlist,
-							guests: [],
-							waitlist: []
-						});
-						timeslot.save();
-					}
-				}
-			})
-		}
-	})
-
-	//console.log("got here 3");
-	//remove events if they were no repeat
- 	//not implemented yet
- 	//Timeslot.find().exec(function(err, timeslots){console.log(timeslots)})
- 	//console.log("got here 4");
  	done();  
 
 });
 
 //cron format: minute, hour, dayOfMonth, monthOfYear, dayOfWeek, Year, * means any
-agenda.every('10 minutes', 'update timeslots');
+agenda.every('10 minutes', 'prune appointments');
 agenda.on('fail', function(err, job){
 	console.log(err.message)
 })

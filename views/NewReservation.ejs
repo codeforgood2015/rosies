@@ -18,6 +18,32 @@
 <h1>Food Pantry Sign Up</h1>
 </div>
 
+<!-- ERROR: GUEST NOT FOUND -->
+<div ng-show = "currentSelect === -10" id = "notFound">
+	<h3>Error</h3>
+	<p>Your information was not found in the database.<br>Please try again or call Patricia Jones in Rosie’s Place Pantry at 617-318-0236 for assistance.</p>
+	<button class = 'button5' ng-click = 'ctrl.reset()'>exit</button>
+</div>
+
+<!--ERROR: PAST APPOINTMENT -->
+<div ng-show = "currentSelect === -9" id = "tooMany">
+	<h3></h3>
+	<p>You have visited in the past 30 days!</p>
+	<!-- need a cancel button -->
+</div>
+
+<!--ERROR: UPCOMING APPOINTMENT -->
+<div ng-show = "currentSelect === -8" id = "tooSoon">
+	<h3>Reminder</h3>
+	<p>You are signed up for {{ctrl.lastVisit.date}}.</p>
+	<p>Your timeslot is {{ctrl.lastVisit.timeSlot}}. </p>
+	<p>Press "cancel" to cancel this sign up and make a new one</p>
+	<p>Press "exit" to close</p>
+	<button class = 'button5' ng-click = 'ctrl.cancel(user)'>cancel</button>
+	<button class = 'button5' ng-click = 'ctrl.reset()'>exit</button>
+</div>
+
+<!-- NORMAL FLOW -->
 <div ng-show = "currentSelect === -1">
 	<h3>Log In</h3>
 	<form name = 'guestForm' novalidate>
@@ -94,7 +120,8 @@
 	<button class = "button4" ng-show = '!submitSuccess' ng-click = "ctrl.sendReservation(user, ctrl.dateSelect, ctrl.timeSelect, ctrl.bag)">submit</button><br>
 	<span ng-show = "submitSuccess">Successfully Saved!<br><button class = 'button5' ng-click = 'ctrl.print()'>print page</button><br><button class = 'button5' ng-click = 'ctrl.reset()'>exit</button></span>
 </div>
-</div>
 
+
+</div>
 </body>
 </html>

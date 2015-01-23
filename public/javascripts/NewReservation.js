@@ -36,17 +36,22 @@ app.controller('datetimeController', function($scope, $http){
 	$scope.timeSlots = [['9:00 am to 10:00 am', '10:00 am  to 11:00 am', '11:00 am to 12:00 noon', '4:30 pm to 5:30 pm', '5:30 pm to 6:30 pm'],['9:00 am to 10:00 am', '10:00 am  to 11:00 am', '11:00 am to 12:00 noon', '4:30 pm to 5:30 pm', '5:30 pm to 6:30 pm']];
 	this.dateIndex = 0;
 	this.timeSelect = ['not Selected', ''];
+	this.lastVisit = {};
+	this.lastVisit.date = '';
+	this.lastVisit.timeSlot = '';
 
-
+	$scope.timeSlots[0] = [];
+	$scope.timeSlots[1] = [];
 	//CLEARS ALL USER DATA AND SETS ALL BACK TO DEFAULTS
 	//CALLED ON EXIT BUTTON AND ON HITTING BACK TO THE FRONT PAGE
 	this.reset = function(){
 		$scope.currentSelect = -1;
 		$scope.user = {};
-		this.dateSelect = '';
-		this.timeSelect = '';
-		this.bag = '';
-		this.attempted = false;
+		me.dateSelect = '';
+		me.timeSelect = '';
+		me.bag = '';
+		me.attempted = false;
+		me.lastVisit = {};
 	}
 
 	//STEPS THE PAGE FORWARD LINEARLY
@@ -60,7 +65,7 @@ app.controller('datetimeController', function($scope, $http){
 	this.back = function(){
 		$scope.currentSelect -= 1;
 		if($scope.currentSelect == -1){
-			this.reset();
+			me.reset();
 		}
 	};
 
@@ -69,14 +74,13 @@ app.controller('datetimeController', function($scope, $http){
 	//IF THEY ARE, CHECK DATABASE FOR THE USER
 	//IF THE USER IS VALID, GET THE LATEST TIMESLOT AVAILABILITY
 	this.lookup = function(user){
-		console.log(user);
 		if(user && user.firstName && user.lastName && user.dob && user.dob.year && user.dob.month && user.dob.day){
 			$http.post('/auth/guest', {
 				firstName: user.firstName,
 				lastName: user.lastName,
 				dob: user.dob
 			}).success(function(data, status, headers, config){
-				if (data.content.available) {
+				if (data.content.available == true) {
 					$scope.currentSelect +=1;
 					$scope.submitSuccess = false;
 					$http.post('/appointments/availability').success(function(data, status, headers, config){
@@ -98,9 +102,15 @@ app.controller('datetimeController', function($scope, $http){
 
 					}).error(function(data, status, headers, config){
 					})
-				} else {
-					console.log(data)
-					alert('You have an appointment!');
+				} 
+				else if(data.content.available == 'notFound'){
+					$scope.currentSelect = -10;
+				}
+
+				else {
+					me.lastVisit.date = new Date(data.content.available[0]).toLocaleString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
+					me.lastVisit.timeSlot = me.timeArrayToString(data.content.available[1]);
+					$scope.currentSelect = -8;
 				}
 			}).error(function(data, status, headers, config){
 				console.log(status)
@@ -260,6 +270,16 @@ app.controller('datetimeController', function($scope, $http){
 		else{
 			console.log("uhoh")
 		}
+	};
+
+	this.cancel = function(user){
+		$http.post('/appointments/cancel',{
+			firstName: user.firstName,
+			lastName: user.lastName,
+			birthday: user.dob
+		}).success(function(data, status, headers, config){
+			me.reset();
+		})
 	}
 
 }); //end of controller 
