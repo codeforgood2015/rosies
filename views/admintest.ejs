@@ -96,9 +96,10 @@
 				<h3>Food Pantry Hours of Operation</h3>
 				<div class='default'>
 					<h4 class='left-align'>Manage default hours:</h4>
+					<p class='left-align' style='font-size: 14pt'> Click a time to edit or delete it. </p>
 					<div class='default-hours'> 
 						<table id='default-table'>
-							<tr ng-repeat="dayHours in ctrl.defaultHours()">
+							<tr ng-repeat="dayHours in ctrl.defaultHours">
 								<td>{{dayHours.day}} </td>
 								<td ng-repeat='time in dayHours.hours'>{{time}}</td>
 								<td class='edit-default'> <button ng-click='ctrl.editDefaultHours(dayHours.day);'>edit</button></td>'
@@ -117,15 +118,16 @@
 						<form class='new-default-times'>
 							<div class='slots'>
 								<div class='default-input'>
-									start: <input id='default-start-time' type='text' placeholder='9:00AM'> </input>
-									end: <input id='default-end-time' type='text' placeholder='10:00AM'> </input>
-									max-capacity: <input id='default-max-cap' type='text' placeholder='27'> </input>
+									start: <input id='default-start-time' type='text' placeholder='9:00AM'></input>
+									end: <input id='default-end-time' type='text' placeholder='10:00AM'></input>
+									timeslot capacity: <input id='default-max-cap' type='text' placeholder='27'></input>
+									waitlist capacity: <input id='default-waitlist' type='text' placeholder='2'></input> 
 									<button class='add-default-time' ng-click='ctrl.addDefaultTimeslot();'>Add</button>
 								</div>
 								<div>
 									<p>Updated hours: </p> 
 									<p ng-repeat='slot in ctrl.newDefaultTimeslots'>
-										{{slot.start}}--{{slot.end}} ({{slot.cap}})
+										timeslot: {{slot.start}}--{{slot.end}} ({{slot.cap}}, {{slot.waitlist}})
 										<button class='remove-time-slot' ng-click='ctrl.removeDefaultTimeslot();'>Remove</button>
 									</p>
 								</div>

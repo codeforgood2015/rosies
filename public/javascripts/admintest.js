@@ -287,8 +287,8 @@
 	  	}).error(function(data, status, headers, config) {
 		  	window.alert('something wrong in getTodayGuests');
 	  	});
-
 		};
+		
 		this.getTomorrowGuests = function(_time, callback) { //_time is a rule object
 			var tomorrow = new Date();
 	  	tomorrow.setDate(tomorrow.getDate() + 1);
@@ -309,7 +309,7 @@
 		}
 
 		//determines whether to hide or show the guests under the following time and day
-		this.toggleGuests = function(day, _time) {
+		this.toggleGuests = function(day, _time) { //_time is a rule object
 			var times = [];
 			if (day === 'today') {
 				times = this.showTodayTimes;
@@ -325,7 +325,7 @@
 					t.show = !s;
 				}
 			}
-			return t.show;
+			//return t.show;
 		};
 
 		//dumb helper function, takes true/false and turns it into yes/no
@@ -413,84 +413,85 @@
 		/******************/
 
 		//FAKE DATA, replace soon plz 
-		// this.mondayDefault = function() {return ['4:30 PM', '5:30 PM'];};
-		// this.tuesdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
-		// this.wednesdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
-		// this.thursdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
-		// this.fridayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
-		// this.saturdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
-		// this.sundayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
+		this.mondayDefault = function() {return ['4:30 PM', '5:30 PM'];};
+		this.tuesdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
+		this.wednesdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
+		this.thursdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
+		this.fridayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
+		this.saturdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
+		this.sundayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
 
 
 
 		//populates this.defaultHours list by querying database
 		//should be called either with a refresh button or every time the page loads
-		// this.getDefaultHours = function() {
-		// 	//for each day of the week, get that day's default hours as a list of 
-		// }
+		this.getDefaultHours = function() {
+			//for each day of the week, get that day's default hours as a list of 
+		}
 
-		// this.defaultHours = function() {
-		// 	return [{"day":"Monday", "hours": this.mondayDefault()}, 
-		// 										{"day":"Tuesday", "hours": this.tuesdayDefault()}, 
-		// 										{"day":"Wednesday", "hours": this.wednesdayDefault()}, 
-		// 										{"day":"Thursday", "hours": this.thursdayDefault()},
-		// 										{"day":"Friday", "hours": this.fridayDefault()},
-		// 										{"day":"Saturday", "hours": this.saturdayDefault()},
-		// 										{"day":"Sunday", "hours": this.sundayDefault()}];
-		// };
+		this.defaultHours =  [{day:"Monday", hours: this.mondayDefault()}, 
+												{day:"Tuesday", hours: this.tuesdayDefault()}, 
+												{"day":"Wednesday", "hours": this.wednesdayDefault()}, 
+												{"day":"Thursday", "hours": this.thursdayDefault()},
+												{"day":"Friday", "hours": this.fridayDefault()},
+												{"day":"Saturday", "hours": this.saturdayDefault()},
+												{"day":"Sunday", "hours": this.sundayDefault()}];
 
-		// //for editing default hours
-		// this.showEditDefaultHours = false; //true when the sidebar with the add timeslots form should appear
+		//for editing default hours
+		this.showEditDefaultHours = false; //true when the sidebar with the add timeslots form should appear
 		
-		// this.editDay = ''; //will reflect which day they are editing, so when they click submit, we know which day's data to change
+		this.editDay = ''; //will reflect which day they are editing, so when they click submit, we know which day's data to change
 		
-		// this.newDefaultTimeslots = []; //array for us to save things to do when they add timeslots; will send to database when they click 'save'
+		this.newDefaultTimeslots = []; //array for us to save things to do when they add timeslots; will send to database when they click 'save'
 
-		// this.editDefaultHours = function(day) {
-		// 	this.clearDefaultTimeslotsInput(); //clear when the user changes days
-		// 	this.showEditDefaultHours = true;
-		// 	this.editDay = day;
-		// };
+		this.editDefaultHours = function(day) {
+			this.clearDefaultTimeslotsInput(); //clear when the user changes days
+			this.showEditDefaultHours = true;
+			this.editDay = day;
+		};
 
-		// this.clearDefaultTimeslotsInput = function() {
-		// 	//to be called when a different edit button, or the cancel button, is pressed
-		// 	$('#default-start-time').val('');
-		// 	$('#default-end-time').val('');
-		// 	$('#default-max-cap').val('');
-		// 	this.newDefaultTimeslots = [];
-		// };
+		this.clearDefaultTimeslotsInput = function() {
+			//to be called when a different edit button, or the cancel button, is pressed
+			$('#default-start-time').val('');
+			$('#default-end-time').val('');
+			$('#default-max-cap').val('');
+			$('#default-waitlist').val('');
+			this.newDefaultTimeslots = [];
+		};
 
-		// this.addDefaultTimeslot = function() {
-		// 	//jQuery to grab the info in the text boxes, add them to this.newDefaultTimeslots
-		// 	var s = $('#default-start-time').val();
-		// 	var e = $('#default-end-time').val();
-		// 	var c = $('#default-max-cap').val();
-		// 	var timeslot = {
-		// 		start: s, end: e, cap: c
-		// 	}
-		// 	this.newDefaultTimeslots.push(timeslot);
-		// };
+		this.addDefaultTimeslot = function() {
+			//jQuery to grab the info in the text boxes, add them to this.newDefaultTimeslots
+			var s = $('#default-start-time').val();
+			var e = $('#default-end-time').val();
+			var c = $('#default-max-cap').val();
+			var w = $('#default-waitlist').val();
+			var timeslot = {
+				start: s, end: e, cap: c, waitlist: w
+			}
+			this.newDefaultTimeslots.push(timeslot);
+		};
 
-		// this.removeDefaultTimeslot = function() {
-		// 	//figure out how to associate the remove button with the timeslots it's related to
-		// };
+		this.removeDefaultTimeslot = function() {
+			//figure out how to associate the remove button with the timeslots it's related to
+		};
 
-		// this.saveNewDefaultHours = function() {
-		// 	var day = this.editDay;
+		this.saveNewDefaultHours = function() {
+			var day = this.editDay;
 
-		// 	//current editDay should be the correct day, selected when the user pressed an edit button
-		// 	//need to go through the text in the input fields in class='slots' and save their info to database, then clear their text
-		// 	//TODO: some parsing stuff, and accounting for user error
+			//current editDay should be the correct day, selected when the user pressed an edit button
+			//need to go through the text in the input fields in class='slots' and save their info to database, then clear their text
+			//TODO: some parsing stuff, and accounting for user error
 
-		// 	//...
-		// 	this.clearDefaultTimeslotsInput();
-		// };
+			//...
+			this.clearDefaultTimeslotsInput();
+		};
 
-		// this.cancelNewDefaultHours = function() {
-		// 	this.clearDefaultTimeslotsInput(); //clear 
-		// 	this.showEditDefaultHours = false;
-		// 	this.editDay = '';
-		// };
+		this.cancelNewDefaultHours = function() {
+			this.clearDefaultTimeslotsInput(); //clear 
+			this.showEditDefaultHours = false;
+			this.editDay = '';
+		};
+
 		// /******************/
 		// /*  SPECIAL HOURS */
 		// /******************/

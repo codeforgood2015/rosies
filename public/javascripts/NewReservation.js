@@ -140,6 +140,122 @@ app.config(function($translateProvider){
 		'EXIT' : '退出'
 	});
 
+	//portuguese
+	$translateProvider.translations('pt', {
+	//header
+	'LOGO_CAPTION' : 'Registrar para a Dispensa',
+	'BACK' : 'voltar a trás',
+
+	//months
+	'JANUARY' : 'Janeiro',
+	'FEBRUARY' : 'Fevereiro',
+	'MARCH' : 'Março',
+	'APRIL' : 'Abril',
+	'MAY' : 'Maio',
+	'JUNE' : 'Junho',
+	'JULY' : 'Julho',
+	'AUGUST' : 'Agosto',
+	'SEPTEMBER' : 'Setembro',
+	'OCTOBER' : 'Outobro',
+	'NOVEMBER' : 'Novembro',
+	'DECEMBER' : 'Dezembro',
+
+	//page 1
+	'LOG_IN' : 'Entrar',
+	'FIRST_NAME' : 'Nome',
+	'LAST_NAME' : 'Apelido',
+	'DATE_OF_BIRTH' : 'Data de Nascimento',
+	'CONTINUE' : 'continuar',
+
+	//page1 errors
+	'MISSING_FIRST' : 'coloque o seu nome por favor',
+	'MISSING_LAST' : 'coloque o seu apelido por favor',
+	'MISSING_DOB' : 'coloque o sua data de nascimento',
+
+	//page2
+	'SELECT_A_DATE' : 'Selecione uma data',
+	'TODAY' : 'hoje',
+	'TOMORROW' : 'amanhã',
+
+	//page3
+	'SELECT_A_TIME' : 'Selecione uma hora',
+
+	//page4
+	'PREMADE_BAG' : 'Saco pré-feito',
+	'YES' : 'SIM',
+	'NO' : 'NÃO',
+	'MAKE_BAG': 'Faz-me um saco',
+	'I_CHOOSE': 'Quero escolher a minha própria comida',
+
+	//page5
+	'CONFIRMATION' : 'Confirmação',
+	'NAME' : 'Nome',
+	'DATE' : 'Data', 
+	'TIME' : 'Hora',
+	'SUBMIT' : 'Submeter',
+	'SUCCESS' : 'Guardado com sucesso!',
+	'PRINT' : 'imprimir página',
+	'EXIT' : 'sair'
+	});
+
+		//haitian creole
+	$translateProvider.translations('ht', {
+	//header
+	'LOGO_CAPTION' : '', //missing
+	'BACK' : 'pa tras',
+
+	//months
+	'JANUARY' : 'Janeiro',
+	'FEBRUARY' : 'Fevereiro',
+	'MARCH' : 'Marco',
+	'APRIL' : 'Abril',
+	'MAY' : 'Maio',
+	'JUNE' : 'Junho',
+	'JULY' : 'Julho',
+	'AUGUST' : 'Agosto',
+	'SEPTEMBER' : 'Setembro',
+	'OCTOBER' : 'Outobro',
+	'NOVEMBER' : 'Novembro',
+	'DECEMBER' : 'Dezembro',
+
+	//page 1
+	'LOG_IN' : 'Conecte -se',
+	'FIRST_NAME' : 'Primeiro Nome',
+	'LAST_NAME' : 'Sobrenome',
+	'DATE_OF_BIRTH' : 'Data de Nascimento',
+	'CONTINUE' : '', //missing
+
+	//page1 errors
+	'MISSING_FIRST' : '', //missing
+	'MISSING_LAST' : '', //missing
+	'MISSING_DOB' : '', //missing
+
+	//page2
+	'SELECT_A_DATE' : 'Escolher um Data',
+	'TODAY' : 'ahoje',
+	'TOMORROW' : 'manha',
+
+	//page3
+	'SELECT_A_TIME' : 'Escolher uma hora',
+
+	//page4
+	'PREMADE_BAG' : 'Saco pré-feito',
+	'YES' : 'SI',
+	'NO' : 'NÃO',
+	'MAKE_BAG': 'Fazem um bolsa',
+	'I_CHOOSE': 'Um kre escolher nha comida',
+
+	//page5
+	'CONFIRMATION' : 'Confirmacao',
+	'NAME' : 'Nome',
+	'DATE' : 'Data', 
+	'TIME' : 'Hora',
+	'SUBMIT' : '', //missing
+	'SUCCESS' : '', //missing
+	'PRINT' : '', //missing
+	'EXIT' : '' //missing
+	});	
+
 	$translateProvider.preferredLanguage('en');
 }); //end of translation
 		
