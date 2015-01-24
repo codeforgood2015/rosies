@@ -264,6 +264,7 @@ tr:nth-child(odd) {
 	font-size: 18pt;
 }
 
+/*for printer friendly version*/
 @media only print{
 	html{
 		background-image: none;

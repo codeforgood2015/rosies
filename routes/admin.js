@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Admin = require('../models/admin').Admin;
 var utils = require('../utils/utils');
+var bcrypt = require('bcrypt');
 
 // GET /admin - return a list of all admins
 // TODO: Check log-in status
@@ -28,13 +29,45 @@ router.get('/usernames', function(req, res) {
 		} else {
 			var usernames = [];
 			for (var i = 0; i < admins.length; i ++) {
-				usernames.push({username: admins[i].username, _id: admins[i]._id});
+				usernames.push({username: admins[i].username, _id: admins[i]._id, type: admins[i].type});
 			}
 			utils.sendSuccessResponse(res, usernames);
 		}
 	});
 });
 
+/*
+	POST /admin - creates a new admin user
+	Request body:
+	- username: Username for the new admin. Error returned if it's already taken.
+	- password: Password for the new admin. Encrypted by bcrypt.
+	- type: Permissions level for the new admin user.
+*/
+router.post('/', function(req,res) {
+	var data = {
+		username: req.body.username,
+		type: req.body.type
+	}
+	Admin.findOne({username: data.username}, function(err, admin) {
+		if (err) {
+			utils.sendErrResponse(res, 404, err);
+		} else if (admin) {
+			utils.sendErrResponse(res, 400, 'Username already exists.');
+		} else {
+			bcrypt.hash(req.body.password, 10, function(err, hash) {
+				data.password = hash;
+				admin = new Admin(data);
+				admin.save(function(err) {
+					if (err) {
+						utils.sendErrResponse(res, 404, err);
+					} else {
+						utils.sendSuccessResponse(res, 'User created.');
+					}
+				})
+			});
+		}
+	});
+});
 
 //DELETE /admin/delete - deletes an admin account based on its _id
 router.post('/delete', function(req, res) {
@@ -48,29 +81,60 @@ router.post('/delete', function(req, res) {
 	});
 });
 
-
-// TODO: use bcrypt to hash the password to be stored
-router.post('/', function(req,res) {
-	var data = {
-		username: req.body.username,
-		password: req.body.password,
-		type: req.body.type
-	};
-	Admin.find({username: data.username}, function(err, admins) {
-		// TODO: check whether we need to check for null on admins
-		if (admins && admins.length > 0) {
-			utils.sendErrResponse(res, 403, 'Username already exists');
-		} else {
-			admin = new Admin(data);
-			admin.save(function(err) {
-				if (err) {
-					utils.sendErrResponse(res, 404, err);
+/*
+	PUT /admin - Log in an user
+	Request body:
+	- username: Username for the admin.
+	- password: Password for the admin
+*/
+router.put('/', function(req, res) {
+	Admin.findOne({username: req.body.username}, function(err, admin) {
+		if (err) {
+			utils.sendErrResponse(res, 404, err);
+		} else if (admin) {
+			bcrypt.compare(req.body.password, admin.password, function(err, result) {
+				if (result) {
+					req.session.name = req.body.username;
+					req.session.userId = admin._id;
+					/*req.session.save(function(err) {
+						if (err) {
+							utils.sendErrResponse(res, 404, err);
+						} else {
+							utils.sendSuccessResponse(res, req.session);
+							//utils.sendSuccessResponse(res, 'Logged in.');
+						}
+					});*/utils.sendSuccessResponse(res, 'Logged in');
 				} else {
-					utils.sendSuccessResponse(res, admin);
+					utils.sendErrResponse(res, 401, 'Incorrect password.');
 				}
 			});
+		} else {
+			utils.sendErrResponse(res, 401, 'Incorrect username.');
 		}
 	});
+});
+
+router.get('/check', function(req, res) {
+	utils.sendSuccessResponse(res, {name: req.session.name, id: req.session.userId});
+});
+
+router.get('/session', function(req, res) {
+	utils.sendSuccessResponse(res, req.session);
+});
+
+/*
+	PUT /admin/logout - logs out a user and clears session cookies
+	Returns: 
+	String: 'Successfully logged out.'
+*/
+router.get('/logout', function(req, res) {
+	if (req.session.name) {
+		req.session.name = null;
+		req.session.userId = null;
+		utils.sendSuccessResponse(res, 'Successfully logged out.');
+	} else {
+		utils.sendSuccessResponse(res, 'Already logged out.');
+	}
 });
 
 // checks whether a given username is taken or not; might need to be fixed 
