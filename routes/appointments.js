@@ -32,8 +32,7 @@ router.post('/', function(req, res) {
 	console.log(tempDate)
 	fixedDate = new Date(tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate());
 	//saves birthday as a date as well
-	var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-	birthday = new Date(req.body.birthday.year, months.indexOf(req.body.birthday.month), req.body.birthday.day);
+	birthday = new Date(req.body.birthday.year, req.body.birthday.month, req.body.birthday.day);
 
 
 	var data = {
@@ -86,9 +85,8 @@ router.post('/', function(req, res) {
 router.post('/availability', function(req, res) {
 	var temptoday = new Date(Date.now());
 	var temptomorrow = new Date(Date.now() + 1000*60*60*24);
-	var today = new Date(temptoday.getYear(), temptoday.getMonth(), temptoday.getDay());
-	var tomorrow = new Date(temptomorrow.getYear(), temptomorrow.getMonth(), temptomorrow.getDay());
-
+	var today = new Date(temptoday.getYear(), temptoday.getMonth(), temptoday.getDate());
+	var tomorrow = new Date(temptomorrow.getYear(), temptomorrow.getMonth(), temptomorrow.getDate());
 	Rule.find({date: {$in: [dayString(today.getDay()), dayString(tomorrow.getDay())]}}, function(err, rules){
 		if(err){
 			console.log(err);

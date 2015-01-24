@@ -206,11 +206,7 @@ table tr td:nth-child(odd){
 		font-size: 25px;
 	}
 
-	#back{
+	button{
 		display: none;
-	}
-
-	.button5{
-		display:none;
 	}
 }

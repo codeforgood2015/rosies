@@ -9,6 +9,7 @@ exports.testDev = function(req, res){
 	beginningOftime = new Date (1950, 1, 1);
 	(new Guest({firstName: 'TRICIA', lastName: 'SHI', birthday: birthday, lastVisit: beginningOftime})).save();*/
 	Guest.find().exec(function(err, guests){console.log(guests)})
+	Rule.find().exec(function(err, rules){console.log(rules)})
 	res.render('error');
 }
 

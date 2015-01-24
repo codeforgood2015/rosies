@@ -83,7 +83,7 @@ router.post('/guest', function(req, res) {
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 router.post('/guest', function(req, res) {
-	birthday = new Date(req.body.dob.year, months.indexOf(req.body.dob.month), req.body.dob.day);
+	birthday = new Date(req.body.dob.year, req.body.dob.month, req.body.dob.day);
 	console.log(birthday)
 	var data = {
 		firstName: req.body.firstName.toUpperCase(),

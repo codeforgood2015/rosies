@@ -13,7 +13,7 @@
 <body ng-app = "dateTime">
 <div ng-controller="datetimeController as ctrl">
 
-<button id = "back"  ng-show="currentSelect >= 0" ng-click = "ctrl.back()"><span style = "font-family: 'Times New Roman';">&#9166</span><br>BACK </button>
+<button id = "back"  ng-show="currentSelect >= 0" ng-click = "ctrl.back()"><span style = "font-family: 'Times New Roman';">&#9166</span><br>{{'BACK' | translate}} </button>
 <div id = "header"><br>
 <img id = "logo" src = '../public/images/logo.png'>
 <h1>{{'LOGO_CAPTION' | translate}}</h1><br>
@@ -69,7 +69,21 @@
 	<span class = "label"> {{'DATE_OF_BIRTH' | translate}}: </span>
 
 	<select name = "year" id = "dobyear" ng-model = "user.dob.year" ng-change = "ctrl.updateDates()" ng-options = "year for year in ctrl.years" required = ""></select>
-	<select name = "month" id = "dobmonth" ng-model = "user.dob.month" ng-change = "ctrl.updateDates()" ng-options = "month for month in ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November', 'December']" required = ""></select>
+	<select name = "month" id = "dobmonth" ng-model = "user.dob.month" ng-change = "ctrl.updateDates()" required = "">
+		<option value = '0'>{{'JANUARY' | translate}}</option>
+		<option value = '1'>{{'FEBRUARY' | translate}}</option>
+		<option value = '2'>{{'MARCH' | translate}}</option>
+		<option value = '3'>{{'APRIL' | translate}}</option>
+		<option value = '4'>{{'MAY' | translate}}</option>
+		<option value = '5'>{{'JUNE' | translate}}</option>
+		<option value = '6'>{{'JULY' | translate}}</option>
+		<option value = '7'>{{'AUGUST' | translate}}</option>
+		<option value = '8'>{{'SEPTEMBER' | translate}}</option>
+		<option value = '9'>{{'OCTOBER' | translate}}</option>
+		<option value = '10'>{{'NOVEMBER' | translate}}</option>
+		<option value = '11'>{{'DECEMBER' | translate}}</option>
+
+	</select>
 	<select name = "day"id = "dobdate" ng-model = "user.dob.day"required = ""><option ng-repeat = "day in ctrl.monthDayPairs[0]" value = {{day}}>{{day}}</options></select><br>
 	<span class = "error" ng-show = "ctrl.attempted && (!user.dob.day || !user.dob.month || !user.dob.year)">{{'MISSING_DOB' | translate}}</span>
 <br><br>
@@ -79,21 +93,21 @@
 </div>
 
 <div ng-show = "currentSelect === 0">
-<h3>Select a Date</h3>
+<h3>{{'SELECT_A_DATE' | translate }}</h3>
 	<br>
-	<button class = "button0" ng-click="ctrl.dateIndex = 0; ctrl.selectDate(0); ctrl.next()"><b>{{ctrl.dateSlots[0]}}</b><br>(today)</button>
-	<button class = "button0" ng-click="ctrl.dateIndex = 1; ctrl.selectDate(1);ctrl.next()"><b>{{ctrl.dateSlots[1]}}</b><br>(tomorrow)</button>
+	<button class = "button0" ng-click="ctrl.dateIndex = 0; ctrl.selectDate(0); ctrl.next()"><b>{{dateSlots[0]}}</b><br>({{'TODAY' | translate}})</button>
+	<button class = "button0" ng-click="ctrl.dateIndex = 1; ctrl.selectDate(1);ctrl.next()"><b>{{dateSlots[1]}}</b><br>({{'TOMORROW' | translate}})</button>
 </div>
 
 <div ng-show = "currentSelect === 1">
-<h3>Select a Time</h3>
+<h3>{{'SELECT_A_TIME' | translate}}</h3>
 <div><button ng-repeat="time in timeSlots[ctrl.dateIndex]" class = "button1 {{time[1]}}" ng-disabled = {{ctrl.disableClosed(time)}} ng-click="ctrl.selectTime(time); ctrl.next()">{{ctrl.timeArrayToString(time[0])}}</button></div>
 </div>
 
 <div ng-show = "currentSelect === 2">
-<h3>Premade Bag</h3>
-	<button class = "button2" ng-click="ctrl.selectBag('yes'); ctrl.next()"><b>YES</b><br>make me a bag</button>
-	<button class = "button2" ng-click="ctrl.selectBag('no'); ctrl.next()"><b>NO</b><br>I want to pick my own food</button>
+<h3>{{'PREMADE_BAG' | translate}}</h3>
+	<button class = "button2" ng-click="ctrl.selectBag('YES'); ctrl.next()"><b>{{'YES' | translate}}</b><br>{{'MAKE_BAG' | translate}}</button>
+	<button class = "button2" ng-click="ctrl.selectBag('NO'); ctrl.next()"><b>{{'NO' | translate}}</b><br>{{'I_CHOOSE' | translate}}</button>
 </div>
 
 <!-- <div ng-show = "currentSelect === 3">
@@ -106,24 +120,25 @@
 	<button class = "button3-1" ng-click = "ctrl.next()" ng-show = "ctrl.allergies">done</button>
 </div> -->
 
-<div ng-show = "currentSelect ===3" id = "confirmationPage">
-	<h3>Confirmation</h3>
+<div ng-show = "currentSelect === 3" id = "confirmationPage">
+	<h3>{{'CONFIRMATION' | translate}}</h3>
 	<table>
 		<tr>
-			<td>Name: </td>
+			<td>{{'NAME' | translate}}: </td>
 			<td>{{user.firstName}} {{user.lastName}}</td>
+			<td>{{user.dob.year}} {{user.dob.month}} {{user.dob.day}}</td>
 		</tr>
 		<tr>
-			<td>Date: </td>
-			<td>{{ctrl.dateSelect}}</td>
+			<td>{{'DATE' | translate}}: </td>
+			<td>{{dateSlots[ctrl.dateIndex]}}</td>
 		</tr>
 		<tr>
-			<td>Time: </td>
+			<td>{{'TIME' | translate}}: </td>
 			<td>{{ctrl.timeArrayToString(ctrl.timeSelect[0])}}</td>
 		</tr>
 		<tr>
-			<td>Pre-made Bag: </td>
-			<td>{{ctrl.bag}}</td>
+			<td>{{'PREMADE_BAG' | translate}}: </td>
+			<td>{{ctrl.bag | translate}}</td>
 		</tr>
 		<tr ng-show = 'user.waitlist'>
 			<td>Waitlist:</td>

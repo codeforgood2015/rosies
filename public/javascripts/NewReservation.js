@@ -28,6 +28,21 @@ app.config(function($translateProvider){
 	$translateProvider.translations('en', {
 		//header
 		'LOGO_CAPTION' : 'Food Pantry Sign Up',
+		'BACK' : 'back',
+
+		//months
+		'JANUARY' : 'January',
+		'FEBRUARY' : 'February',
+		'MARCH' : 'March',
+		'APRIL' : 'April',
+		'MAY' : 'May',
+		'JUNE' : 'June',
+		'JULY' : 'July',
+		'AUGUST' : 'August',
+		'SEPTEMBER' : 'September',
+		'OCTOBER' : 'October',
+		'NOVEMBER' : 'November',
+		'DECEMBER' : 'December',
 
 		//page 1
 		'LOG_IN' : 'Log In',
@@ -39,13 +54,53 @@ app.config(function($translateProvider){
 		//page1 errors
 		'MISSING_FIRST' : 'please provide your first name',
 		'MISSING_LAST' : 'please provide your last name',
-		'MISSING_DOB' : 'please provide your date of birth'
+		'MISSING_DOB' : 'please provide your date of birth',
+
+		//page2
+		'SELECT_A_DATE' : 'Select a Date',
+		'TODAY' : 'today',
+		'TOMORROW' : 'tomorrow',
+
+		//page3
+		'SELECT_A_TIME' : 'Select a Time',
+
+		//page4
+		'PREMADE_BAG' : 'Premade Bag',
+		'YES' : 'YES',
+		'NO' : 'NO',
+		'MAKE_BAG': 'make me a bag',
+		'I_CHOOSE': 'I want to pick my own food',
+
+		//page5
+		'CONFIRMATION' : 'Confirmation',
+		'NAME' : 'Name',
+		'DATE' : 'Date', 
+		'TIME' : 'Time',
+		'SUBMIT' : 'submit',
+		'SUCCESS' : 'Successfully Saved!',
+		'PRINT' : 'print page',
+		'EXIT' : 'exit'
 	});
 
 	//chinese
 	$translateProvider.translations('zh', {
 		//header
 		'LOGO_CAPTION' : '登记',
+		'BACK' : '返回',
+
+		//months
+		'JANUARY' : '一月',
+		'FEBRUARY' : '二月',
+		'MARCH' : '三月',
+		'APRIL' : '四月',
+		'MAY' : '五月',
+		'JUNE' : '六月',
+		'JULY' : '七月',
+		'AUGUST' : '八月',
+		'SEPTEMBER' : '九月',
+		'OCTOBER' : '十月',
+		'NOVEMBER' : '十一月',
+		'DECEMBER' : '十二月',
 
 		//page 1
 		'LOG_IN': '登录',
@@ -57,7 +112,32 @@ app.config(function($translateProvider){
 		//page1 errors
 		'MISSING_FIRST' : '请输入你的名字',
 		'MISSING_LAST' : '请输入你的姓氏',
-		'MISSING_DOB' : '请输入你的出生日期'
+		'MISSING_DOB' : '请输入你的出生日期',
+
+		//page2
+		'SELECT_A_DATE' : '选择一个日期',
+		'TODAY' : '今天',
+		'TOMORROW' : '明天',
+
+		//page3
+		'SELECT_A_TIME' : '选择一个时间',
+
+		//page4
+		'PREMADE_BAG' : '已经预备好的袋子',
+		'YES' : '是',
+		'NO' : '不是',
+		'MAKE_BAG': '替我预备一个袋子',
+		'I_CHOOSE': '我想自己选择食物',
+
+		//page5
+		'CONFIRMATION' : '确定',
+		'NAME' : '名字',
+		'DATE' : '日期', 
+		'TIME' : '时间',
+		'SUBMIT' : '确定',
+		'SUCCESS' : '成功储存',
+		'PRINT' : '列印',
+		'EXIT' : '退出'
 	});
 
 	$translateProvider.preferredLanguage('en');
@@ -65,12 +145,13 @@ app.config(function($translateProvider){
 		
 app.controller('datetimeController', function($scope, $translate, $http){
 	var me = this;
+	$scope.langKey = 'en'; //defaults to English
 	$scope.currentSelect = -1;
 	this.attempted = false;
 	$scope.submitSuccess = false;
 	$scope.timeSlots = [['9:00 am to 10:00 am', '10:00 am  to 11:00 am', '11:00 am to 12:00 noon', '4:30 pm to 5:30 pm', '5:30 pm to 6:30 pm'],['9:00 am to 10:00 am', '10:00 am  to 11:00 am', '11:00 am to 12:00 noon', '4:30 pm to 5:30 pm', '5:30 pm to 6:30 pm']];
 	this.dateIndex = 0;
-	this.timeSelect = ['not Selected', ''];
+	this.timeSelect = ['9:00', '10:00'];
 	this.lastVisit = {};
 	this.lastVisit.date = '';
 	this.lastVisit.timeSlot = '';
@@ -83,8 +164,16 @@ app.controller('datetimeController', function($scope, $translate, $http){
 	//langKey is a 2 letter abbreviation for language
 	//this function is basically the same as the tutorial found here http://angular-translate.github.io/docs/#/guide/07_multi-language
 	//'en' : English
+	//'es' : Spanish
 	//'zh' : Chinese
+	//'pt' : Portuguese
+	//'ht' : Haitian Creole
+	//'kea' : Kabuverdianu (Cape Verdean Creole)
 	$scope.changeLanguage = function(langKey){
+		//toLocaleString is not supported for ht and kea. Need to do casework to add these in
+		//TODO: ask Sandy to ask how date constructors work in creole.
+		$scope.dateSlots = [me.today.toLocaleString(langKey, me.dateOptions), me.tomorrow.toLocaleString(langKey, me.dateOptions)];
+		$scope.langKey = langKey;
 		$translate.use(langKey);
 	}
 
@@ -121,6 +210,7 @@ app.controller('datetimeController', function($scope, $translate, $http){
 	//IF THE USER IS VALID, GET THE LATEST TIMESLOT AVAILABILITY
 	this.lookup = function(user){
 		if(user && user.firstName && user.lastName && user.dob && user.dob.year && user.dob.month && user.dob.day){
+			console.log(user)
 			$http.post('/auth/guest', {
 				firstName: user.firstName,
 				lastName: user.lastName,
@@ -130,6 +220,7 @@ app.controller('datetimeController', function($scope, $translate, $http){
 					$scope.currentSelect +=1;
 					$scope.submitSuccess = false;
 					$http.post('/appointments/availability').success(function(data, status, headers, config){
+						console.log(data);
 						$scope.timeSlots = [];
 						$scope.timeSlots[0] = data[0];
 						$scope.timeSlots[0].sort(function(a, b){
@@ -170,6 +261,7 @@ app.controller('datetimeController', function($scope, $translate, $http){
 	//HELPER FUNCTION FOR BUTTON RENDERING
 	//changes an array [String, String] where strings are times in military time
 	//to a readable string 'TIME TO TIME'
+	//TODO: INTERNATIONALIZE THIS. BECAUSE 'TO' ISN'T IN ALL LANGUAGES
 	this.timeArrayToString = function(timeArray){
 		start = timeArray[0].split(':');
 		end = timeArray[1].split(':');
@@ -229,9 +321,10 @@ app.controller('datetimeController', function($scope, $translate, $http){
 	//binds date to button click because angular doesn't like buttons
 	this.today = new Date(Date.now());
 	this.tomorrow = new Date(Date.now() + 1000*60*60*24)
-	this.dateSlots = [this.today.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'}), this.tomorrow.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})];
+	this.dateOptions = {weekday: 'long', month: 'long', day: 'numeric'};
+	$scope.dateSlots = [this.today.toLocaleString($scope.langKey, this.dateOptions), this.tomorrow.toLocaleString($scope.langKey, this.dateOptions)];
 	this.selectDate = function(dateChoice){
-		this.dateSelect = this.dateSlots[dateChoice];
+		this.dateSelect = $scope.dateSlots[dateChoice];
 		this.dateIndex = dateChoice;
 	};
 
@@ -254,14 +347,13 @@ app.controller('datetimeController', function($scope, $translate, $http){
 	}
 
 	this.updateDates = function(){
-		myYear = $("#dobyear").val();
+		myYear = me.today.getFullYear() - 14 - $("#dobyear").val();
 		myMonth = $("#dobmonth").val();
 		myCurrentDate = $("#dobdate").val();
 		myDates = range(1, 31, 1);
-
 		if(myYear != '?' && myMonth != '?'){
 			myDates = this.monthDayPairs[myMonth];
-			if(myYear % 4 === 0 && myMonth == 2){
+			if(myYear % 4 === 0 && myMonth == 1){
 				myDates = range(1, 29, 1);
 			}
 		}
@@ -303,7 +395,7 @@ app.controller('datetimeController', function($scope, $translate, $http){
 			rdateFixed = fixedDates[this.dateIndex].getTime();
 			console.log(rdateFixed)
 			console.log(Date(rdateFixed))
-			if(rbag == 'yes'){
+			if(rbag == 'YES'){
 				rbagFixed = true;
 			}
 			else{
