@@ -16,13 +16,12 @@
 <button id = "back"  ng-show="currentSelect >= 0" ng-click = "ctrl.back()"><span style = "font-family: 'Times New Roman';">&#9166</span><br>{{'BACK' | translate}} </button>
 <div id = "header"><br>
 <img id = "logo" src = '../public/images/logo.png'>
-<h1>{{'LOGO_CAPTION' | translate}}</h1><br>
-<button ng-click = 'changeLanguage("en")'>English</button>
-<button ng-click = 'changeLanguage("zh")'>中文</button>
-<button ng-click = 'changeLanguage("es")'>Español</button>
-<button ng-click = 'changeLanguage("pt")'>Português</button>
-<button ng-click = 'changeLanguage("ht")'>Kreyòl Ayisyen</button> 
-
+<h1>{{'LOGO_CAPTION' | translate}}</h1><span class = 'noMobile'><br></span>
+<button class = 'language' ng-click = 'changeLanguage("en")'>English</button>
+<button class = 'language' ng-click = 'changeLanguage("zh")'>中文</button>
+<button class = 'language' ng-click = 'changeLanguage("es")'>Español</button>
+<button class = 'language' ng-click = 'changeLanguage("pt")'>Português</button>
+<button class = 'language' ng-click = 'changeLanguage("ht")'>Kreyòl Ayisyen</button> 
 </div>
 
 <!-- ERROR: GUEST NOT FOUND -->
@@ -130,7 +129,6 @@
 		<tr>
 			<td>{{'NAME' | translate}}: </td>
 			<td>{{user.firstName}} {{user.lastName}}</td>
-			<td>{{user.dob.year}} {{user.dob.month}} {{user.dob.day}}</td>
 		</tr>
 		<tr>
 			<td>{{'DATE' | translate}}: </td>
