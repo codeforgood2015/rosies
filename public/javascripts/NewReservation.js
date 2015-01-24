@@ -455,16 +455,18 @@ app.controller('datetimeController', function($scope, $translate, $http){
 		//toLocaleString is not supported for ht and kea. Need to do casework to add these in
 		//TODO: ask Sandy to ask how date constructors work in creole.
 		$scope.dateSlots = [me.today.toLocaleString(langKey, me.dateOptions), me.tomorrow.toLocaleString(langKey, me.dateOptions)];
-		me.lastVisit.date = 
 		$scope.langKey = langKey;
-		me.lastVisit.date = me.lastVisit.dateReal.toLocaleString(langKey, me.dateOptions);
-		//$translate.fallbackLanguage('en');
+		if(me.lastVisit.dateReal && me.lastVisit.dateReal != ''){
+			me.lastVisit.date = me.lastVisit.dateReal.toLocaleString(langKey, me.dateOptions);
+		}
 		$translate.use(langKey);
 	}
 
 	//CLEARS ALL USER DATA AND SETS ALL BACK TO DEFAULTS
 	//CALLED ON EXIT BUTTON AND ON HITTING BACK TO THE FRONT PAGE
 	this.reset = function(){
+		$scope.langKey = 'en';
+		$scope.changeLanguage('en');
 		$scope.currentSelect = -1;
 		$scope.user = {};
 		me.dateSelect = '';
