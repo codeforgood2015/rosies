@@ -4,6 +4,7 @@
 <head>
 	<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src = "bower_components/angular-translate/angular-translate.js"></script>
 	<script src='../public/javascripts/NewReservation.js'></script>
 	<link href='../public/stylesheets/NewReservation.css' type='text/css' rel='stylesheet'/>
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans|Roboto|Playfair+Display' rel='stylesheet' type='text/css'>
@@ -15,7 +16,10 @@
 <button id = "back"  ng-show="currentSelect >= 0" ng-click = "ctrl.back()"><span style = "font-family: 'Times New Roman';">&#9166</span><br>BACK </button>
 <div id = "header"><br>
 <img id = "logo" src = '../public/images/logo.png'>
-<h1>Food Pantry Sign Up</h1>
+<h1>{{'LOGO_CAPTION' | translate}}</h1><br>
+<button ng-click = 'changeLanguage("zh")'>中文</button>
+<button ng-click = 'changeLanguage("en")'>English</button>
+
 </div>
 
 <!-- ERROR: GUEST NOT FOUND -->
@@ -46,6 +50,7 @@
 <!--WAITLIST INFO -->
 <div ng-show = 'currentSelect === -7' id = 'waitlistInfo'>
 	<h3>Waitlist</h3>
+	<p>You signed up for a waitlist time.</p>
 	<p>Waitlist means you can show up, and you will get a spot if anyone with an appointment does not show up.</p>
 	<button class = 'button-7' ng-click = 'currentSelect = 0'>select a different time</button>
 	<button class = 'button-7' ng-click = 'user.waitlist = true; currentSelect = 2'>continue anyways</button>
@@ -53,22 +58,22 @@
 
 <!-- NORMAL FLOW -->
 <div ng-show = "currentSelect === -1">
-	<h3>Log In</h3>
+	<h3>{{'LOG_IN' | translate}}</h3>
 	<form name = 'guestForm' novalidate>
-	<span class = "label"> First Name: </span><input name = "first" type = "text" ng-model = "user.firstName" placeholder = "type here" required = ""><br>
-	<span class = "error" ng-show = "ctrl.attempted && !user.firstName">please enter your first name</span><br>
+	<span class = "label"> {{'FIRST_NAME' | translate}}: </span><input name = "first" type = "text" ng-model = "user.firstName" placeholder = "type here" required = ""><br>
+	<span class = "error" ng-show = "ctrl.attempted && !user.firstName">{{'MISSING_FIRST' | translate}}</span><br>
 
-	<span class = "label"> Last Name: </span><input name = "last" type = "text" ng-model = "user.lastName" placeholder = "type here" required = ""><br>
-	<span class = "error" ng-show = "ctrl.attempted && !user.lastName">please enter your last name</span><br>
+	<span class = "label"> {{'LAST_NAME' | translate}}: </span><input name = "last" type = "text" ng-model = "user.lastName" placeholder = "type here" required = ""><br>
+	<span class = "error" ng-show = "ctrl.attempted && !user.lastName">{{'MISSING_LAST' | translate}}</span><br>
 
-	<span class = "label"> Date of Birth: </span>
+	<span class = "label"> {{'DATE_OF_BIRTH' | translate}}: </span>
 
 	<select name = "year" id = "dobyear" ng-model = "user.dob.year" ng-change = "ctrl.updateDates()" ng-options = "year for year in ctrl.years" required = ""></select>
 	<select name = "month" id = "dobmonth" ng-model = "user.dob.month" ng-change = "ctrl.updateDates()" ng-options = "month for month in ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November', 'December']" required = ""></select>
 	<select name = "day"id = "dobdate" ng-model = "user.dob.day"required = ""><option ng-repeat = "day in ctrl.monthDayPairs[0]" value = {{day}}>{{day}}</options></select><br>
-	<span class = "error" ng-show = "ctrl.attempted && (!user.dob.day || !user.dob.month || !user.dob.year)">please fill out your date of birth</span>
+	<span class = "error" ng-show = "ctrl.attempted && (!user.dob.day || !user.dob.month || !user.dob.year)">{{'MISSING_DOB' | translate}}</span>
 <br><br>
-	<button type = "submit" class = "button-1" ng-click = "ctrl.lookup(user)">next</button>
+	<button type = "submit" class = "button-1" ng-click = "ctrl.lookup(user)">{{'CONTINUE' | translate}}</button>
 	</form>
 
 </div>

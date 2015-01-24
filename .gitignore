@@ -9,3 +9,6 @@ public/images/Thumbs.db
 
 #Mongo DB
 data
+
+#bower modules
+bower_components

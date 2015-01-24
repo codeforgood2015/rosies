@@ -21,13 +21,49 @@ var range = function(start, end, up){
 /****************************/
 
 (function(){
-	var app = angular.module('dateTime', []);
-app.controller('LoginController', function($scope, $http){
-	
+var app = angular.module('dateTime', ['pascalprecht.translate']);
+app.config(function($translateProvider){
 
-});
+	//english
+	$translateProvider.translations('en', {
+		//header
+		'LOGO_CAPTION' : 'Food Pantry Sign Up',
+
+		//page 1
+		'LOG_IN' : 'Log In',
+		'FIRST_NAME' : 'First Name',
+		'LAST_NAME' : 'Last Name',
+		'DATE_OF_BIRTH' : 'Date of Birth',
+		'CONTINUE' : 'continue',
+
+		//page1 errors
+		'MISSING_FIRST' : 'please provide your first name',
+		'MISSING_LAST' : 'please provide your last name',
+		'MISSING_DOB' : 'please provide your date of birth'
+	});
+
+	//chinese
+	$translateProvider.translations('zh', {
+		//header
+		'LOGO_CAPTION' : '登记',
+
+		//page 1
+		'LOG_IN': '登录',
+		'FIRST_NAME' : '名',
+		'LAST_NAME' : '姓氏',
+		'DATE_OF_BIRTH' : '出生日期', 
+		'CONTINUE' : '继续',
+
+		//page1 errors
+		'MISSING_FIRST' : '请输入你的名字',
+		'MISSING_LAST' : '请输入你的姓氏',
+		'MISSING_DOB' : '请输入你的出生日期'
+	});
+
+	$translateProvider.preferredLanguage('en');
+}); //end of translation
 		
-app.controller('datetimeController', function($scope, $http){
+app.controller('datetimeController', function($scope, $translate, $http){
 	var me = this;
 	$scope.currentSelect = -1;
 	this.attempted = false;
@@ -39,8 +75,19 @@ app.controller('datetimeController', function($scope, $http){
 	this.lastVisit.date = '';
 	this.lastVisit.timeSlot = '';
 
+
 	$scope.timeSlots[0] = [];
 	$scope.timeSlots[1] = [];
+
+	//allows for different languages
+	//langKey is a 2 letter abbreviation for language
+	//this function is basically the same as the tutorial found here http://angular-translate.github.io/docs/#/guide/07_multi-language
+	//'en' : English
+	//'zh' : Chinese
+	$scope.changeLanguage = function(langKey){
+		$translate.use(langKey);
+	}
+
 	//CLEARS ALL USER DATA AND SETS ALL BACK TO DEFAULTS
 	//CALLED ON EXIT BUTTON AND ON HITTING BACK TO THE FRONT PAGE
 	this.reset = function(){
