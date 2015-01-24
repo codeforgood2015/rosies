@@ -79,10 +79,112 @@ app.config(function($translateProvider){
 		'SUBMIT' : 'submit',
 		'SUCCESS' : 'Successfully Saved!',
 		'PRINT' : 'print page',
-		'EXIT' : 'exit'
+		'EXIT' : 'exit',
+
+		//errors
+		'ERROR' : 'Error',
+		'NOT_FOUND' : 'Your information was not found in the database',
+		'CONTACT' : "call Patricia Jones in Rosie's Place at 617-318-0236 for assistance",
+		'TRY_AGAIN_OR' : 'please try again or',
+		'REMINDER' : 'Reminder',
+		//need: you have already visited the food pantry
+		'YOUR_APPOINTMENTS_DATE' : 'You are signed up for',
+		'YOUR_APPOINTMENTS_TIME' : 'Your timeslot is',
+		'PRESS_CANCEL' : 'press "cancel" to cancel this appointment and make a new one',
+		'PRESS_EXIT' : 'press "exit" to close this page',
+		'CANCEL' : 'cancel',
+
+		//waitlist
+		'WAITLIST' : 'Waitlist',
+		'WAITLIST_STATEMENT' : 'You signed up for a waitlist time',
+		'WAITLIST_INFO' : 'Waitlist means you may show up, and you will get a spot if people with appointments do not show up',
+		'SELECT_DIFF' : 'select a different time',
+		'CONTINUE_ANYWAYS' : 'continue anyways'
+
+
+	});
+
+	//spanish
+	//provided by Antonio Moreno MIT '15 
+	$translateProvider.translations('es', {
+		//header
+		'LOGO_CAPTION' : 'despensa de comida',
+		'BACK' : 'regresar',
+
+		//months
+		'JANUARY' : 'enero',
+		'FEBRUARY' : 'febrero',
+		'MARCH' : 'marzo',
+		'APRIL' : 'abril',
+		'MAY' : 'mayo',
+		'JUNE' : 'junio',
+		'JULY' : 'julio',
+		'AUGUST' : 'agosto',
+		'SEPTEMBER' : 'septiembre',
+		'OCTOBER' : 'octubre',
+		'NOVEMBER' : 'noviembre',
+		'DECEMBER' : 'diciembre',
+
+		//page 1
+		'LOG_IN' : 'Iniciar una cita ',
+		'FIRST_NAME' : 'Nombre propío',
+		'LAST_NAME' : 'Apellido',
+		'DATE_OF_BIRTH' : 'Fecha de Nacimiento',
+		'CONTINUE' : 'empezar',
+
+		//page1 errors
+		'MISSING_FIRST' : 'porfavor ingrese su nombre propío',
+		'MISSING_LAST' : 'porfavor ingrese su apellido',
+		'MISSING_DOB' : 'porfavor ingrese su fecha de nacimiento',
+
+		//page2
+		'SELECT_A_DATE' : 'elija una fecha para su cita',
+		'TODAY' : 'hoy',
+		'TOMORROW' : 'mañana',
+
+		//page3
+		'SELECT_A_TIME' : 'elija una hora para su cita',
+
+		//page4
+		'PREMADE_BAG' : 'bolsita pre-hecha',
+		'YES' : 'si',
+		'NO' : 'no',
+		'MAKE_BAG': 'bolsita pre-hecha',
+		'I_CHOOSE': 'quiero escoger mi propia comida',
+
+		//page5
+		'CONFIRMATION' : 'confirmacion',
+		'NAME' : 'nombre y apellido',
+		'DATE' : 'fecha que escojio', 
+		'TIME' : 'hora que escojio',
+		'SUBMIT' : 'completar su orden',
+		'SUCCESS' : 'orden registrada!',
+		'PRINT' : 'imprimir una copia',
+		'EXIT' : 'salir',
+
+		//errors
+		'ERROR' : 'Error',
+		'NOT_FOUND' : 'su informacion no esta registrada',
+		'CONTACT' : "contacte a Patricia Jones a 617-318-0236 para asistencia",
+		'TRY_AGAIN_OR' : 'Porfavor trate de Nuevo, o',
+		'REMINDER' : 'notificacion',
+		//need: you have already visited the food pantry
+		'YOUR_APPOINTMENTS_DATE' : 'ya esta registrada para una cita en',
+		'YOUR_APPOINTMENTS_TIME' : 'su hora de cita es',
+		'PRESS_CANCEL' : 'oprima (cancelar) para cancelar su cita, y podra hacer otra cita',
+		'PRESS_EXIT' : 'oprima (salir) para cerrar esta pagina',
+		'CANCEL' : 'cancelar',
+
+		//waitlist
+		'WAITLIST' : 'lista de espera',
+		'WAITLIST_STATEMENT' : 'se registro para un lugar en la lista de espera',
+		'WAITLIST_INFO' : 'la lista de espra no garantiza un lugar, pero posiblemente le reserva un lugar en caso de que alguien mas no llegue a su citap',
+		'SELECT_DIFF' : 'selecione una hora diferente',
+		'CONTINUE_ANYWAYS' : 'continuar con su seleccion'
 	});
 
 	//chinese
+	//provided by Natalle Yu MIT '15
 	$translateProvider.translations('zh', {
 		//header
 		'LOGO_CAPTION' : '登记',
@@ -137,10 +239,31 @@ app.config(function($translateProvider){
 		'SUBMIT' : '确定',
 		'SUCCESS' : '成功储存',
 		'PRINT' : '列印',
-		'EXIT' : '退出'
+		'EXIT' : '退出',
+
+		//errors
+		'ERROR' : '错误',
+		'NOT_FOUND' : '你的资料不在记录里',
+		'CONTACT' : "致电Patricia Jones (617-318-0236)",
+		'TRY_AGAIN_OR' : '请再尝试或',
+		'REMINDER' : '提示',
+		//need: you have already visited the food pantry
+		'YOUR_APPOINTMENTS_DATE' : '你登记的日期是',
+		'YOUR_APPOINTMENTS_TIME' : '时间是',
+		'PRESS_CANCEL' : '如果要取消这个登记，请按取消',
+		'PRESS_EXIT' : '如果要退出，请按取消',
+		'CANCEL' : '取消',
+
+		//waitlist
+		'WAITLIST' : '候补名单',
+		'WAITLIST_STATEMENT' : '你已经被登记在候补名单内',
+		'WAITLIST_INFO' : '候补名单的意思是如果已经登记了的人没有来你可以取代他们的位置',
+		'SELECT_DIFF' : '请选择另一个时间',
+		'CONTINUE_ANYWAYS' : '继续'
 	});
 
 	//portuguese
+	//provided by Francisco Machado MIT '16
 	$translateProvider.translations('pt', {
 	//header
 	'LOGO_CAPTION' : 'Registrar para a Dispensa',
@@ -195,13 +318,34 @@ app.config(function($translateProvider){
 	'SUBMIT' : 'Submeter',
 	'SUCCESS' : 'Guardado com sucesso!',
 	'PRINT' : 'imprimir página',
-	'EXIT' : 'sair'
+	'EXIT' : 'sair',
+
+	//errors
+	'ERROR' : 'Erro',
+	'NOT_FOUND' : 'A sua informação não foi encontrada na base de dados',
+	'CONTACT' : "telefone à Patricia Jones na Rosie Place Pantry pelo número 617-318-0236 para assistência",
+	'TRY_AGAIN_OR' : 'Por favor tente de novo ou',
+	'REMINDER' : 'Lembrete',
+	//need: you have already visited the food pantry
+	'YOUR_APPOINTMENTS_DATE' : 'Está registado para o',
+	'YOUR_APPOINTMENTS_TIME' : 'A sua reserva é às',
+	'PRESS_CANCEL' : 'Pressione “cancelar” para cancelar este registo e fazer um novo',
+	'PRESS_EXIT' : 'Pressione “sair” para fechar',
+	'CANCEL' : 'cancelar',
+
+	//waitlist
+	'WAITLIST' : 'List de espera',
+	'WAITLIST_STATEMENT' : 'Inscreveu-se para a lista de espera',
+	'WAITLIST_INFO' : 'A lista de espera significa que pode aparecer, e terá um lugar se as pessoas com reservas não aparecerem',
+	'SELECT_DIFF' : 'Selecione uma hora diferente',
+	'CONTINUE_ANYWAYS' : 'Continuar à mesma'
 	});
 
-		//haitian creole
+	//haitian creole
+	//provided by a guest of Rosie's Place
 	$translateProvider.translations('ht', {
 	//header
-	'LOGO_CAPTION' : '', //missing
+	//'LOGO_CAPTION' : '', //missing
 	'BACK' : 'pa tras',
 
 	//months
@@ -223,12 +367,12 @@ app.config(function($translateProvider){
 	'FIRST_NAME' : 'Primeiro Nome',
 	'LAST_NAME' : 'Sobrenome',
 	'DATE_OF_BIRTH' : 'Data de Nascimento',
-	'CONTINUE' : '', //missing
+	//'CONTINUE' : '', //missing
 
 	//page1 errors
-	'MISSING_FIRST' : '', //missing
-	'MISSING_LAST' : '', //missing
-	'MISSING_DOB' : '', //missing
+	//'MISSING_FIRST' : '', //missing
+	//'MISSING_LAST' : '', //missing
+	//'MISSING_DOB' : '', //missing
 
 	//page2
 	'SELECT_A_DATE' : 'Escolher um Data',
@@ -250,13 +394,34 @@ app.config(function($translateProvider){
 	'NAME' : 'Nome',
 	'DATE' : 'Data', 
 	'TIME' : 'Hora',
-	'SUBMIT' : '', //missing
-	'SUCCESS' : '', //missing
-	'PRINT' : '', //missing
-	'EXIT' : '' //missing
+	//'SUBMIT' : '', //missing
+	//'SUCCESS' : '', //missing
+	//'PRINT' : '', //missing
+	//'EXIT' : '' //missing
+
+	//errors
+	//'ERROR' : '', //missing
+	//'NOT_FOUND' : '', //missing
+	//'CONTACT' : '', //missing
+	//'TRY_AGAIN_OR' : '', //missing
+	//'REMINDER' : '', //missing
+	//need: you have already visited the food pantry
+	//'YOUR_APPOINTMENTS_DATE' : ''', //missing
+	//'YOUR_APPOINTMENTS_TIME' : '', //missing
+	//'PRESS_CANCEL' : '', //missing
+	//'PRESS_EXIT' : '', //missing
+	//'CANCEL' : ''', //missing
+
+	//waitlist
+	//'WAITLIST' : '', //missing
+	//'WAITLIST_STATEMENT' : '', //missing
+	//'WAITLIST_INFO' : '', //missing
+	//'SELECT_DIFF' : '', //missing
+	//'CONTINUE_ANYWAYS' : '', //missing
 	});	
 
 	$translateProvider.preferredLanguage('en');
+	$translateProvider.fallbackLanguage(['en']);
 }); //end of translation
 		
 app.controller('datetimeController', function($scope, $translate, $http){
@@ -269,6 +434,7 @@ app.controller('datetimeController', function($scope, $translate, $http){
 	this.dateIndex = 0;
 	this.timeSelect = ['9:00', '10:00'];
 	this.lastVisit = {};
+	this.lastVisit.dateReal = '';
 	this.lastVisit.date = '';
 	this.lastVisit.timeSlot = '';
 
@@ -289,7 +455,10 @@ app.controller('datetimeController', function($scope, $translate, $http){
 		//toLocaleString is not supported for ht and kea. Need to do casework to add these in
 		//TODO: ask Sandy to ask how date constructors work in creole.
 		$scope.dateSlots = [me.today.toLocaleString(langKey, me.dateOptions), me.tomorrow.toLocaleString(langKey, me.dateOptions)];
+		me.lastVisit.date = 
 		$scope.langKey = langKey;
+		me.lastVisit.date = me.lastVisit.dateReal.toLocaleString(langKey, me.dateOptions);
+		//$translate.fallbackLanguage('en');
 		$translate.use(langKey);
 	}
 
@@ -361,7 +530,9 @@ app.controller('datetimeController', function($scope, $translate, $http){
 				}
 
 				else {
-					me.lastVisit.date = new Date(data.content.available[0]).toLocaleString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
+					//lastvisit means current appointment... :(
+					me.lastVisit.dateReal = new Date(data.content.available[0])
+					me.lastVisit.date = me.lastVisit.dateReal.toLocaleString($scope.langKey, me.dateOptions);
 					me.lastVisit.timeSlot = me.timeArrayToString(data.content.available[1]);
 					$scope.currentSelect = -8;
 				}
