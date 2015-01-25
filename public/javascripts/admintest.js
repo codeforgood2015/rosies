@@ -49,6 +49,7 @@
 			if (!this.loginError) this.currentSection = 3;
 			//get the current hours loaded
 			this.getDefaultHours(0);
+			this.getSpecialHours();
 		};
 		this.toAccountsView = function() {
 			if (!this.loginError) this.currentSection = 4;
@@ -72,6 +73,8 @@
 			//this.showEditDefaultHours = false;
 			//hide the edit admin side
 			this.hideNewAdminAccountView();
+			this.cancelEditedDefaultHours();
+			this.cancelEditedSpecialHours();
 			$("input :not(type=text)").val('');
 			//TODO: remove the additional slots that have been created
 		};
@@ -215,33 +218,61 @@
 			return military;
 		}
 
+		this.convertToStandard = function(military) {
+			var t = military.split(':');
+			var hour = t[0];
+			var minute = t[1];
+			var AMPM = '';
+			if (Number.parse(hour) > 12) {
+				AMPM = 'PM';
+				hour = Number.parse(hour) - 12;
+				hour = hour.toString();
+			} else if (Number.parse(hour) == 12) {
+				AMPM = 'PM'
+			} else {
+				AMPM = 'AM';
+			}
+			return hour + ':' + minute + ' ' + AMPM;
+		}
+
+		this.convertDateToReadable = function(date) {
+			var d = date.split('-'); //assumes dates come in form yyyy-mm-dd, as we inputed them
+			var year = d[0];
+			var month = d[1];
+			var date = d[2];
+			return month + '/' + date + '/' + year;
+		}
+
+		//TODO: change this to only change one military time thing, then use it for displays
+			//ALSO TODO: write functions that transform the date strings yyyy-mm-dd into more readable form mm/dd/yyyy  
+
 	  //HELPER FUNCTION FOR BUTTON RENDERING
 	  //changes an array [String, String] where strings are times in military time
 	  //to a readable string 'TIME TO TIME'
-	  this.timeArrayToString = function(timeArray){
-      start = timeArray[0].split(':');
-      end = timeArray[1].split(':');
-      if(Number(start[0]) > 12){
-        start[0] = Number(start[0]) - 12;
-        start[0] = String(start[0]);
-        start[2] = 'PM';
-      } else if (Number(start[0]) == 12){
-        start[2] = 'PM'
-      } else{
-        start[2] = 'AM';
-      }
+	  // this.timeArrayToString = function(timeArray){
+   //    start = timeArray[0].split(':');
+   //    end = timeArray[1].split(':');
+   //    if(Number(start[0]) > 12){
+   //      start[0] = Number(start[0]) - 12;
+   //      start[0] = String(start[0]);
+   //      start[2] = 'PM';
+   //    } else if (Number(start[0]) == 12){
+   //      start[2] = 'PM'
+   //    } else{
+   //      start[2] = 'AM';
+   //    }
       
-      if(Number(end[0]) > 12){
-        end[0] = Number(end[0]) - 12;
-        end[0] = String(end[0]);
-        end[2] = 'PM';
-      } else if (Number(end[0]) == 12){
-        end[2] = 'PM';
-      } else{
-        end[2] = 'AM';
-      }
-      return(start[0] + ':' + start[1] + ' ' + start[2] + ' to ' + end[0] + ':' + end[1] + ' ' + end[2]);
-	  };
+   //    if(Number(end[0]) > 12){
+   //      end[0] = Number(end[0]) - 12;
+   //      end[0] = String(end[0]);
+   //      end[2] = 'PM';
+   //    } else if (Number(end[0]) == 12){
+   //      end[2] = 'PM';
+   //    } else{
+   //      end[2] = 'AM';
+   //    }
+   //    return(start[0] + ':' + start[1] + ' ' + start[2] + ' to ' + end[0] + ':' + end[1] + ' ' + end[2]);
+	  // };
 
 		//arrays to store guest objects for each day
 		//format is _time: [list of guests], where _time is a rule object returned from query, and each guest is an appointment object
@@ -456,7 +487,7 @@
 			this.cancelEditedDefaultHours();
 		}
 
-		this.saveAddedDefaultHours = function() {
+		this.saveAddedDefaultRule = function() {
 			var s = $('#add-default-start').val();
 			var e = $('#add-default-end').val();
 			var c = $('#add-default-max-cap').val();
@@ -479,7 +510,7 @@
 			});
 		} 
 
-		this.cancelAddedDefaultHours = function() {
+		this.cancelAddedDefaultRule = function() {
 			this.showAddDefault = false;
 			this.addDay = '';
 			this.resetAddDefault();
@@ -500,7 +531,7 @@
 			this.cancelAddedDefaultHours();
 		}
 
-		this.saveEditedDefaultHours = function() {
+		this.saveEditedDefaultRule = function() {
 			//push new data to database using put request and refresh list of hours
 			var s = $('#edit-default-start').val();
 			var e = $('#edit-default-end').val();
@@ -522,7 +553,7 @@
 			});
 		}
 
-		this.cancelEditedDefaultHours = function() {
+		this.cancelEditedDefaultRule = function() {
 			this.showEditDefault = false;
 			this.editRule = {};
 			this.resetEditDefault();
@@ -536,7 +567,7 @@
 			$('#edit-default-waitlist').val('');
 		}
 
-		this.deleteRule = function(rule) { //rule is a rule object
+		this.deleteDefaultRule = function(rule) { //rule is a rule object
 			var id = rule._id;
 			$http.delete('/rules/'+id).success(function(data, status, headers, config) {
 				me.getDefaultHours(0);
@@ -545,292 +576,208 @@
 			});
 		}
 
-		// //FAKE DATA, replace soon plz 
-		// this.mondayDefault = function() {return ['4:30 PM', '5:30 PM'];};
-		// this.tuesdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
-		// this.wednesdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
-		// this.thursdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
-		// this.fridayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
-		// this.saturdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
-		// this.sundayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
+		// /***********************/
+		// /*  EDIT SPECIAL RULES */
+		// /***********************/
+
+		this.specialRules = {}; //key-value pairs like date:[rules]
+		this.specialDates = []; //array to keep track of all dates that have special rules associated with them
+		this.showEditSpecial = false;
+		this.specialRule = {}; //rule that is selected for editing and/or deleting
+
+		//utility to help populate all the special rules as key-value pairs
+		this.populateSpecialRulesAndDates = function(rules) { //takes in array of all rules
+			this.specialRules = {};
+			for (var i = 0; i < rules.length; i ++) {
+				var rule = rules[i];
+				var date = rule.date;
+				//add to specialDates if necessary
+				if (this.specialDates.indexOf(date) < 0) {
+					this.specialDates.push(date);
+				}
+				//add to specialRules 
+				if (!this.specialRules[date]) { //if already there, add this rule
+					this.specialRules[date] = [];
+				} 
+				this.specialRules[date].push(rule);
+			}
+		}
+
+		this.getSpecialHours = function() {
+			$http.get('/rules/special').success(function(data, status, headers, config){
+				me.populateSpecialRulesAndDates(data.content);
+			}).error(function(data, status, headers, config) {
+				window.alert('error in getSpecialHours');
+			});
+		}
+
+		this.editSpecialHours = function(rule) {
+			this.showEditSpecial = true;
+			this.specialRule = rule; //rule to edit
+		}
+
+		this.saveEditedSpecialRule = function() {
+			//grab things, send to database, reload
+			var s = $('#edit-special-start').val();
+			var e = $('#edit-special-end').val();
+			var c = $('#edit-special-max-cap').val();
+			var w = $('#edit-special-waitlist').val();
+			var id = this.specialRule._id;
+			var r = false; //repeat false
+			var data = {
+				time: [s, e],
+				maxCap: c,
+				maxWaitlist: w,
+				repeat: r
+			};
+			$http.put('/rules/' + id, data).success(function(data, status, headers, config) {
+				me.getSpecialHours();
+			}).error(function(data, status, headers, config) {
+				window.alert('error in saveEditedSpecialHours');
+			});
+		}
+
+		this.cancelEditedSpecialRule = function() {
+			this.showEditSpecial = false;
+			this.specialRule = {};
+			this.resetEditSpecial();
+		}
+
+		//clears all input text boxes for editing special hours
+		this.resetEditSpecial = function() {
+			$('#edit-special-start').val('');
+			$('#edit-special-end').val('');
+			$('#edit-special-max-cap').val('');
+			$('#edit-special-waitlist').val('');
+		}
 
 
+		this.deleteSpecialRule = function(rule) { //rule is a rule object
+			var id = rule._id;
+			$http.delete('/rules/'+id).success(function(data, status, headers, config) {
+				me.getSpecialHours();
+			}).error(function(data, status, headers, config) {
+				window.alert('error in deleteRule');
+			});
+		}
 
-		// //populates this.defaultHours list by querying database
-		// //should be called either with a refresh button or every time the page loads
-		// this.getDefaultHours = function() {
-		// 	//for each day of the week, get that day's default hours as a list of 
-		// }
+		/*********************/
+		/* ADD SPECIAL RULES */
+		/*********************/
+		this.showAddSpecial = false;
+		this.showDateError = false; //if the date they entered is somehow invalid. 
+		this.newDate = ''; //to store the current date that's being edited
 
-		// this.defaultHours =  [{day:"Monday", hours: this.mondayDefault()}, 
-		// 										{day:"Tuesday", hours: this.tuesdayDefault()}, 
-		// 										{"day":"Wednesday", "hours": this.wednesdayDefault()}, 
-		// 										{"day":"Thursday", "hours": this.thursdayDefault()},
-		// 										{"day":"Friday", "hours": this.fridayDefault()},
-		// 										{"day":"Saturday", "hours": this.saturdayDefault()},
-		// 										{"day":"Sunday", "hours": this.sundayDefault()}];
+		this.addSpecialRule = function() {
+			this.showDateError = false; //reset to false
+			this.validateDate();
+			if (!this.showDateError) {
+				this.showAddSpecial = true;
+			}
+		}
 
-		// //for editing default hours
-		// this.showEditDefaultHours = false; //true when the sidebar with the add timeslots form should appear
-		
-		// this.editDay = ''; //will reflect which day they are editing, so when they click submit, we know which day's data to change
-		
-		// this.newDefaultTimeslots = []; //array for us to save things to do when they add timeslots; will send to database when they click 'save'
+		this.saveAddedSpecialRule = function() {
+			if (this.newDate.length > 0) {
+				var s = $('#add-special-start').val();
+				var e = $('#add-special-end').val();
+				var c = $('#add-special-max-cap').val();
+				var w = $('#add-special-waitlist').val();
+				var d = this.newDate;
+				var r = false; //repeat false
+				var data = {
+					time: [s, e],
+					maxCap: c,
+					maxWaitlist: w,
+					date: d,
+					repeat: r
+				};		
+				$http.post('/rules/special', data).success(function(data, status, headers, config) {
+					me.clearDate();
+					me.getSpecialHours();
+				}).error(function(data, status, headers, config) {
+					window.alert('error in saveEditedSpecialHours');
+				});
+			}
+		}
 
-		// this.editDefaultHours = function(day) {
-		// 	this.clearDefaultTimeslotsInput(); //clear when the user changes days
-		// 	this.showEditDefaultHours = true;
-		// 	this.editDay = day;
-		// };
+		//when user clicks cancel, clear date selection
+		this.cancelAddedSpecialRule = function() {
+			this.showAddSpecial = false;
+			this.clearDate();
+		}
 
-		// this.clearDefaultTimeslotsInput = function() {
-		// 	//to be called when a different edit button, or the cancel button, is pressed
-		// 	$('#default-start-time').val('');
-		// 	$('#default-end-time').val('');
-		// 	$('#default-max-cap').val('');
-		// 	$('#default-waitlist').val('');
-		// 	this.newDefaultTimeslots = [];
-		// };
+		this.clearDate = function() {
+			//clear the date values, and the showDateError back to false
+			if (!this.showDateError) {
+				$('#select-year').prop('selectedIndex', 0);
+				$('#select-month').prop('selectedIndex', 0);
+				$('#select-date').prop('selectedIndex', 0);
+			}
+			this.newDate = '';
+			this.showDateError = false;
+			$('#add-special-start').val('');
+			$('#add-special-end').val('');
+			$('#add-special-max-cap').val('');
+			$('#add-special-waitlist').val('');
+		}
 
-		// this.addDefaultTimeslot = function() {
-		// 	//jQuery to grab the info in the text boxes, add them to this.newDefaultTimeslots
-		// 	var s = $('#default-start-time').val();
-		// 	var e = $('#default-end-time').val();
-		// 	var c = $('#default-max-cap').val();
-		// 	var w = $('#default-waitlist').val();
-		// 	var timeslot = {
-		// 		start: s, end: e, cap: c, waitlist: w
-		// 	}
-		// 	this.newDefaultTimeslots.push(timeslot);
-		// };
-
-		// this.removeDefaultTimeslot = function() {
-		// 	//figure out how to associate the remove button with the timeslots it's related to
-		// };
-
-		// this.saveNewDefaultHours = function() {
-		// 	var day = this.editDay;
-
-		// 	//current editDay should be the correct day, selected when the user pressed an edit button
-		// 	//need to go through the text in the input fields in class='slots' and save their info to database, then clear their text
-		// 	//TODO: some parsing stuff, and accounting for user error
-
-		// 	//...
-		// 	this.clearDefaultTimeslotsInput();
-		// };
-
-		// this.cancelNewDefaultHours = function() {
-		// 	this.clearDefaultTimeslotsInput(); //clear 
-		// 	this.showEditDefaultHours = false;
-		// 	this.editDay = '';
-		// };
-
-		// /******************/
-		// /*  SPECIAL HOURS */
-		// /******************/
-
-		// this.specialRules = function(){ 
-		// 	//should return a list of rule objects, drawing from the database
-		// 	//each rule has rule.date and rule.times, where times is a list of times on that day
-		// 	return [
-		// 	{date: '2/14/15', times: ['9:00AM', '10:00AM', '11:00AM', '4:30PM']},
-		// 	{date: '12/25/15', times: ['9:00AM', '10:00AM', '12:00PM', '3:00PM']},
-		// 	{date: '3/16/15', times: ['10:00AM', '11:00AM', '4:30PM']},
-		// 	{date: '5/23/15', times: ['4:30PM', '5:30PM', '6:30PM', '7:30PM']},
-		// 	{date: '2/2/15', times: ['9:00AM', '10:00AM', '11:00AM', '4:30PM']},
-		// 	{date: '8/19/15', times: ['9:00AM', '3:30PM', '4:30PM', '5:00PM']},
-		// 	{date: '9/24/15', times: ['11:00AM', '12:00PM', '1:00PM', '2:00PM', '3:30PM', '4:30PM']},
-		// 	{date: '10/24/15', times: ['9:00AM', '10:00AM', '11:00AM', '4:30PM', '5:30']}
-		// 	];
-		// };
-
-		// /*EDIT SPECIAL HOURS FORM */
-		// this.showEditSpecialHours = false;
-		// this.editDate = ''; //the date that is being edited, when user tries to edit special hours for date
-		
-		// this.newEditedSpecialTimeslots = [];
-
-		// this.clearEditedSpecialTimeslots = function() {
-		// 	$('#special-start-time').val('');
-		// 	$('#special-end-time').val('');
-		// 	$('#special-max-cap').val('');
-		// 	this.newEditedSpecialTimeslots = [];
-		// }
-
-		// this.addSpecialTimeslot = function() {
-		// 	var s = $('#special-start-time').val();
-		// 	var e = $('#special-end-time').val();
-		// 	var c = $('#special-max-cap').val();
-
-		// 	var timeslot = {
-		// 		start: s, end: e, cap: c
-		// 	};
-
-		// 	this.newEditedSpecialTimeslots.push(timeslot);
-		// };
-
-		// this.editSpecialHours = function(date) {
-		// 	//displays the edit special hours div, specific to the 'date' mentioned
-		// 	this.showEditSpecialHours = true;
-		// 	this.editDate = date;
-		// 	this.clearEditedSpecialTimeslots();
-		// };
-
-		// this.removeSpecialTimeslot = function() {
-		// 	//removes a timeslot the user entered but does not want saved
-		// };
-
-		// this.saveNewEditedSpecialHours = function() {
-		// 	//depending on this.editDate
-		// 	//clear 
-		// 	this.clearEditedSpecialTimeslots();
-		// };
-
-		// this.cancelNewEditedSpecialHours = function() {
-		// 	this.clearEditedSpecialTimeslots();
-		// 	this.showEditSpecialHours = false;
-		// 	this.editDate = '';
-		// 	//TODO: remove all additional timeslots
-		// }
-
-		// //* ADD SPECIAL HOURS FORM */
+		//utility function that returns an array from start to end, incremented by 1 either up or down
 		var range = function(start, end, up){
 		result = [];
 		if (up === 1){
 			for(var i = start; i <= end; i++){
-			result.push(i);
+				result.push(i);
 			}
-		}
-		else{
+		} else{
 			for(var i = end; i >= start; i--){
-			result.push(i)
+				result.push(i)
 			}
 		};
 		return result
 		}
 
-		// this.years = range(2015, 2200, 1);
-	 // 	this.monthDayPairs = {
-		// 	'January' : range(1, 31, 1),
-		// 	'February' : range(1, 28, 1),
-		// 	'March' : range(1, 31, 1),
-		// 	'April' : range(1, 30, 1), 
-		// 	'May' : range(1, 31, 1),
-		// 	'June' : range(1, 30, 1),
-		// 	'July' : range(1, 31, 1),
-		// 	'August' : range(1, 31, 1),
-		// 	'September' : range(1, 30, 1),
-		// 	'October' : range(1, 31, 1),
-		// 	'November' : range(1, 30, 1),
-		// 	'December' : range(1, 31, 1)		
-		// };
-
-		// this.monthToNumber = {
-		// 	'January' :"1",
-		// 	'February' : "2",
-		// 	'March' : "3",
-		// 	'April' : "4", 
-		// 	'May' : "5",
-		// 	'June' : "6",
-		// 	'July' : "7",
-		// 	'August' : "8",
-		// 	'September' : "9",
-		// 	'October' : "10",
-		// 	'November' : "11",
-		// 	'December' : "12"	
-		// };
-
-		// this.showDateError = false;
-
-		// this.date = ''; //for parsing the input to the date selector
-		// this.newDate = ''; //date that is being added, when user tries to add new date for special hours
-
-		// this.clearDate = function() {
-		// 	//clear the date values, and the showDateError back to false
-		// 	$('#select-year').prop('selectedIndex', -1);
-		// 	$('#select-month').prop('selectedIndex', -1);
-		// 	$('#select-day').prop('selectedIndex', -1);
-		// 	this.newDate = '';
-		// 	this.date = '';
-		// 	this.showDateError = false;
-		// }
-
-		// //debugging
-		// this.debug = '';
-		// this.debug1 = $('#select-date').val();
-		// this.debug2 = $('#select-month').val();
-		// this.debug3 = $('#select-year').val();
-
-
-		// this.validateDate = function() {
-		// 	this.addSpecialHours(); //for testing display; should not be here
-		// 	this.debug = ''; //debugging this method...something with the selects is weird
-		// 	var year = $('#select-year').val();
-		// 	var month = $('#select-month').val();
-		// 	var day = $('#select-day').val();
-		// 	if (year === undefined) {
-		// 		this.showDateError = true;
-		// 		this.debug = '11';
-		// 	} 
-		// 	else if (month === undefined){
-		// 		this.showDateError = true;
-		// 		this.debug = '12';
-		// 	} else if (month === undefined) {
-		// 		this.showDateError = true;
-		// 		this.debug = '13';
-		// 	}
-
-		// 	// else {
-		// 	// 	validDays = this.monthDayPairs.month;
-		// 	// 	if(year % 4 === 0 && month == 'February'){
-		// 	// 		validDays = range(1, 29, 1);
-		// 	// 	}
-		// 	// 	if (day > validDays[validDays.length -1] | day < validDays[0]) {
-		// 	// 		this.showDateError = true;
-		// 	// 		this.debug = '2';
-		// 	// 	} else {
-		// 	// 		this.date = this.monthToNumber[month] + '/' + day.toString() + '/' + year.toString()[2] + year.toString()[3];
-		// 	// 		this.addSpecialHours();
-		// 	// 	}
-		// 	// }
-		// };
-
-		// this.showAddSpecialHours = false;
-
-		// this.newAddedSpecialTimeslots = [];
-
-		// this.addSpecialHours = function() {
-		// 	this.newDate = this.date;
-		// 	this.showAddSpecialHours = true;
-		// }
-
-		// this.addAddedSpecialTimeslot = function() {
-		// 	var s = $('#add-special-start-time').val();
-		// 	var e = $('#add-special-end-time').val();
-		// 	var c = $('#add-special-max-cap').val();
-		// 	var timeslot = {
-		// 		start: s, end: e, cap: c
-		// 	};
-		// 	this.newAddedSpecialTimeslots.push(timeslot);
-		// }
-
-		// this.clearNewAddedSpecialHours = function() {
-		// 	this.newAddedSpecialTimeslots = [];
-		// 	this.showAddSpecialHours = false;
-		// 	this.clearDate();
-		// }
-
-		// this.saveNewAddedSpecialHours = function() {
-		// 	//TODO: save hours
-		// 	this.clearNewAddedSpecialHours();
-		// }
-
-		// this.cancelNewAddedSpecialHours = function() {
-		// 	//cancel selection
-		// 	this.showAddSpecialHours = false;
-		// 	this.clearNewAddedSpecialHours();
-
-		// }
+		//used to generate the options for the year select; always goes from now until 100 years from now
+		this.futureYears = range(this.today.getFullYear(), this.today.getFullYear() + 100, 1);
+		this.allDays = range(1, 31, 1);
+		//utility mapping from month to number and to the list of days allowed in that month
+		var monthToNumber = {
+			'January' : ["01", range(1,31,1)],
+			'February' : ["02", range(1, 28, 1)],
+			'March' : ["03", range(1, 31, 1)],
+			'April' : ["04",  range(1, 30, 1)],
+			'May' : ["05", range(1, 31, 1)],
+			'June' : ["06", range(1, 30, 1)],
+			'July' : ["07", range(1, 31, 1)],
+			'August' : ["08", range(1,31, 1)],
+			'September' : ["09", range(1, 30, 1)],
+			'October' : ["10", range(1, 31, 1)],
+			'November' : ["11", range(1, 30, 1)],
+			'December' : ["12", range(1, 31, 1)]	
+		};
+		//utility function to check that the date entered is valid 
+		this.validateDate = function() {
+			var year = $('#select-year').val();
+			var month = $('#select-month').val();
+			var day = $('#select-date').val();
+			var last_allowed_date = monthToNumber[month][1][(monthToNumber[month][1].length)-1];
+			if (month === 'February' && Number.parse(year)%4 == 0) {
+				last_allowed_date = 29;
+			}
+			if (!year || !month || !day) {
+				this.showDateError = true;
+			} else if (day > last_allowed_date) {
+				this.showDateError = true;
+			} else {
+				if (day < 10) {
+					day = '0' + day;
+				}
+				this.newDate = year + '-' + monthToNumber[month][0] + '-' + day;
+			}
+			if (this.showDateError) {
+				this.cancelAddedSpecialRule();
+				this.showDateError = true; //because it gets reset in this.cancelAddedSpecialRule();
+			}
+		}
 
 		/***************/
 		/*  ADMIN PAGE */

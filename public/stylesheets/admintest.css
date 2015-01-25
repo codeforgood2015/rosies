@@ -166,7 +166,7 @@ button:active{
 	border-top: 2pt white solid;
 }
 
-.default button {
+.hours button {
 	font-size: 12pt;
 	text-align: center;
 }
@@ -218,6 +218,7 @@ button:active{
 .special-hours {
 	width: 60%;
 	float: left;
+	font-size: 12pt;
 }
 
 .edit-special {
@@ -238,6 +239,11 @@ button:active{
 	padding: 10px;
 }
 
+#special-table a {
+	text-decoration: none;
+	color: white;
+}
+
 .new-special {
 	clear: both;
 	width: 95%;
@@ -254,7 +260,7 @@ button:active{
 .add-special {
 	float: right;
 	display: inline-block;
-	max-width: 65%;
+	max-width: 50%;
 	overflow: scroll;
 	font-size: 10pt;
 }

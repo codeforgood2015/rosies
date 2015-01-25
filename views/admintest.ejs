@@ -111,7 +111,7 @@
 	 					<p> Editing timeslot on day: <span>{{ctrl.editRule.date}}</span> 
 	 						<br> Current timeslot: {{ctrl.editRule.time[0]}}-{{ctrl.editRule.time[1]}} ({{ctrl.editRule.maxCap}}, {{ctrl.editRule.maxWaitlist}})
 	 					</p>
-	 					<button ng-click='ctrl.deleteRule(ctrl.editRule);'>Delete this Timeslot</button>
+	 					<button ng-click='ctrl.deleteDefaultRule(ctrl.editRule);'>Delete this Timeslot</button>
 						<form class='edit-default-times'>
 							<div class='slots'>
 								<p> Please enter times in military format; example -- 9:00AM is 9:00 and 9:00PM is 21:00 </p>
@@ -122,8 +122,8 @@
 									<br> waitlist capacity: <input id='edit-default-waitlist' type='text' placeholder='2'></input> 
 								</div>
 							</div> 
-							<button ng-click='ctrl.saveEditedDefaultHours();'>Save New Hours</button>
-							<button ng-click='ctrl.cancelEditedDefaultHours();'>Cancel</button>
+							<button ng-click='ctrl.saveEditedDefaultRule();'>Save New Hours</button>
+							<button ng-click='ctrl.cancelEditedDefaultRule();'>Cancel</button>
 							<p>Your new default hours won't be saved unless you click "Save New Hours"</p>
 					</div>
 					<div class='add-default' ng-show = 'ctrl.showAddDefault'>
@@ -139,51 +139,41 @@
 									<br> waitlist capacity: <input id='add-default-waitlist' type='text' placeholder='2'></input> 
 								</div>
 							</div> 
-							<button ng-click='ctrl.saveAddedDefaultHours();'>Save New Hours</button>
-							<button ng-click='ctrl.cancelAddedDefaultHours();'>Cancel</button>
+							<button ng-click='ctrl.saveAddedDefaultRule();'>Save New Hours</button>
+							<button ng-click='ctrl.cancelAddedDefaultRule();'>Cancel</button>
 							<p>Your new default hours won't be saved unless you click "Save New Hours"</p>
 						</form>
 					</div>
+				</div>
 				<!-- Current specific date rules -->
 				<div class='special'>
+					<h4 class='left-align'>Manage special hours:</h4>
 					<div class='special-hours'>
-						<h4 class='left-align'>Manage special hours:</h4>
 						<table id='special-table'>
 							<!--Runs the specialRules function to get a list of rules, each of which contains a date and a list of times -->
-							<tr ng-repeat='rule in ctrl.specialRules()'>
-								<td> <strong> {{rule.date}} </strong> </td>
-								<td ng-repeat='time in rule.times'>{{time}}</td> 
-								<td><button class='edit-special-hours-button' ng-click='ctrl.editSpecialHours(rule.date);'>edit</button></td>
+							<tr ng-repeat='date in ctrl.specialDates'>
+								<td> <strong> {{date}} </strong> </td>
+								<td ng-repeat='rule in ctrl.specialRules[date]'> <a href='#' ng-click='ctrl.editSpecialHours(rule)'> {{rule.time[0]}}-{{rule.time[1]}} <br> ({{rule.maxCap}}, {{rule.maxWaitlist}})</a></td> 
 							</tr>
 						</table> 
 					</div>
 						<!-- Form for editing special hours.-->
-					<div class='edit-special' ng-show='ctrl.showEditSpecialHours'>
-						<p> Please enter your new desired hours. 
-							<br>
-							<strong>Include the start and end time and capacity of each timeslot.</strong>
-							<br>
-							example - start: 9:00AM end: 10:00AM max-capacity: 27
+					<div class='edit-special' ng-show='ctrl.showEditSpecial'>
+	 					<p> Editing timeslot on day: <span>{{ctrl.specialRule.date}}</span> 
+	 						<br> Current timeslot: {{ctrl.specialRule.time[0]}}-{{ctrl.specialRule.time[1]}} ({{ctrl.specialRule.maxCap}}, {{ctrl.specialRule.maxWaitlist}})
 	 					</p>
-	 					<p> New Hours for <span>{{ctrl.editDate}}</span>: </p>
+	 					<button ng-click='ctrl.deleteSpecialRule(ctrl.specialRule);'>Delete this Timeslot </button>
 						<form class='new-special-times'>
 							<div class='slots'>
 								<div class='special-input'>
-									start: <input id='special-start-time' type='text' placeholder='9:00AM'> </input>
-									end: <input id='special-end-time' type='text' placeholder='10:00AM'> </input>
-									max-capacity: <input id='special-max-cap' type='text' placeholder='27'> </input>
-									<button class='add-edited-special-time' ng-click='ctrl.addSpecialTimeslot();'>Add</button>
-								</div>
-								<div>
-									<p>Updated hours: </p> 
-									<p ng-repeat='slot in ctrl.newEditedSpecialTimeslots'>
-										{{slot.start}}--{{slot.end}} ({{slot.cap}})
-										<button class='remove-time-slot' ng-click='ctrl.removeSpecialTimeslot();'>Remove</button>
-									</p>
+									start: <input id='edit-special-start' type='text' placeholder='13:00'> </input>
+									end: <input id='edit-special-end' type='text' placeholder='14:00'> </input>
+									timeslot capacity: <input id='edit-special-max-cap' type='text' placeholder='27'> </input>
+									waitlist capacity: <input id = 'edit-special-waitlist' type='text' placeholder='2'></input>
 								</div>
 							</div> 
-							<button ng-click='ctrl.saveNewEditedSpecialHours();'>Save New Hours</button>
-							<button ng-click='ctrl.cancelNewEditedSpecialHours();'>Cancel</button>
+							<button ng-click='ctrl.saveEditedSpecialRule();'>Save New Hours</button>
+							<button ng-click='ctrl.cancelEditedSpecialRule();'>Cancel</button>
 							<p>Your new hours won't be saved unless you click "Save New Hours"</p>
 						</form>
 					</div>
@@ -191,48 +181,34 @@
 				<div class='new-special'>
 					<div class='new-special-hours'>
 						<h4 class='left-align'> Add a New Special Hours Rule </h4>
-						<p>Add New Special Hours on Date:</p>
+						<p>Select a Date:</p>
 						<select id="select-year">
-							<option ng-repeat = "year in ctrl.years" value = {{year}}>{{year}}</option>
+							<option ng-repeat = "year in ctrl.futureYears" value = {{year}}>{{year}}</option>
 						</select>
 						<select id="select-month">
-							<option ng-repeat = "month in ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November', 'December']" value ={{month}}>{{month}}</option>
+							<option ng-repeat = "month in ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November', 'December']" value={{month}}>{{month}}</option>
 						</select>
 						<select id="select-date">
-							<option ng-repeat = "day in ctrl.monthDayPairs.January" value = {{day}}>{{day}}</option>
+							<option ng-repeat = "day in ctrl.allDays" value={{day}}> {{day}}</option>
 						</select>
-						<button ng-click='ctrl.validateDate();'>Select</button>
-						<p> {{ctrl.debug}} </p>
-						<p> {{ctrl.debug1}}___{{ctrl.debug2}}___{{ctrl.debug3}} </p>
-						<p ng-show='ctrl.showDateError;'>The date you have entered is invalid. </p>
+						<button ng-click='ctrl.addSpecialRule();'>Select</button>
+						<p ng-show='ctrl.showDateError'>Error: Please choose a valid date. </p>
 					</div>
 					<!-- Form for adding special hours.-->
-					<div class='add-special' ng-show='ctrl.showAddSpecialHours'>
-						<p> Please enter your new desired hours. 
-							<br>
-							<strong>Include the start and end time and capacity of each timeslot.</strong>
-							<br>
-							example - start: 9:00AM end: 10:00AM max-capacity: 27
-	 					</p>
-	 					<p> New Hours for <span>{{ctrl.editDate}}</span>: </p>
-						<form class='new-special-times'>
+					<div class='add-special' ng-show='ctrl.showAddSpecial'>
+						<p>Adding timeslot on date: {{ctrl.newDate}} </p>
+						<form class='add-special-times'>
 							<div class='slots'>
-								<div class='add-special-input'>
-									start: <input id='add-special-start-time' type='text' placeholder='9:00AM'> </input>
-									end: <input id='add-special-end-time' type='text' placeholder='10:00AM'> </input>
-									max-capacity: <input id='add-special-max-cap' type='text' placeholder='27'> </input>
-									<button class='add-special-time' ng-click='ctrl.addAddedSpecialTimeslot();'>Add</button>
-								</div>
-								<div>
-									<p>Updated hours: </p> 
-									<p ng-repeat='slot in ctrl.newAddedSpecialTimeslots'>
-										{{slot.start}}--{{slot.end}} ({{slot.cap}})
-										<button class='remove-time-slot' ng-click='ctrl.removeAddedSpecialTimeslot();'>Remove</button>
-									</p>
+								<div class='special-input'>
+									start: <input id='add-special-start' type='text' placeholder='13:00'> </input>
+									end: <input id='add-special-end' type='text' placeholder='14:00'> </input>
+									<br>
+									timeslot capacity: <input id='add-special-max-cap' type='text' placeholder='27'> </input>
+									waitlist capacity: <input id = 'add-special-waitlist' type='text' placeholder='2'></input>
 								</div>
 							</div> 
-							<button ng-click='ctrl.saveNewAddedSpecialHours();'>Save New Hours</button>
-							<button ng-click='ctrl.cancelNewAddedSpecialHours();'>Cancel</button>
+							<button ng-click='ctrl.saveAddedSpecialRule();'>Save New Hours</button>
+							<button ng-click='ctrl.cancelAddedSpecialRule();'>Cancel</button>
 							<p>Your new hours won't be saved unless you click "Save New Hours"</p>
 						</form>
 					</div>

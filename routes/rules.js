@@ -169,10 +169,11 @@ router.put('/:id', function(req, res) {
 	- rule: the deleted rule document
 */
 router.delete('/:id', function(req, res) {
-	Rule.remove({id: req.params.id}, function(err, rule) {
+	Rule.remove({_id: req.params.id}, function(err, rule) {
 		if (err) {
 			utils.sendErrResponse(res, 404, err);
 		} else {
+			console.log(rule);
 			utils.sendSuccessResponse(res, rule);
 		}
 	});
