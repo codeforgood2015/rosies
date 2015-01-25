@@ -47,6 +47,8 @@
 		};
 		this.toHoursView = function() {
 			if (!this.loginError) this.currentSection = 3;
+			//get the current hours loaded
+			this.getDefaultHours(0);
 		};
 		this.toAccountsView = function() {
 			if (!this.loginError) this.currentSection = 4;
@@ -185,13 +187,14 @@
 			var sendDay = this.daysOfWeek[weekday];
 			//get default hours for tomorrow 
 			$http.get('/rules/default/'+sendDay).success(function(data, status, headers, config) {
-				me.tomorowTimes = data.content;
+				me.tomorrowTimes = data.content;
 			}).error(function(data, status, headers, config) {
 				window.alert('error with queryDefaultTomorrow()');
 			});
 		}
 
 		//converts string of form 'h:mm AM|PM' to 'hh:mm' military time; e.g. "5:30 PM" -> "17:30"
+		//taken from StackOverflow post http://stackoverflow.com/questions/15083548/convert-12-hour-hhmm-am-pm-to-24-hour-hhmm
 		this.convertToMilitary = function(time) {
 			//get hours and minutes with regex
 			var hours = Number(time.match(/^(\d+)/)[1]);
@@ -202,6 +205,9 @@
 			if (ampm === 'PM' && hours < 12) {hours += 12};
 			var sHours = hours.toString();
 			var sMinutes = minutes.toString();
+			if (hours < 10) {
+				sHours = "0" + sHours;
+			}
 			if (minutes < 10) {
 				sMinutes = "0" + sMinutes;
 			}
@@ -412,85 +418,212 @@
 		/*  DEFAULT HOURS */
 		/******************/
 
-		//FAKE DATA, replace soon plz 
-		this.mondayDefault = function() {return ['4:30 PM', '5:30 PM'];};
-		this.tuesdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
-		this.wednesdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
-		this.thursdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
-		this.fridayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
-		this.saturdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
-		this.sundayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
+		this.defaultHours = {}; //contains key-value pairs like "Monday":[rules], "Tuesday":[rules] etc
+		this.showEditDefault = false; //show the edit screen AND the hour being edited and delete button
+		this.showAddDefault = false; //show edit screen to add new timeslot
+		this.addDay = ''; //day that we are adding a rule to
+		this.editRule = {}; //rule that we are changing
 
+		this.convertFromMilitary = function(time) {
+			//takes in a string of military time and converts to standard time, e.g. "9:00 AM" --> NOTE THE SPACE BEFORE 'AM'
+		}	
 
-
-		//populates this.defaultHours list by querying database
-		//should be called either with a refresh button or every time the page loads
-		this.getDefaultHours = function() {
-			//for each day of the week, get that day's default hours as a list of 
+		//utility function called in getDefaultHours to populate the defaultHours object
+		this.populateDefaultHours = function(_day, _rules) { //day is "Monday", hours is list of rules
+			this.defaultHours[_day] = _rules;
 		}
 
-		this.defaultHours =  [{day:"Monday", hours: this.mondayDefault()}, 
-												{day:"Tuesday", hours: this.tuesdayDefault()}, 
-												{"day":"Wednesday", "hours": this.wednesdayDefault()}, 
-												{"day":"Thursday", "hours": this.thursdayDefault()},
-												{"day":"Friday", "hours": this.fridayDefault()},
-												{"day":"Saturday", "hours": this.saturdayDefault()},
-												{"day":"Sunday", "hours": this.sundayDefault()}];
+		this.getDefaultHours = function(depth) {
+			//stop once we've done all 7 days
+			if (depth >= this.daysOfWeek.length) return;
+			//day = 'Monday' or 'Tuesday' etc
+			var day = this.daysOfWeek[depth];
+			depth += 1; //increment depth so next loop we grab the next day in the list
+			//for each day of the week, get the rules fo that day and populate the defaultHours object
+			$http.get('/rules/default/'+day).success(function(data, status, headers, config) {
+				me.populateDefaultHours(day, data.content);
+				me.getDefaultHours(depth); //recursive step
+			}).error(function(data, status, headers, config) {
+				window.alert('something wrong with getDefaultHours' + '\n' + status + '\n' + data.content);
+			});
+		}
 
-		//for editing default hours
-		this.showEditDefaultHours = false; //true when the sidebar with the add timeslots form should appear
+		//when user clicks 'add' button next to each day, this function is called, should display the inputs to add new default timeslot
+		this.addDefaultHours = function(day) { //takes in a string like "Monday"
+			this.showAddDefault = true;
+			this.addDay = day;
+			//if we're showing the adding window, we don't know the edit window
+			this.cancelEditedDefaultHours();
+		}
+
+		this.saveAddedDefaultHours = function() {
+			var s = $('#add-default-start').val();
+			var e = $('#add-default-end').val();
+			var c = $('#add-default-max-cap').val();
+			var w = $('#add-default-waitlist').val(); 
+			var r = false; //repeat
+			var d = this.addDay; //"Monday" or the like
+			var data = {
+				maxCap: c, 
+				maxWaitlist: w,
+				time: [s,e],
+				date: d,
+				repeat: r
+			};
+			//use post to /rules/special to add a new rule
+			$http.post('/rules/special', data).success(function(data, status, headers, config) {
+				me.resetAddedDefault(); //clear text fields
+				me.getDefaultHours(0); //reload the hours 
+			}).error(function(data, status, headers, config) {
+				window.alert('error in saveAddedDefaultHours');
+			});
+		} 
+
+		this.cancelAddedDefaultHours = function() {
+			this.showAddDefault = false;
+			this.addDay = '';
+			this.resetAddDefault();
+		}
+
+		this.resetAddedDefault = function() {
+			//clear all text fields
+			$('#add-default-start').val('');
+			$('#add-default-end').val('');
+			$('#add-default-max-cap').val('');
+			$('#add-default-waitlist').val('');
+		}
+
+		this.editDefaultHours = function(rule) { //takes in a rule object
+			this.showEditDefault = true;
+			this.editRule = rule;
+			//if we're showing the editing window, we don't also show the add window
+			this.cancelAddedDefaultHours();
+		}
+
+		this.saveEditedDefaultHours = function() {
+			//push new data to database using put request and refresh list of hours
+			var s = $('#edit-default-start').val();
+			var e = $('#edit-default-end').val();
+			var c = $('#edit-default-max-cap').val();
+			var w = $('#edit-default-waitlist').val();
+			var id = this.editRule._id;
+			var data = {
+				time: [s, e],
+				maxCap: c,
+				maxWaitlist: w,
+				repeat: false
+			};
+			//put request to modify the rule specified by id
+			$http.put('/rules/'+id, data).success(function(data, status, headers, config) {
+				 me.resetEditDefault();
+				 me.getDefaultHours(0);
+			}).error(function(data, status, headers, config) {
+				window.alert('error in saveEditedDefaultHours\n' + status + '\n' + data.content);
+			});
+		}
+
+		this.cancelEditedDefaultHours = function() {
+			this.showEditDefault = false;
+			this.editRule = {};
+			this.resetEditDefault();
+		}
+
+		//clears the text fields in the edit default form
+		this.resetEditDefault = function() {
+			$('#edit-default-start').val('');
+			$('#edit-default-end').val('');
+			$('#edit-default-max-cap').val('');
+			$('#edit-default-waitlist').val('');
+		}
+
+		this.deleteRule = function(rule) { //rule is a rule object
+			var id = rule._id;
+			$http.delete('/rules/'+id).success(function(data, status, headers, config) {
+				me.getDefaultHours(0);
+			}).error(function(data, status, headers, config) {
+				window.alert('error in deleteRule');
+			});
+		}
+
+		// //FAKE DATA, replace soon plz 
+		// this.mondayDefault = function() {return ['4:30 PM', '5:30 PM'];};
+		// this.tuesdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
+		// this.wednesdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
+		// this.thursdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
+		// this.fridayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
+		// this.saturdayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
+		// this.sundayDefault = function() {return ['9:00 AM', '10:00 AM', '11:00 AM', '4:30 PM', '5:30 PM'];};
+
+
+
+		// //populates this.defaultHours list by querying database
+		// //should be called either with a refresh button or every time the page loads
+		// this.getDefaultHours = function() {
+		// 	//for each day of the week, get that day's default hours as a list of 
+		// }
+
+		// this.defaultHours =  [{day:"Monday", hours: this.mondayDefault()}, 
+		// 										{day:"Tuesday", hours: this.tuesdayDefault()}, 
+		// 										{"day":"Wednesday", "hours": this.wednesdayDefault()}, 
+		// 										{"day":"Thursday", "hours": this.thursdayDefault()},
+		// 										{"day":"Friday", "hours": this.fridayDefault()},
+		// 										{"day":"Saturday", "hours": this.saturdayDefault()},
+		// 										{"day":"Sunday", "hours": this.sundayDefault()}];
+
+		// //for editing default hours
+		// this.showEditDefaultHours = false; //true when the sidebar with the add timeslots form should appear
 		
-		this.editDay = ''; //will reflect which day they are editing, so when they click submit, we know which day's data to change
+		// this.editDay = ''; //will reflect which day they are editing, so when they click submit, we know which day's data to change
 		
-		this.newDefaultTimeslots = []; //array for us to save things to do when they add timeslots; will send to database when they click 'save'
+		// this.newDefaultTimeslots = []; //array for us to save things to do when they add timeslots; will send to database when they click 'save'
 
-		this.editDefaultHours = function(day) {
-			this.clearDefaultTimeslotsInput(); //clear when the user changes days
-			this.showEditDefaultHours = true;
-			this.editDay = day;
-		};
+		// this.editDefaultHours = function(day) {
+		// 	this.clearDefaultTimeslotsInput(); //clear when the user changes days
+		// 	this.showEditDefaultHours = true;
+		// 	this.editDay = day;
+		// };
 
-		this.clearDefaultTimeslotsInput = function() {
-			//to be called when a different edit button, or the cancel button, is pressed
-			$('#default-start-time').val('');
-			$('#default-end-time').val('');
-			$('#default-max-cap').val('');
-			$('#default-waitlist').val('');
-			this.newDefaultTimeslots = [];
-		};
+		// this.clearDefaultTimeslotsInput = function() {
+		// 	//to be called when a different edit button, or the cancel button, is pressed
+		// 	$('#default-start-time').val('');
+		// 	$('#default-end-time').val('');
+		// 	$('#default-max-cap').val('');
+		// 	$('#default-waitlist').val('');
+		// 	this.newDefaultTimeslots = [];
+		// };
 
-		this.addDefaultTimeslot = function() {
-			//jQuery to grab the info in the text boxes, add them to this.newDefaultTimeslots
-			var s = $('#default-start-time').val();
-			var e = $('#default-end-time').val();
-			var c = $('#default-max-cap').val();
-			var w = $('#default-waitlist').val();
-			var timeslot = {
-				start: s, end: e, cap: c, waitlist: w
-			}
-			this.newDefaultTimeslots.push(timeslot);
-		};
+		// this.addDefaultTimeslot = function() {
+		// 	//jQuery to grab the info in the text boxes, add them to this.newDefaultTimeslots
+		// 	var s = $('#default-start-time').val();
+		// 	var e = $('#default-end-time').val();
+		// 	var c = $('#default-max-cap').val();
+		// 	var w = $('#default-waitlist').val();
+		// 	var timeslot = {
+		// 		start: s, end: e, cap: c, waitlist: w
+		// 	}
+		// 	this.newDefaultTimeslots.push(timeslot);
+		// };
 
-		this.removeDefaultTimeslot = function() {
-			//figure out how to associate the remove button with the timeslots it's related to
-		};
+		// this.removeDefaultTimeslot = function() {
+		// 	//figure out how to associate the remove button with the timeslots it's related to
+		// };
 
-		this.saveNewDefaultHours = function() {
-			var day = this.editDay;
+		// this.saveNewDefaultHours = function() {
+		// 	var day = this.editDay;
 
-			//current editDay should be the correct day, selected when the user pressed an edit button
-			//need to go through the text in the input fields in class='slots' and save their info to database, then clear their text
-			//TODO: some parsing stuff, and accounting for user error
+		// 	//current editDay should be the correct day, selected when the user pressed an edit button
+		// 	//need to go through the text in the input fields in class='slots' and save their info to database, then clear their text
+		// 	//TODO: some parsing stuff, and accounting for user error
 
-			//...
-			this.clearDefaultTimeslotsInput();
-		};
+		// 	//...
+		// 	this.clearDefaultTimeslotsInput();
+		// };
 
-		this.cancelNewDefaultHours = function() {
-			this.clearDefaultTimeslotsInput(); //clear 
-			this.showEditDefaultHours = false;
-			this.editDay = '';
-		};
+		// this.cancelNewDefaultHours = function() {
+		// 	this.clearDefaultTimeslotsInput(); //clear 
+		// 	this.showEditDefaultHours = false;
+		// 	this.editDay = '';
+		// };
 
 		// /******************/
 		// /*  SPECIAL HOURS */

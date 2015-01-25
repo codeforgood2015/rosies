@@ -30,19 +30,18 @@ router.get('/default', function(req, res) {
 	- rules: Array of rule Documents
 */
 router.get('/default/:day', function(req, res) {
-	console.log(req.params);
-	console.log(daysOfWeek);
-	console.log(daysOfWeek.indexOf(req.params.day));
 	if (daysOfWeek.indexOf(req.params.day) == -1) {
 		utils.sendErrResponse(res, 400, 'Input string was not a day of the week.');
 	} else {
-		Rule.find({date: req.params.day}, function(err, rules) {
+		Rule.find({date: req.params.day})
+		.sort({time: 1})
+		.exec(function(err, rules) {
 			if (err) {
 				utils.sendErrResponse(res, 404, err);
 			} else {
 				utils.sendSuccessResponse(res, rules);
 			}
-		})
+		});
 	}
 });
 
@@ -145,8 +144,7 @@ router.put('/:id', function(req, res) {
 	var data = {
 		maxCap: req.body.maxCap,
 		maxWaitlist: req.body.maxWaitlist,
-		startTime: req.body.startTime,
-		endTime: req.body.endTime,
+		time: req.body.time,
 		repeat: req.body.repeat
 	};
 	Rule.findById(req.params.id, function(err, rule) {
