@@ -16,46 +16,47 @@
 <button id = "back"  ng-show="currentSelect >= 0" ng-click = "ctrl.back()"><span style = "font-family: 'Times New Roman';">&#9166</span><br>{{'BACK' | translate}} </button>
 <div id = "header"><br>
 <img id = "logo" src = '../public/images/logo.png'>
-<h1>{{'LOGO_CAPTION' | translate}}</h1><br>
-<button ng-click = 'changeLanguage("zh")'>中文</button>
-<button ng-click = 'changeLanguage("en")'>English</button>
-<button ng-click = 'changeLanguage("pt")'>Português</button>
-<button ng-click = 'changeLanguage("ht")'>Kreyòl Ayisyen</button> 
-
+<h1>{{'LOGO_CAPTION' | translate}}</h1><span class = 'noMobile'><br></span>
+<button class = 'language' ng-click = 'changeLanguage("en")'>English</button>
+<button class = 'language' ng-click = 'changeLanguage("zh")'>中文</button>
+<button class = 'language' ng-click = 'changeLanguage("es")'>Español</button>
+<button class = 'language' ng-click = 'changeLanguage("pt")'>Português</button>
+<button class = 'language' ng-click = 'changeLanguage("ht")'>Kreyòl Ayisyen</button> 
 </div>
 
 <!-- ERROR: GUEST NOT FOUND -->
 <div ng-show = "currentSelect === -10" id = "notFound">
-	<h3>Error</h3>
-	<p>Your information was not found in the database.<br>Please try again or call Patricia Jones in Rosie’s Place Pantry at 617-318-0236 for assistance.</p>
-	<button class = 'button5' ng-click = 'ctrl.reset()'>exit</button>
+	<h3>{{'ERROR' | translate}}</h3>
+	<p>{{'NOT_FOUND' | translate}}.<br>{{'TRY_AGAIN_OR' | translate}} {{'CONTACT' | translate}}.</p>
+	<button class = 'button5' ng-click = 'ctrl.reset()'>{{'EXIT' | translate}}</button>
 </div>
 
 <!--ERROR: PAST APPOINTMENT -->
-<div ng-show = "currentSelect === -9" id = "tooMany">
+<div ng-show = "currentSelect === -9" id = "tooSoon">
 	<h3></h3>
 	<p>You have visited in the past 30 days!</p>
+	<p>{{'CONTACT' | translate}}</p>
 	<!-- need a cancel button -->
 </div>
 
 <!--ERROR: UPCOMING APPOINTMENT -->
-<div ng-show = "currentSelect === -8" id = "tooSoon">
-	<h3>Reminder</h3>
-	<p>You are signed up for {{ctrl.lastVisit.date}}.</p>
-	<p>Your timeslot is {{ctrl.lastVisit.timeSlot}}. </p>
-	<p>Press "cancel" to cancel this sign up and make a new one</p>
-	<p>Press "exit" to close</p>
-	<button class = 'button5' ng-click = 'ctrl.cancel(user)'>cancel</button>
-	<button class = 'button5' ng-click = 'ctrl.reset()'>exit</button>
+<div ng-show = "currentSelect === -8" id = "tooMany">
+	<h3>{{'REMINDER' | translate}}</h3>
+	<p>{{'YOUR_APPOINTMENTS_DATE' | translate}} {{ctrl.lastVisit.date}}.</p>
+	<p>{{'YOUR_APPOINTMENTS_TIME' | translate}} {{ctrl.lastVisit.timeSlot}}. </p>
+	<p>{{'PRESS_CANCEL' | translate}}</p>
+	<p>{{'PRESS_EXIT' | translate}}</p>
+	<button class = 'button5' ng-click = 'ctrl.cancel(user)'>{{'CANCEL' | translate}}</button>
+	<button class = 'button5' ng-click = 'ctrl.reset()'>{{'EXIT' | translate}}</button>
 </div>
 
 <!--WAITLIST INFO -->
 <div ng-show = 'currentSelect === -7' id = 'waitlistInfo'>
-	<h3>Waitlist</h3>
-	<p>You signed up for a waitlist time.</p>
-	<p>Waitlist means you can show up, and you will get a spot if anyone with an appointment does not show up.</p>
-	<button class = 'button-7' ng-click = 'currentSelect = 0'>select a different time</button>
-	<button class = 'button-7' ng-click = 'user.waitlist = true; currentSelect = 2'>continue anyways</button>
+	<h3>{{'WAITLIST' | translate}}</h3>
+	<p>{{'WAITLIST_STATEMENT' | translate}}</p>
+	<p>{{'WAITLIST_INFO' | translate}}</p>
+	<button class = 'button-7' ng-click = 'currentSelect = 0'>{{'SELECT_DIFF' | translate}}</button>
+	<button class = 'button-7' ng-click = 'user.waitlist = true; currentSelect = 2'>{{'CONTINUE_ANYWAYS' | translate}}</button>
 </div>
 
 <!-- NORMAL FLOW -->
@@ -128,7 +129,6 @@
 		<tr>
 			<td>{{'NAME' | translate}}: </td>
 			<td>{{user.firstName}} {{user.lastName}}</td>
-			<td>{{user.dob.year}} {{user.dob.month}} {{user.dob.day}}</td>
 		</tr>
 		<tr>
 			<td>{{'DATE' | translate}}: </td>
@@ -143,8 +143,8 @@
 			<td>{{ctrl.bag | translate}}</td>
 		</tr>
 		<tr ng-show = 'user.waitlist'>
-			<td>Waitlist:</td>
-			<td>Yes</td>
+			<td>{{'WAITLIST' | translate}}:</td>
+			<td>{{'YES' | translate}}</td>
 		</tr>
 <!-- 		<tr>
 			<td>Dietary constraints: </td>

@@ -194,6 +194,13 @@ table tr td:nth-child(odd){
 		margin: 20px;
 	}
 
+	.language{
+		font-size: 14px;
+	}
+
+	.noMobile{
+		display: none;
+	}
 }
 
 @media only print{
