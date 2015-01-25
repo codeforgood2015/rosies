@@ -99,45 +99,51 @@
 					<p class='left-align' style='font-size: 14pt'> Click a time to edit or delete it. </p>
 					<div class='default-hours'> 
 						<table id='default-table'>
-							<tr ng-repeat="dayHours in ctrl.defaultHours">
-								<td>{{dayHours.day}} </td>
-								<td ng-repeat='time in dayHours.hours'>{{time}}</td>
-								<td class='edit-default'> <button ng-click='ctrl.editDefaultHours(dayHours.day);'>edit</button></td>'
+							<tr ng-repeat="dayOfWeek in ctrl.daysOfWeek">
+								<td style='text-decoration:underline'>{{dayOfWeek}}</td>
+								<td ng-repeat='rule in ctrl.defaultHours[dayOfWeek]'> <a href='#' ng-click='ctrl.editDefaultHours(rule);'>{{rule.time[0]}}-{{rule.time[1]}} <br>({{rule.maxCap}}, {{rule.maxWaitlist}}) </a></td>
+								<td><button ng-click='ctrl.addDefaultHours(dayOfWeek);'>add</button></td>'
 							</tr>
 						</table>
 					</div>
 					<!-- Form for new hours.-->
-					<div class='edit-default' ng-show='ctrl.showEditDefaultHours'>
-						<p> Please enter your new desired hours. 
-							<br>
-							<strong>Include the start and end time and capacity of each timeslot.</strong>
-							<br>
-							example - start: 9:00AM end: 10:00AM max-capacity: 27
+					<div class='edit-default' ng-show='ctrl.showEditDefault'>
+	 					<p> Editing timeslot on day: <span>{{ctrl.editRule.date}}</span> 
+	 						<br> Current timeslot: {{ctrl.editRule.time[0]}}-{{ctrl.editRule.time[1]}} ({{ctrl.editRule.maxCap}}, {{ctrl.editRule.maxWaitlist}})
 	 					</p>
-	 					<p> New Hours for <span>{{ctrl.editDay}}</span>: </p>
-						<form class='new-default-times'>
+	 					<button ng-click='ctrl.deleteRule(ctrl.editRule);'>Delete this Timeslot</button>
+						<form class='edit-default-times'>
 							<div class='slots'>
+								<p> Please enter times in military format; example -- 9:00AM is 9:00 and 9:00PM is 21:00 </p>
 								<div class='default-input'>
-									start: <input id='default-start-time' type='text' placeholder='9:00AM'></input>
-									end: <input id='default-end-time' type='text' placeholder='10:00AM'></input>
-									timeslot capacity: <input id='default-max-cap' type='text' placeholder='27'></input>
-									waitlist capacity: <input id='default-waitlist' type='text' placeholder='2'></input> 
-									<button class='add-default-time' ng-click='ctrl.addDefaultTimeslot();'>Add</button>
-								</div>
-								<div>
-									<p>Updated hours: </p> 
-									<p ng-repeat='slot in ctrl.newDefaultTimeslots'>
-										timeslot: {{slot.start}}--{{slot.end}} ({{slot.cap}}, {{slot.waitlist}})
-										<button class='remove-time-slot' ng-click='ctrl.removeDefaultTimeslot();'>Remove</button>
-									</p>
+									start: <input id='edit-default-start' type='text' placeholder='16:30'></input>
+									<br> end: <input id='edit-default-end' type='text' placeholder='17:30'></input>
+									<br> timeslot capacity: <input id='edit-default-max-cap' type='text' placeholder='25'></input>
+									<br> waitlist capacity: <input id='edit-default-waitlist' type='text' placeholder='2'></input> 
 								</div>
 							</div> 
-							<button ng-click='ctrl.saveNewDefaultHours();'>Save New Hours</button>
-							<button ng-click='ctrl.cancelNewDefaultHours();'>Cancel</button>
+							<button ng-click='ctrl.saveEditedDefaultHours();'>Save New Hours</button>
+							<button ng-click='ctrl.cancelEditedDefaultHours();'>Cancel</button>
+							<p>Your new default hours won't be saved unless you click "Save New Hours"</p>
+					</div>
+					<div class='add-default' ng-show = 'ctrl.showAddDefault'>
+						<p> Adding a timeslot for day <span>{{ctrl.addDay}}</span> </p>
+						</form>
+						<form class='add-default-times'>
+							<div class='slots'>
+								<p> Please enter times in military format; example -- 9:00AM is 9:00 and 9:00PM is 21:00 </p>
+								<div class='default-input'>
+									start: <input id='add-default-start' type='text' placeholder='16:30'></input>
+									<br> end: <input id='add-default-end' type='text' placeholder='17:30'></input>
+									<br> timeslot capacity: <input id='add-default-max-cap' type='text' placeholder='25'></input>
+									<br> waitlist capacity: <input id='add-default-waitlist' type='text' placeholder='2'></input> 
+								</div>
+							</div> 
+							<button ng-click='ctrl.saveAddedDefaultHours();'>Save New Hours</button>
+							<button ng-click='ctrl.cancelAddedDefaultHours();'>Cancel</button>
 							<p>Your new default hours won't be saved unless you click "Save New Hours"</p>
 						</form>
 					</div>
-				</div>
 				<!-- Current specific date rules -->
 				<div class='special'>
 					<div class='special-hours'>
