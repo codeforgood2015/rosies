@@ -1,0 +1,236 @@
+html{
+	background-color: white;
+	color: #734866;
+	background-image: url('../images/background.png');
+	font-family: 'Roboto';
+	text-align: center;
+}
+body{
+	margin: 0px;
+}
+
+h1{
+	font-family: 'Sacramento';
+	font-size: 150px;
+	background-color: white;
+	margin:0px;
+}
+
+h2{
+	font-family: 'Sacramento';
+	font-size: 75px;
+	margin: 0px;
+}
+
+h3{
+	font-family: 'Playfair Display';
+	margin:0px;
+}
+
+p{
+	margin-top: 0px;
+}
+
+button:focus{
+	outline: 0px;
+}
+
+button:hover{
+	cursor: pointer;
+}
+#front{
+	background-color: white;
+	margin-top: 15%;
+	line-height: 350%;
+	padding-top: 50px;
+	vertical-align: center;
+	width: 50%;
+	margin-left: auto;
+	margin-right: auto;
+	border-radius: 12px;
+}
+
+#front p{
+	font-size: 24px;
+	margin: 0px;
+	margin-bottom: -20px;
+}
+
+.info{
+	background-color: white;
+	border-radius: 12px;
+	width: 50%;
+	margin-top: 10%;
+	margin-right: auto;
+	margin-left: auto;
+	padding: 50px;
+	opacity: 1;
+	overflow: auto;
+
+}
+.info a{
+	color: #734886;
+}
+
+#features{
+	margin-top: 5%;
+	padding:20px;
+}
+
+#team{
+	padding: 30px;
+}
+
+#team p{
+	margin:0px;
+}
+
+.nav{
+	color: white;
+	text-align: center;
+	position: fixed;
+	width: 100%;
+	bottom: 120px;
+	font-size: 30px;
+}
+
+.nav span{
+	color: #d973aa;
+}
+
+.nav span:hover{
+	color: white;
+	cursor: pointer;
+}
+
+.nav span.active{
+	color: white;
+}
+
+#footer{
+	text-align: center;
+	position: fixed;
+	width: 100%;
+	bottom: 0px;
+	margin: 0px;
+	font-size: 30px;
+	color: #8a4a77;
+	padding-bottom: 20px;
+}
+
+#footer:hover{
+	color: white;
+}
+
+#footer:hover button{
+	color: white;
+	border: 2px solid white;
+}
+#footer button{
+	background-color: rgba(0,0,0,0);
+	color: #8a4a77;
+	padding: 5px;
+	border-radius: 6px;
+	border: 2px solid #8a4a77;
+	width: 200px;
+	font-size: 18px;
+	font-family: 'Roboto';
+	vertical-align: middle;
+}
+
+#footer button:hover{
+	background-color: #734866;
+}
+
+#footer button:active{
+	background-color: #d973aa;
+}
+@media only screen and (max-height: 800px){
+	#front{
+		margin-top: 10%;
+	}
+	.info{
+		margin-top: 5%;
+		max-height: 500px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 750px){
+	.info{
+		max-height: 400px;
+	}
+}
+@media only screen and (max-height: 650px){
+	#front{
+		margin-top: 5%;
+	}
+	.info{
+		max-height: 300px;
+	}
+}
+
+@media only screen and (max-height: 600px){
+	html{
+		display: block;
+		position: relative;
+	}
+	.nav{
+		display: block;
+		position: relative;
+		bottom: 0px;
+	}
+
+	#footer{
+		display: block;
+		position: relative;
+	}
+
+}
+
+
+@media only screen and (max-width: 1400px){
+	h1{
+		font-size: 120px;
+	}
+	#front{
+		padding-top: 25px;
+		padding-bottom: 25px;
+		margin-top: 20%;
+	}
+
+	#team{
+		margin-top: 10%;
+	}
+
+	#about{
+		margin-top: 10%;
+	}
+}
+
+@media only screen and (max-width: 1050px){
+	h1{
+		font-size: 80px;
+	}
+	#front{
+		width: 80%;
+		line-height: 300%;
+		padding-top: 50px;
+		padding-bottom: 50px;
+		margin-top: 25%;
+	}
+	#front p{
+		font-size: 18px;
+	}
+	#nav{
+		font-size: 18px;
+	}
+
+	#about{
+		margin-top: 5%;
+	}
+
+	#team{
+		margin-top: 15%;
+	}
+}
