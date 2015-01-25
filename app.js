@@ -147,12 +147,8 @@ app.get('/', function(req, res) {
 	res.render('NewReservation')
 });
 
-/*var checkLogin = function(req, res, next){
-	if(req.isAuthenticated()){
-		return next();
-	}
-	else{
-		res.render('NewReservation');
-	}
-};*/
+app.get('/splash', function(req, res){
+	res.render('splash')
+});
+
 module.exports = app;

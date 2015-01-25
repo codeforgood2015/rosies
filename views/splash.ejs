@@ -1,0 +1,58 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.10/angular.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src='../public/javascripts/splash.js'></script>
+	<link href='../public/stylesheets/splash.css' type='text/css' rel='stylesheet'/>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans|Roboto|Playfair+Display|Sacramento' rel='stylesheet' type='text/css'>
+</head>
+<body ng-app = 'splash'>
+<div ng-controller = 'splashController as ctrl'>
+	<div id = "front" ng-show = "ctrl.current === 0" class = "animate-show 0">
+	<br>
+	<h1>Reservations</h1>
+	<p>a food pantry tool presented by Team Pad Thai</p>
+	<br>
+	</div>
+
+	<div ng-show = "ctrl.current === 1" class = "info animate-show 1" id = "about">
+		<h2>About</h2>
+		<p>Our website is designed for <a href = "url(www.rosiesplace.org)" target = "_blank">Rosie's Place</a>, a nonprofit that provides resources for poor and homeless women. One service that they provide is a food pantry, where guests can take home groceries for free.</p>
+		<p>More than one hundred women come, vying for eighty spots. These women crowd into the dining hall, and when the Rosie's Place soup kitchen starts to prepare meals, these waiting women are moved to a small sitting room.</p>
+		<p> Our system helps women sign up for appointments ahead of time, so that they will not have to wait around for several hours in hopes of landing a spot. This helps the women save time and the charity save space.</p>
+	</div>
+
+	<div ng-show = "ctrl.current === 2" class = "info animate-show 2" id = "features">
+		<h2>Features</h2>
+		<h3>Simplicity</h3>
+		<p>Many guests of Rosie's Place do not have personal technology; their only exposure to computer interfaces are kiosks, such as those found at a doctor's office or pharmacy. Our design emulates these kiosks for their comfort.</p>
+		<h3>Relevancy</h3>
+		<p>We worked closely with Rosie's Place to ensure that the website includes options, such as offering guests a premade bag of groceries, that are specific to their program. We also gave website administrators control over hours of operation and accounts so that they will be able to manage the site independently of our team.</p>
+		<h3>Accessibility</h3>
+		<p>We provide guests with instant translations to five different languages, catering to backgrounds from around the world.</p> 
+		<h3>Responsiveness</h3>
+		<p>Our website uses Angular.js to provide a single-page experience with no refreshing, to make sure the website is responsive, even with slow internet connections.</p>
+	</div>
+
+	<div ng-show = "ctrl.current === 3" class ="info animate-show 3" id ="team">
+		<h2>Team</h2>
+		<h3>Tricia Shi</h3>
+		<h3>Shi-Ke Xue</h3>
+		<h3>Hanna Lee</h3>
+		<br>
+		<h3>Additional Thanks</h3>
+		<p>Sandy and Ruthie, our partners at Rosie's Place</p>
+		<p>Rob Figueiredo, our mentor</p>
+		<p>Antonio, Natalle, Francisco, and a guest of Rosie's Place, our translators</p>
+		<p>6.148 and Code for Good Staff</p>
+	</div>
+
+	<div class = "nav">
+		<span ng-click = "ctrl.go(0)" ng-class= "{active:ctrl.current === 0}">home</span> | <span ng-click = "ctrl.go(1)" ng-class= "{active:ctrl.current === 1}">about</span> | <span ng-click = "ctrl.go(2)" ng-class= "{active:ctrl.current === 2}">features</span> | <span ng-click = "ctrl.go(3)" ng-class= "{active:ctrl.current === 3}">team</span>
+	</div>
+	<div id = "footer">
+		Ready to explore?<br><button onclick = "window.open('/', 'blank')">launch guest view</button> <button onclick = "window.open('/admin', 'blank')">launch admin view</button>
+	</div>
+</div>
+</body>
+</html>
