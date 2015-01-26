@@ -18,10 +18,10 @@
 				if(data.content.name){
 					$scope.currentSection = 1;
 					//check for admin or volunteer
-					if (data.content.type === 'volunteer') {
-						me.volunteer = true;
-					} else {
+					if (data.content.type === 'admin') {
 						me.showNavbar = true;
+					} else {
+						me.volunteer = true;
 					}
 					//get all the times 
 					me.initializeGuests();

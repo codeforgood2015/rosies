@@ -46,13 +46,13 @@
 				<li class='select-action-button' ng-class= '{activeMenu:currentSection==1}' ng-click='ctrl.toSignupView();'>
 					CURRENT SIGNUPS
 				</li>
-				<li class='select-action-button' ng-class= ' {activeMenu:currentSection==3}' ng-click='ctrl.toHoursView();'>
+				<li class='select-action-button' ng-class= '{activeMenu:currentSection==3}' ng-click='ctrl.toHoursView();'>
 					FOOD PANTRY HOURS
 				</li>
-				<li class='select-action-button' ng-class= ' {activeMenu:currentSection==4}' ng-click='ctrl.toAccountsView();'>
+				<li class='select-action-button' ng-class= '{activeMenu:currentSection==4}' ng-click='ctrl.toAccountsView();'>
 					ADMIN ACCOUNTS
 				</li>
-				<li class = 'select-action-button' ng-class= ' {activeMenu:currentSection==5}' ng-click = 'ctrl.toAddGuestsView();'>
+				<li class = 'select-action-button' ng-class= '{activeMenu:currentSection==5}' ng-click = 'ctrl.toAddGuestsView();'>
 					ADD GUEST ACCOUNT
 				</li>
 				</ul>
@@ -99,13 +99,13 @@
 				<h3>Food Pantry Hours of Operation</h3>
 				<div class='default'>
 					<h4 class='left-align'>Manage default hours:</h4>
-					<p class='left-align' style='font-size: 14pt'> Click a time to edit or delete it. </p>
-					<div class='default-hours'> 
+					<p class='left-align' style='font-size: 14pt'> Click a time to edit or delete it.</p>
+					<div class='default-hours'>
 						<table id='default-table'>
-							<tr ng-repeat="dayOfWeek in ctrl.daysOfWeek">
+							<tr ng-repeat='dayOfWeek in ctrl.daysOfWeek'>
 								<td style='text-decoration:underline'>{{dayOfWeek}}</td>
-								<td ng-repeat='rule in ctrl.defaultHours[dayOfWeek]'> <a href='#' ng-click='ctrl.editDefaultHours(rule);'>{{rule.time[0]}}-{{rule.time[1]}} <br>({{rule.maxCap}}, {{rule.maxWaitlist}}) </a></td>
-								<td><button ng-click='ctrl.addDefaultHours(dayOfWeek);'>add</button></td>'
+								<td ng-repeat='rule in ctrl.defaultHours[dayOfWeek]'> <a href='' ng-click='ctrl.editDefaultHours(rule);'>{{rule.time[0]}}-{{rule.time[1]}} <br>({{rule.maxCap}}, {{rule.maxWaitlist}}) </a></td>
+								<td><button ng-click='ctrl.addDefaultHours(dayOfWeek);'>add</button></td>
 							</tr>
 						</table>
 					</div>
@@ -131,7 +131,6 @@
 					</div>
 					<div class='add-default' ng-show = 'ctrl.showAddDefault'>
 						<p> Adding a timeslot for day <span>{{ctrl.addDay}}</span> </p>
-						</form>
 						<form class='add-default-times'>
 							<div class='slots'>
 								<div class='default-input'>
