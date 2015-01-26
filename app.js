@@ -80,16 +80,16 @@ var agenda = new Agenda({
 
 // job processors
 agenda.define('prune appointments', function(job, done) {
-	var today = new Date(Date.now());
-	var yesterday = new Date(Date.now() - 1000*60*60*24);
-	var tomorrow = new Date(Date.now() + 1000*60*60*24);
-	var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-	//console.log("got here 1");
-	//delete yesterday's appointments
-	Appointment.find({dayOfWeek: weekdays[yesterday.getDay()]})
+	console.log('checking appointments')
+	var temptoday = new Date(Date.now());
+	var today = new Date(temptoday.getFullYear(), temptoday.getMonth(), temptoday.getDate());
+	var tomorrow = new Date(temptoday.getFullYear, temptoday.getMonth() + 1, temptoday.getDate());
+	//delete appointments that are not today
+	Appointment.find({date: {$nin: [today, tomorrow]}})
 	.exec(function(err, appointments){
 		if(!err && appointments.length > 0){
-			Appointment.find({dayOfWeek: weekdays[yesterday.getDay()]}).remove().exec()
+			console.log('pruning appointments')
+			Appointment.find({date: {$nin: [today,tomorrow]}}).remove().exec()
 		}
 	})
  	done();
@@ -101,6 +101,8 @@ agenda.on('fail', function(err, job){
 	console.log(err.message)
 })
 agenda.start();
+
+console.log("starting")
 
 // routes for the app
 var auth = require('./routes/auth');

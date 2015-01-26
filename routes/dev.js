@@ -9,9 +9,22 @@ exports.testDev = function(req, res){
 /*	birthday = new Date(1995, 4, 23);
 	beginningOftime = new Date (1950, 1, 1);
 	(new Guest({firstName: 'TRICIA', lastName: 'SHI', birthday: birthday, lastVisit: beginningOftime})).save();*/
-	Guest.find().exec(function(err, guests){console.log(guests)})
+/*	Guest.find().exec(function(err, guests){console.log(guests)})
 	Rule.find().exec(function(err, rules){console.log(rules)})
-	Admin.find().exec(function(err, admin){console.log(admin)})
+	Admin.find().exec(function(err, admin){console.log(admin)})*/
+/*	yesterday = new Date(2015, 0, 24);
+	birthday = new Date(1995, 4, 23);
+	var data = {
+	date: yesterday,
+	timeslot: ['9:00', '10:00'], 
+	firstName: 'TRICIA',
+	lastName: 'SHI',
+	birthday: birthday,
+	premade: false,
+	waitlist: false
+	};
+	blarth = new Appointment(data);
+	blarth.save();*/
 
 /*	user = {
 		username: 'admin',
