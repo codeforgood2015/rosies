@@ -13,7 +13,6 @@
 
 
 		this.checkLogged = function(){
-			console.log('doing this')
 			$http.get('/admin/check').success(function(data, status, headers, config) {
 				if(data.content.name){
 					$scope.currentSection = 1;
@@ -21,7 +20,6 @@
 				else{
 					$scope.currentSection = 0;
 				}
-				console.log(this.currentSection)
 			});
 		}
 
@@ -33,7 +31,6 @@
 			var u = $('#login-username').val();
 			var p = $('#login-password').val();
 
-			console.log(u, p)
 			//if either is missing
 			if (!u || !p) {
 				this.missingLogin = true;
@@ -68,8 +65,8 @@
 			this.initializeGuests();
 			this.getTodayTimes();
 			this.getTomorrowTimes();
-			this.getTodayGuests();
-			this.getTomorrowGuests();
+			//this.getTodayGuests();
+			//this.getTomorrowGuests();
 		};
 		this.toHoursView = function() {
 			if (!this.loginError) $scope.currentSection = 3;
@@ -133,17 +130,57 @@
 			}
 			return result
 		}
+
+		this.timeArrayToString = function(timeArray){
+			start = timeArray[0].split(':');
+			end = timeArray[1].split(':');
+			if(Number(start[0]) > 12){
+				start[0] = Number(start[0]) - 12;
+				start[0] = String(start[0]);
+				start[2] = 'PM';
+			}
+			else if (Number(start[0]) == 12){
+				start[2] = 'PM'
+			}
+			else{
+				start[2] = 'AM';
+			}
+			if(Number(end[0]) > 12){
+				end[0] = Number(end[0]) - 12;
+				end[0] = String(end[0]);
+				end[2] = 'PM';
+			}
+			else if (Number(end[0]) == 12){
+				end[2] = 'PM';
+			}
+			else{
+				end[2] = 'AM';
+			}
+			return(start[0] + ':' + start[1] + ' ' + start[2] + ' to ' + end[0] + ':' + end[1] + ' ' + end[2])
+		};
 		
 		//array of objects {time: sometime, show: false} where 'sometime' is a timeslot gotten from rule.time, a timeslot is just an array of two strings, start and end
 		this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes);
 
 		//toggle whether or not the times nested underneath the 'today' tab are visible to user; toggled when user clicks the button
 		this.toggleToday = function() {
+			if(this.showToday){
+				$('#showtoday').text('Show All');
+			}
+			else{
+				$('#showtoday').text('Hide All');
+			}
 			this.showToday = !this.showToday;
 			//hide all guests in today section
 			this.showTodayTimes = makeTimeObjects(this.todayTimes);
 		}
 		this.toggleTomorrow = function() {
+			if(this.showTomorrow){
+				$('#showtomorrow').text('Show All');
+			}
+			else{
+				$('#showtomorrow').text('Hide All');
+			}
 			this.showTomorrow = !this.showTomorrow;
 			//hide all guests in tomorrow section
 			this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes);
@@ -268,39 +305,6 @@
 			return month + '/' + date + '/' + year;
 		}
 
-		//TODO: change this to only change one military time thing, then use it for displays
-			//ALSO TODO: write functions that transform the date strings yyyy-mm-dd into more readable form mm/dd/yyyy  
-
-	  //HELPER FUNCTION FOR BUTTON RENDERING
-	  //changes an array [String, String] where strings are times in military time
-	  //to a readable string 'TIME TO TIME'
-	  // this.timeArrayToString = function(timeArray){
-   //    start = timeArray[0].split(':');
-   //    end = timeArray[1].split(':');
-   //    if(Number(start[0]) > 12){
-   //      start[0] = Number(start[0]) - 12;
-   //      start[0] = String(start[0]);
-   //      start[2] = 'PM';
-   //    } else if (Number(start[0]) == 12){
-   //      start[2] = 'PM'
-   //    } else{
-   //      start[2] = 'AM';
-   //    }
-      
-   //    if(Number(end[0]) > 12){
-   //      end[0] = Number(end[0]) - 12;
-   //      end[0] = String(end[0]);
-   //      end[2] = 'PM';
-   //    } else if (Number(end[0]) == 12){
-   //      end[2] = 'PM';
-   //    } else{
-   //      end[2] = 'AM';
-   //    }
-   //    return(start[0] + ':' + start[1] + ' ' + start[2] + ' to ' + end[0] + ':' + end[1] + ' ' + end[2]);
-	  // };
-
-		//arrays to store guest objects for each day
-		//format is _time: [list of guests], where _time is a rule object returned from query, and each guest is an appointment object
 		$scope.todayGuests = {};
 		$scope.tomorrowGuests = {};
 
@@ -334,13 +338,13 @@
 			//startTime: string representation of starting time of the timeslot, in military time form, e.g. '17:00'
 		//returns list of appointment objects that match that time
 		this.getTodayGuests = function(_time, callback) { //_time is a rule object
-			var today = new Date();
+		var today = new Date();
 	  	var year = today.getFullYear();
 	  	var month = today.getMonth();
 	  	var day = today.getDate();
 
 	  	var sendDate = new Date(year, month, day, 0, 0, 0, 0).getTime();
-	  	var timeslot = [_time.time[0], _time.time[1]]; //[startTime, endTime] of the timeslot
+	  	var timeslot = _time.time; //[startTime, endTime] of the timeslot
 
 	  	$http.put('/appointments/time', {date: sendDate, timeslot: timeslot})
 	  	.success(function(data, status, headers, config) {
@@ -411,12 +415,12 @@
 			//determine whether or not the guests for day and time should be shown right now
 			var times = [];
 			if (day === 'today') {
-				times = this.showTodayTimes;
-				this.getTodayGuests(_time, this.getTodayGuestsCallback);
+				times = makeTimeObjects(this.todayTimes);
+				me.getTodayGuests(_time, me.getTodayGuestsCallback);
 
 			} else if (day === 'tomorrow') {
-				times = this.showTomorrowTimes;
-				this.getTomorrowGuests(_time, this.getTomorrowGuestsCallback);
+				times = makeTimeObjects(this.tomorrowTimes);
+				me.getTomorrowGuests(_time, me.getTomorrowGuestsCallback);
 
 			} else {
 				console.log('should never get here');
@@ -458,7 +462,7 @@
 
 				}
 				else{
-					me.showTomrrow = false;
+					me.showTomorrow = false;
 					$('#show' + day).text('Show All');
 
 				}

@@ -44,7 +44,7 @@ router.post('/', function(req, res) {
 		premade: req.body.premade,
 		waitlist: req.body.waitlist
 	}; 
-	console.log(data)
+	console.log(dayString(data.date.getDay()), data.timeslot)
 	Rule.findOne({date: dayString(data.date.getDay()), time: data.timeslot}, function(err, rule){
 		if(err){
 			console.log(err)
@@ -85,8 +85,8 @@ router.post('/', function(req, res) {
 router.post('/availability', function(req, res) {
 	var temptoday = new Date(Date.now());
 	var temptomorrow = new Date(Date.now() + 1000*60*60*24);
-	var today = new Date(temptoday.getYear(), temptoday.getMonth(), temptoday.getDate());
-	var tomorrow = new Date(temptomorrow.getYear(), temptomorrow.getMonth(), temptomorrow.getDate());
+	var today = new Date(temptoday.getFullYear(), temptoday.getMonth(), temptoday.getDate());
+	var tomorrow = new Date(temptomorrow.getFullYear(), temptomorrow.getMonth(), temptomorrow.getDate());
 	Rule.find({date: {$in: [dayString(today.getDay()), dayString(tomorrow.getDay())]}}, function(err, rules){
 		if(err){
 			console.log(err);
@@ -102,9 +102,11 @@ router.post('/availability', function(req, res) {
 				//find appointments that correspond to the rule
 				if(rules[i].date == dayString(today.getDay())){
 					closedRules(rules[i], today, passData, timesToday);
+					console.log(i)
 				}
 				else if(rules[i].date == dayString(tomorrow.getDay())){
 					closedRules(rules[i], tomorrow, passData, timesTomorrow);
+					console.log(i)
 				}
 			}
 
