@@ -23,6 +23,7 @@ if (process.env.OPENSHIFT_MONGODB_DB_USERNAMEODB_DB_PASSWORD) {
         process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
         process.env.OPENSHIFT_MONGODB_DB_PORT + process.env.OPENSHIFT_APP_NAME;
 }
+console.log('connection_string=' + connection_string);
 mongoose.connect(connection_string);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -142,14 +143,14 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/bower_components', express.static(path.join(__dirname, 'bower_components')));
 
 app.use(cookieParser());
-/*app.use(session({
+app.use(session({
 	secret: "rosie's place",
 	resave: false,
 	saveUninitialized: true,
 	store: new MongoStore({
 		mongooseConnection: mongoose.connection
 	})
-}));*/
+}));
 
 app.use('/auth', auth);
 app.get('/dev', dev.testDev);
