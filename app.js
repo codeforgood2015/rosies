@@ -111,7 +111,7 @@ agenda.define('prune appointments', function(job, done) {
 });
 
 //cron format: minute, hour, dayOfMonth, monthOfYear, dayOfWeek, Year, * means any
-agenda.schedule('1 second', 'prune appointments');
+agenda.every('1 hour', 'prune appointments');
 agenda.on('fail', function(err, job){
 	console.log(err.message)
 })
