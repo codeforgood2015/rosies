@@ -42,4 +42,16 @@ utils.midnightDate = function(dateObj) {
     return new Date(year + '-' + month + '-' + date);
 };
 
+/*
+    checkAdmin(req, res, next): Middleware function that validates that 
+        an admin is logged in.
+*/
+utils.checkAdmin = function(req, res, next) {
+    if (req.session.name) {
+        next();
+    } else {
+        utils.sendErrResponse(res, 401, 'Admin not logged in.');
+    }
+};
+
 module.exports = utils;
