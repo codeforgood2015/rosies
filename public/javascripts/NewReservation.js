@@ -28,7 +28,7 @@ app.config(function($translateProvider){
 	$translateProvider.translations('en', {
 		//header
 		'LOGO_CAPTION' : 'Food Pantry Sign Up',
-		'BACK' : 'back',
+		'BACK' : 'BACK',
 
 		//months
 		'JANUARY' : 'January',

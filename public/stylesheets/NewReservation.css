@@ -21,7 +21,7 @@ html{
 	margin-right: auto;
 }
 #logo{
-	width: 150px;
+	width: 200px;
 }
 button:focus{
 	outline:0;
@@ -43,6 +43,10 @@ button:active{
 	border-left: 3px solid gray;
 	border-right: 3px solid lightgray;
 	border-bottom: 3px solid lightgray;	
+}
+
+button:hover{
+	background-color:lightgray;
 }
 
 button:disabled{
@@ -92,11 +96,16 @@ button:disabled{
 	margin: 20px;
 }
 
+.language{
+	width: 150px;
+	font-size: 20px;
+}
+
 h1{
 	margin: 0px;
 	color: #d973aa;
-	font-family: 'Playfair Display';
-	font-size: 18px;
+	font-family: 'Sacramento';
+	font-size: 24px;
 }
 h3{
 	margin-top: 20px;
@@ -195,7 +204,7 @@ table tr td:nth-child(odd){
 	}
 
 	.language{
-		font-size: 14px;
+		width: 150px;
 	}
 
 	.noMobile{
