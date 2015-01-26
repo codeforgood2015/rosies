@@ -153,8 +153,14 @@ var dateToRule = function(dateObj, callback) {
 	});
 };
 
+/*
+	POST /appointments/cancel - remove an appointment from the database based on person who scheduled it.
+	Request body:
+	- birthday: object with year, month, and day
+	- firstName: first name of person to be removed
+	- lastName: last name of person to be removed
+*/
 router.post('/cancel', function(req, res){
-	var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 	birthday = new Date(req.body.birthday.year, req.body.birthday.month, req.body.birthday.day);
 	var data = {
 		firstName: req.body.firstName.toUpperCase(),
