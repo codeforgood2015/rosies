@@ -17,7 +17,6 @@
 			<!-- back button -->
 			<button id='logout' class = 'topLeft' ng-click='ctrl.logout();' ng-show="currentSection!=0"> logout </button>
 			<button id='print' class = 'topLeft' ng-click='ctrl.print();' ng-show="currentSection==1"> print </button>
-
 			<!-- logo -->
 			<img id='logo' src='../public/images/logo.png'/>
 			<h1> Food Pantry Admin Site </h1>
@@ -112,40 +111,40 @@
 					</div>
 					<!-- Form for new hours.-->
 					<div class='edit-default' ng-show='ctrl.showEditDefault'>
+						<button ng-click='ctrl.deleteDefaultRule(ctrl.editRule);'>Delete this Timeslot</button>
 	 					<p> Editing timeslot on day: <span>{{ctrl.editRule.date}}</span> 
 	 						<br> Current timeslot: {{ctrl.editRule.time[0]}}-{{ctrl.editRule.time[1]}} ({{ctrl.editRule.maxCap}}, {{ctrl.editRule.maxWaitlist}})
 	 					</p>
-	 					<button ng-click='ctrl.deleteDefaultRule(ctrl.editRule);'>Delete this Timeslot</button>
 						<form class='edit-default-times'>
 							<div class='slots'>
-								<p> Please enter times in military format; example -- 9:00AM is 9:00 and 9:00PM is 21:00 </p>
 								<div class='default-input'>
-									start: <input id='edit-default-start' type='text' placeholder='16:30'></input>
-									<br> end: <input id='edit-default-end' type='text' placeholder='17:30'></input>
-									<br> timeslot capacity: <input id='edit-default-max-cap' type='text' placeholder='25'></input>
-									<br> waitlist capacity: <input id='edit-default-waitlist' type='text' placeholder='2'></input> 
+									start: <select ng-model='edsh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='edsm'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='edsa'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
+									<br> end: <select ng-model='edeh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='edem'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='edea'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
+									<br> timeslot capacity: <input ng-model='edmc' type='text' placeholder='25'></input>
+									<br> waitlist capacity: <input ng-model='edw' type='text' placeholder='2'></input> 
 								</div>
 							</div> 
 							<button ng-click='ctrl.saveEditedDefaultRule();'>Save New Hours</button>
 							<button ng-click='ctrl.cancelEditedDefaultRule();'>Cancel</button>
 							<p>Your new default hours won't be saved unless you click "Save New Hours"</p>
+							<p ng-show='ctrl.editDefaultHoursError'>There was an error with your information. Timeslot not updated.</p>
 					</div>
 					<div class='add-default' ng-show = 'ctrl.showAddDefault'>
 						<p> Adding a timeslot for day <span>{{ctrl.addDay}}</span> </p>
 						</form>
 						<form class='add-default-times'>
 							<div class='slots'>
-								<p> Please enter times in military format; example -- 9:00AM is 9:00 and 9:00PM is 21:00 </p>
 								<div class='default-input'>
-									start: <input id='add-default-start' type='text' placeholder='16:30'></input>
-									<br> end: <input id='add-default-end' type='text' placeholder='17:30'></input>
-									<br> timeslot capacity: <input id='add-default-max-cap' type='text' placeholder='25'></input>
-									<br> waitlist capacity: <input id='add-default-waitlist' type='text' placeholder='2'></input> 
+									start: <select ng-model='adsh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='adsm'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='adsa'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
+									<br> end: <select ng-model='adeh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='adem'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='adea'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
+									<br> timeslot capacity: <input ng-model='admc' type='text' placeholder='25'></input>
+									<br> waitlist capacity: <input ng-model='adw' type='text' placeholder='2'></input> 
 								</div>
 							</div> 
 							<button ng-click='ctrl.saveAddedDefaultRule();'>Save New Hours</button>
 							<button ng-click='ctrl.cancelAddedDefaultRule();'>Cancel</button>
 							<p>Your new default hours won't be saved unless you click "Save New Hours"</p>
+							<p ng-show='ctrl.addDefaultHoursError'>There was an error with your information. Timeslot not updated.</p>
 						</form>
 					</div>
 				</div>
@@ -170,15 +169,16 @@
 						<form class='new-special-times'>
 							<div class='slots'>
 								<div class='special-input'>
-									start: <input id='edit-special-start' type='text' placeholder='13:00'> </input>
-									end: <input id='edit-special-end' type='text' placeholder='14:00'> </input>
-									timeslot capacity: <input id='edit-special-max-cap' type='text' placeholder='27'> </input>
-									waitlist capacity: <input id = 'edit-special-waitlist' type='text' placeholder='2'></input>
+									start: <select ng-model='essh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='essm'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='essa'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
+									<br> end: <select ng-model='eseh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='esem'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='esea'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
+									<br> timeslot capacity: <input ng-model='esmc' type='text' placeholder='25'></input>
+									<br> waitlist capacity: <input ng-model='esw' type='text' placeholder='2'></input> 
 								</div>
 							</div> 
 							<button ng-click='ctrl.saveEditedSpecialRule();'>Save New Hours</button>
 							<button ng-click='ctrl.cancelEditedSpecialRule();'>Cancel</button>
 							<p>Your new hours won't be saved unless you click "Save New Hours"</p>
+							<p ng-show='ctrl.editSpecialHoursError'> There was an error with your information. Timeslot not updated. </p>
 						</form>
 					</div>
 				</div>
@@ -204,16 +204,16 @@
 						<form class='add-special-times'>
 							<div class='slots'>
 								<div class='special-input'>
-									start: <input id='add-special-start' type='text' placeholder='13:00'> </input>
-									end: <input id='add-special-end' type='text' placeholder='14:00'> </input>
-									<br>
-									timeslot capacity: <input id='add-special-max-cap' type='text' placeholder='27'> </input>
-									waitlist capacity: <input id = 'add-special-waitlist' type='text' placeholder='2'></input>
+									start: <select ng-model='assh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='assm'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='assa'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
+									<br> end: <select ng-model='aseh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='asem'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='asea'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
+									<br> timeslot capacity: <input ng-model='asmc' type='text' placeholder='25'></input>
+									<br> waitlist capacity: <input ng-model='asw' type='text' placeholder='2'></input> 
 								</div>
 							</div> 
 							<button ng-click='ctrl.saveAddedSpecialRule();'>Save New Hours</button>
 							<button ng-click='ctrl.cancelAddedSpecialRule();'>Cancel</button>
 							<p>Your new hours won't be saved unless you click "Save New Hours"</p>
+							<p ng-show='ctrl.addSpecialHoursError'>There was an error with your information. Timeslot not updated.</p>
 						</form>
 					</div>
 				</div>

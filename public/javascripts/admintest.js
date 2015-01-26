@@ -11,7 +11,6 @@
 		this.loginError = false;
 		this.missingLogin = false;
 
-
 		this.checkLogged = function(){
 			$http.get('/admin/check').success(function(data, status, headers, config) {
 				if(data.content.name){
@@ -485,15 +484,19 @@
 			window.print();
 		}
 
-		/******************/
-		/*  DEFAULT HOURS */
-		/******************/
+		/**********************/
+		/*  ADD DEFAULT RULES */
+		/**********************/
+
+		/*HELPER ARRAYS FOR TIMESLOT SELECTION*/
+		this.hoursRange = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+		this.minutesRange = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'];
+		this.ampmSelect = ['AM', 'PM'];
 
 		this.defaultHours = {}; //contains key-value pairs like "Monday":[rules], "Tuesday":[rules] etc
-		this.showEditDefault = false; //show the edit screen AND the hour being edited and delete button
 		this.showAddDefault = false; //show edit screen to add new timeslot
 		this.addDay = ''; //day that we are adding a rule to
-		this.editRule = {}; //rule that we are changing
+		this.addDefaultHoursError = false;
 
 		this.convertFromMilitary = function(time) {
 			//takes in a string of military time and converts to standard time, e.g. "9:00 AM" --> NOTE THE SPACE BEFORE 'AM'
@@ -504,6 +507,7 @@
 			this.defaultHours[_day] = _rules;
 		}
 
+		//uses repe
 		this.getDefaultHours = function(depth) {
 			//stop once we've done all 7 days
 			if (depth >= this.daysOfWeek.length) return;
@@ -528,10 +532,18 @@
 		}
 
 		this.saveAddedDefaultRule = function() {
-			var s = $('#add-default-start').val();
-			var e = $('#add-default-end').val();
-			var c = $('#add-default-max-cap').val();
-			var w = $('#add-default-waitlist').val(); 
+			window.alert('reached');
+			if (!$scope.adsh || !$scope.adsm || !$scope.adsa || !$scope.adeh || !$scope.adem || !$scope.adea || $scope.admc < 0 || $scope.adw < 0) {
+				this.addDefaultHoursError = true;
+				return;
+			} else if (!$scope.admc || !$scope.adw) {
+				this.addDefaultHoursError = true;
+				return;
+			}
+			var s = this.convertToMilitary($scope.adsh + ':' + $scope.adsm + ' ' + $scope.adsa);
+			var e = this.convertToMilitary($scope.adeh + ':' + $scope.adem + ' ' + $scope.adea);
+			var c = $scope.admc;
+			var w = $scope.adw; 
 			var r = false; //repeat
 			var d = this.addDay; //"Monday" or the like
 			var data = {
@@ -552,19 +564,32 @@
 
 		this.cancelAddedDefaultRule = function() {
 			this.showAddDefault = false;
+			this.addDefaultHoursError = false;
 			this.addDay = '';
 			this.resetAddDefault();
 		}
 
 		this.resetAddedDefault = function() {
-			//clear all text fields
-			$('#add-default-start').val('');
-			$('#add-default-end').val('');
-			$('#add-default-max-cap').val('');
-			$('#add-default-waitlist').val('');
+			$scope.adsh = undefined;
+			$scope.adsm = undefined;
+			$scope.adsa = undefined;
+			$scope.adeh = undefined;
+			$scope.adem = undefined;
+			$scope.adea = undefined; 
+			$scope.admc = undefined;
+			$scope.adw = undefined;
 		}
 
-		this.editDefaultHours = function(rule) { //takes in a rule object
+		/**********************/
+		/* EDIT DEFAULT RULES */
+		/**********************/
+
+		this.showEditDefault = false; //show the edit screen AND the hour being edited and delete button
+		this.editRule = {}; //rule that we are changing
+		this.editDefaultHoursError = false;
+
+		//called when edit button is clicked
+		this.editDefaultHours = function(rule) { //takes in a rule object			
 			this.showEditDefault = true;
 			this.editRule = rule;
 			//if we're showing the editing window, we don't also show the add window
@@ -572,11 +597,19 @@
 		}
 
 		this.saveEditedDefaultRule = function() {
+			this.editDefaultHoursError = false;
 			//push new data to database using put request and refresh list of hours
-			var s = $('#edit-default-start').val();
-			var e = $('#edit-default-end').val();
-			var c = $('#edit-default-max-cap').val();
-			var w = $('#edit-default-waitlist').val();
+			if (!$scope.edsh || !$scope.edsm || !$scope.edsa || !$scope.edeh || !$scope.edem || !$scope.edea || $scope.edmc < 0 || $scope.edw < 0) {
+				this.editDefaultHoursError = true;
+				return;
+			} else if (!$scope.edmc || !$scope.edw) {
+				this.editDefaultHoursError = true;
+				return;
+			}
+			var s = this.convertToMilitary($scope.edsh + ':' + $scope.edsm + ' ' + $scope.edsa);
+			var e = this.convertToMilitary($scope.edeh + ':' + $scope.edem + ' ' + $scope.edea);
+			var c = $scope.edmc;
+			var w = $scope.edw;
 			var id = this.editRule._id;
 			var data = {
 				time: [s, e],
@@ -586,8 +619,9 @@
 			};
 			//put request to modify the rule specified by id
 			$http.put('/rules/'+id, data).success(function(data, status, headers, config) {
-				 me.resetEditDefault();
-				 me.getDefaultHours(0);
+				me.editRule = data.content;
+				me.resetEditDefault();
+				me.getDefaultHours(0);
 			}).error(function(data, status, headers, config) {
 				window.alert('error in saveEditedDefaultHours\n' + status + '\n' + data.content);
 			});
@@ -595,16 +629,21 @@
 
 		this.cancelEditedDefaultRule = function() {
 			this.showEditDefault = false;
+			this.editDefaultHoursError = false;
 			this.editRule = {};
 			this.resetEditDefault();
 		}
 
 		//clears the text fields in the edit default form
 		this.resetEditDefault = function() {
-			$('#edit-default-start').val('');
-			$('#edit-default-end').val('');
-			$('#edit-default-max-cap').val('');
-			$('#edit-default-waitlist').val('');
+			$scope.edsh = undefined;
+			$scope.edsm = undefined;
+			$scope.edsa = undefined;
+			$scope.edeh = undefined;
+			$scope.edem = undefined;
+			$scope.edea = undefined; 
+			$scope.edmc = undefined;
+			$scope.edw = undefined;
 		}
 
 		this.deleteDefaultRule = function(rule) { //rule is a rule object
@@ -623,11 +662,13 @@
 		this.specialRules = {}; //key-value pairs like date:[rules]
 		this.specialDates = []; //array to keep track of all dates that have special rules associated with them
 		this.showEditSpecial = false;
+		this.editSpecialHoursError = false;
 		this.specialRule = {}; //rule that is selected for editing and/or deleting
 
 		//utility to help populate all the special rules as key-value pairs
 		this.populateSpecialRulesAndDates = function(rules) { //takes in array of all rules
 			this.specialRules = {};
+			this.specialDates = [];
 			for (var i = 0; i < rules.length; i ++) {
 				var rule = rules[i];
 				var date = rule.date;
@@ -657,11 +698,20 @@
 		}
 
 		this.saveEditedSpecialRule = function() {
+			this.editSpecialHoursError = false;
+			//checks
+			if (!$scope.essh || !$scope.essm || !$scope.essa || !$scope.eseh || !$scope.esem || !$scope.esea || $scope.esmc < 0 || $scope.esw < 0) {
+				this.editSpecialHoursError = true;
+				return;
+			} else if (!$scope.esmc || !$scope.esw) {
+				this.editSpecialHoursError = true;
+				return;
+			}
 			//grab things, send to database, reload
-			var s = $('#edit-special-start').val();
-			var e = $('#edit-special-end').val();
-			var c = $('#edit-special-max-cap').val();
-			var w = $('#edit-special-waitlist').val();
+			var s = this.convertToMilitary($scope.essh + ':' + $scope.essm + ' ' + $scope.essa);
+			var e = this.convertToMilitary($scope.eseh + ':' + $scope.esem + ' ' + $scope.esea);
+			var c = $scope.esmc;
+			var w = $scope.esw;
 			var id = this.specialRule._id;
 			var r = false; //repeat false
 			var data = {
@@ -679,16 +729,21 @@
 
 		this.cancelEditedSpecialRule = function() {
 			this.showEditSpecial = false;
+			this.editSpecialHoursError = false;
 			this.specialRule = {};
 			this.resetEditSpecial();
 		}
 
 		//clears all input text boxes for editing special hours
 		this.resetEditSpecial = function() {
-			$('#edit-special-start').val('');
-			$('#edit-special-end').val('');
-			$('#edit-special-max-cap').val('');
-			$('#edit-special-waitlist').val('');
+			$scope.essh = undefined;
+			$scope.essm = undefined;
+			$scope.essa = undefined;
+			$scope.eseh = undefined;
+			$scope.esem = undefined;
+			$scope.esea = undefined; 
+			$scope.esmc = undefined;
+			$scope.esw = undefined;
 		}
 
 
@@ -705,6 +760,7 @@
 		/* ADD SPECIAL RULES */
 		/*********************/
 		this.showAddSpecial = false;
+		this.addSpecialHoursError = false;
 		this.showDateError = false; //if the date they entered is somehow invalid. 
 		this.newDate = ''; //to store the current date that's being edited
 
@@ -717,11 +773,20 @@
 		}
 
 		this.saveAddedSpecialRule = function() {
+			this.addSpecialHoursError = false;
+			if (!$scope.assh || !$scope.assm || !$scope.assa || !$scope.aseh || !$scope.asem || !$scope.asea || $scope.asmc < 0 || $scope.asw < 0) {
+				this.addSpecialHoursError = true;
+				return;
+			} else if (!$scope.asmc || !$scope.asw) {
+				this.addSpecialHoursError = true;
+				return;
+			}
+
 			if (this.newDate.length > 0) {
-				var s = $('#add-special-start').val();
-				var e = $('#add-special-end').val();
-				var c = $('#add-special-max-cap').val();
-				var w = $('#add-special-waitlist').val();
+			var s = this.convertToMilitary($scope.assh + ':' + $scope.assm + ' ' + $scope.assa);
+			var e = this.convertToMilitary($scope.aseh + ':' + $scope.asem + ' ' + $scope.asea);
+			var c = $scope.asmc;
+			var w = $scope.asw;
 				var d = this.newDate;
 				var r = false; //repeat false
 				var data = {
@@ -743,6 +808,7 @@
 		//when user clicks cancel, clear date selection
 		this.cancelAddedSpecialRule = function() {
 			this.showAddSpecial = false;
+			this.addSpecialHoursError = false;
 			this.clearDate();
 		}
 
@@ -755,10 +821,18 @@
 			}
 			this.newDate = '';
 			this.showDateError = false;
-			$('#add-special-start').val('');
-			$('#add-special-end').val('');
-			$('#add-special-max-cap').val('');
-			$('#add-special-waitlist').val('');
+			this.resetAddedSpecial();
+		}
+
+		this.resetAddedSpecial = function() {
+			$scope.assh = undefined;
+			$scope.assm = undefined;
+			$scope.assa = undefined;
+			$scope.aseh = undefined;
+			$scope.asem = undefined;
+			$scope.asea = undefined; 
+			$scope.asmc = undefined;
+			$scope.asw = undefined;
 		}
 
 		//utility function that returns an array from start to end, incremented by 1 either up or down
