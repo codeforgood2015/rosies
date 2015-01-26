@@ -1,6 +1,7 @@
 var Rule = require('../models/rule').Rule;
 var Appointment = require('../models/appointment').Appointment;
 var Guest = require('../models/guest').Guest;
+var Admin = require('../models/admin').Admin;
 
 exports.testDev = function(req, res){
 	Appointment.find().exec(function(err, appointments){console.log(appointments)})
@@ -10,6 +11,17 @@ exports.testDev = function(req, res){
 	(new Guest({firstName: 'TRICIA', lastName: 'SHI', birthday: birthday, lastVisit: beginningOftime})).save();*/
 	Guest.find().exec(function(err, guests){console.log(guests)})
 	Rule.find().exec(function(err, rules){console.log(rules)})
+	Admin.find().exec(function(err, admin){console.log(admin)})
+
+/*	user = {
+		username: 'admin',
+		password: '12345',
+		type: 'administrator'
+	};
+
+	new Admin(user).save();
+
+	(new Admin({username: 'Admin', password: '12345', type: 'administrator'})).save();*/
 	res.render('error');
 }
 

@@ -48,6 +48,9 @@ router.post('/', function(req,res) {
 		username: req.body.username,
 		type: req.body.type
 	}
+
+	console.log(data)
+	console.log(req.body)
 	Admin.findOne({username: data.username}, function(err, admin) {
 		if (err) {
 			utils.sendErrResponse(res, 404, err);

@@ -11,12 +11,29 @@
 		this.loginError = false;
 		this.missingLogin = false;
 
+
+		this.checkLogged = function(){
+			console.log('doing this')
+			$http.get('/admin/check').success(function(data, status, headers, config) {
+				if(data.content.name){
+					$scope.currentSection = 1;
+				}
+				else{
+					$scope.currentSection = 0;
+				}
+				console.log(this.currentSection)
+			});
+		}
+
+		this.checkLogged();
 		//called when user presses 'login' button
 		this.login = function() {
 			this.loginError = false; //reset every time user attempts to log in
 			this.missingLogin = false;
 			var u = $('#login-username').val();
 			var p = $('#login-password').val();
+
+			console.log(u, p)
 			//if either is missing
 			if (!u || !p) {
 				this.missingLogin = true;
@@ -40,13 +57,13 @@
 		/********************/
 
 			//section numbers -- 0:login, 1:actions, 2:viewguests, 3:hours, 4:accounts
-		this.currentSection = 0;
+		//this.currentSection = 0;
 
 		this.toSelectAction = function() {
-			if (!this.loginError) this.currentSection = 1;
+			if (!this.loginError) $scope.currentSection = 1;
 		};
 		this.toSignupView = function() {
-			if (!this.loginError) this.currentSection = 2;
+			if (!this.loginError) $scope.currentSection = 2;
 			//query database to get today's and tomorrow's signups
 			this.initializeGuests();
 			this.getTodayTimes();
@@ -55,24 +72,24 @@
 			this.getTomorrowGuests();
 		};
 		this.toHoursView = function() {
-			if (!this.loginError) this.currentSection = 3;
+			if (!this.loginError) $scope.currentSection = 3;
 			//get the current hours loaded
 			this.getDefaultHours(0);
 			this.getSpecialHours();
 		};
 		this.toAccountsView = function() {
-			if (!this.loginError) this.currentSection = 4;
+			if (!this.loginError) $scope.currentSection = 4;
 			this.getAdminUsernames();
 		};
 		this.toAddGuestsView = function() {
-			if (!this.loginError) this.currentSection = 5;
+			if (!this.loginError) $scope.currentSection = 5;
 		}
 		//back button
 		this.back = function() {
-			if (this.currentSection > 1) {
+			if ($scope.currentSection > 1) {
 				this.toSelectAction(); //return to the select action screen
 			} else {
-				this.currentSection = 0;
+				$scope.currentSection = 0;
 			}
 			//hide the guests in viewgusts
 			this.resetShowTimesAndGuests();

@@ -91,7 +91,7 @@ button:active{
 }
 .login input[type='text']{
 	font-family: 'Roboto';
-	background-color: darkgray;
+	background-color: #636363;
 	color: white;
 	font-size: 20px;
 	border-radius: 5px;
@@ -100,7 +100,7 @@ button:active{
 }
 .login input[type='password']{
 	font-family: 'Roboto';
-	background-color: darkgray;
+	background-color: #636363;
 	color: white;
 	font-size: 20px;
 	border-radius: 5px;
@@ -128,12 +128,8 @@ button:active{
 	background-color: #1874CD;
 }
 
-.login-error {
-	border: 1px solid red;
-	background-color: white;
-	color: black;
-	margin: auto;
-	max-width: 75%;
+.login-error p{
+	color: red;
 }
 
 #back-button {
