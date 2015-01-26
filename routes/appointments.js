@@ -7,9 +7,20 @@ var moment = require('moment');
 var _ = require('underscore');
 
 /*
+	checkAdmin(req, res, next): Middleware function that validates that 
+	    an admin is logged in.
+*/
+var checkAdmin = function(req, res, next) {
+	if (req.session.user) {
+		next();
+	} else {
+		utils.sendErrResponse(res, 401, 'Admin not logged in.');
+	}
+};
+
+/*
 	GET /appointments: Return all appointments
 */
-// TODO: should check that an admin is logged in
 router.get('/', function(req, res) {
 	Appointment.find({}, function(err, appointments) {
 		utils.sendSuccessResponse(res, appointments);
@@ -57,6 +68,7 @@ router.post('/', function(req, res) {
 		waitlist: req.body.waitlist
 	}; 
 	console.log(data)
+	console.log(dayString(data.date.getDay()));
 	Rule.findOne({date: dayString(data.date.getDay()), time: data.timeslot}, function(err, rule){
 		if (err) {
 			console.log(err)

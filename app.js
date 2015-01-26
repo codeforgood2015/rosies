@@ -6,9 +6,11 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var http = require('http');
+var bcrypt = require('bcrypt');
 var Agenda = require('agenda');
 var Rule = require('./models/rule').Rule;
 var Appointment = require('./models/appointment').Appointment;
+var Admin = require('./models/admin').Admin;
 var utils = require('./utils/utils');
 
 // handle the mongoose database
@@ -30,7 +32,12 @@ db.once('open', function(callback) {
 		if (rules.length == 0) {
 			createDefaultRules();
 		}
-	})
+	});
+	Admin.find({}, function(err, admins) {
+		if (admins.length == 0) {
+			createDefaultAdmins();
+		}
+	});
 });
 
 var createDefaultRules = function() {
@@ -69,7 +76,18 @@ var createDefaultRules = function() {
 			}
 		}
 	}
-}
+};
+
+var createDefaultAdmins = function() {
+	bcrypt.hash('password', 10, function(err, hash) {
+		admin = new Admin({
+			username: admin,
+			password: hash,
+			type: 'admin'
+		});
+		admin.save();
+	});
+};
 
 // set up agenda in order to schedule jobs
 var agenda = new Agenda({
