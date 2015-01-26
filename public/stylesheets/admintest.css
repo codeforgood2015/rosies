@@ -115,7 +115,7 @@ button:hover{
 
 }
 
-.login input[type='button']{
+.login input[type='submit']{
 	background-color:rgba(0,0,0,0);
 	border: 2px solid white;
 	color: white;
@@ -126,11 +126,11 @@ button:hover{
 	padding: 10px;
 }
 
-.login input[type='button']:hover{
+.login input[type='submit']:hover{
 	background-color: navy;
 }
 
-.login input[type='button']:active{
+.login input[type='submit']:active{
 	background-color: #1874CD;
 }
 
@@ -138,23 +138,25 @@ button:hover{
 	color: red;
 }
 
-#back-button {
-	position: fixed;
-	width: 150px;
-	height: 75px;
-	left: 5px;
+#logout {
 	top: 5px;
-	font-size: 24pt;
-	border-radius: 10px;
 }
 
 #print{
-	display: none;
-	position: fixed;
-	top: 5px;
-	right: 5px;
+	top: 60px;
 }
 
+.topLeft{
+	right: 5px;
+	position: fixed;
+	width: 100px;
+	height: 50px;
+	font-size: 24px;
+	border-radius: 6px;
+	background-color: rgba(0,0,0,0);
+	color: white;
+	border: 2px solid white;
+}
 .actions{
 	background-color: #734866;
 	overflow: hidden;
