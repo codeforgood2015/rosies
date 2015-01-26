@@ -16,6 +16,19 @@ router.get('/', function(req, res) {
 	});
 });
 
+router.post('/testing', function(req, res) {
+	tempDate = utils.midnightDate(new Date(req.body.date));
+	var appt = new Appointment({date: tempDate});
+	console.log(tempDate);
+	appt.save(function(err) {
+		if (err) {
+			utils.sendErrResponse(res, 404, 'not saved');
+		} else {
+			utils.sendSuccessResponse(res, 'test appt saved');
+		}
+	});
+});
+
 /*
 	POST /appointments: create a new appointment
 	Request body:
@@ -34,7 +47,6 @@ router.post('/', function(req, res) {
 	//saves birthday as a date as well
 	birthday = new Date(req.body.birthday.year, req.body.birthday.month, req.body.birthday.day);
 
-
 	var data = {
 		date: fixedDate,
 		timeslot: req.body.timeslot,
@@ -46,38 +58,34 @@ router.post('/', function(req, res) {
 	}; 
 	console.log(data)
 	Rule.findOne({date: dayString(data.date.getDay()), time: data.timeslot}, function(err, rule){
-		if(err){
+		if (err) {
 			console.log(err)
-		}
-		else if(!rule){
-			console.log("doesn't fit a rule");
-			res.render('NewReservation');
-		}
-		else{
+		} else if (!rule) {
+			utils.sendErrResponse(res, 401, 'Does not fit a rule.');
+		} else {
 			console.log(rule);
 			Appointment.find({date: data.date, timeslot: data.timeslot}, function(err, appointments) {
 			// TODO: check if user has already made an appointment
-			if (err){
-				console.log(err)
-			}
-			else if (appointments.length < rule.maxCap) {
-				data.waitlist = false;
-				var appointment = new Appointment(data);
-				appointment.save(function(err) {
-					utils.sendSuccessResponse(res, appointment);
-				});
-			} else if (appointments.length < rule.maxCap + rule.maxWaitlist) {
-				data.waitlist = true;
-				appointment = new Appointment(data);
-				appointment.save(function(err) {
-					utils.sendSuccessResponse(res, appointment);
-				});
-			} else {
-				res.sendErrResponse(res, 403, 'This timeslot is filled.');
-			}
-	});
+				if (err) {
+					console.log(err)
+				} else if (appointments.length < rule.maxCap) {
+					data.waitlist = false;
+					var appointment = new Appointment(data);
+					appointment.save(function(err) {
+						utils.sendSuccessResponse(res, appointment);
+					});
+				} else if (appointments.length < rule.maxCap + rule.maxWaitlist) {
+					data.waitlist = true;
+					appointment = new Appointment(data);
+					appointment.save(function(err) {
+						utils.sendSuccessResponse(res, appointment);
+					});
+				} else {
+					res.sendErrResponse(res, 403, 'This timeslot is filled.');
+				}
+			});
 		}
-	})
+	});
 });
 
 
@@ -115,14 +123,13 @@ router.post('/availability', function(req, res) {
 
 var closedRules = function(myRule, day, passData, times){
 	Appointment.find({date: day, timeslot: myRule.time}, function(err, appointments){
-		if(err || !appointments){
+		if (err || !appointments) {
 			console.log(err);
-		}
-		else{
+		} else {
 			times.push([myRule.time, checkRule(appointments.length, myRule)]);		
 		}
 		passData();	
-	})
+	});
 };
 
 router.post('/cancel', function(req, res){
@@ -133,8 +140,9 @@ router.post('/cancel', function(req, res){
 		lastName: req.body.lastName.toUpperCase(),
 		birthday: birthday
 	}
-	Appointment.find(data).remove().exec(
-		utils.sendSuccessResponse(res, 'done'))
+	Appointment.find(data)
+	.remove()
+	.exec(utils.sendSuccessResponse(res, 'done'))
 })
 
 /*
