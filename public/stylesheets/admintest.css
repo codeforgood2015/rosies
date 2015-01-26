@@ -209,6 +209,10 @@ button:hover{
  	color:white;
 }
 
+.viewguests a table{
+	display: none;
+}
+
 
 .viewguests td {
 	padding-right: 10px;
@@ -407,6 +411,10 @@ tr:nth-child(odd) {
 
 	.viewguests a{
 		color: black;
+	}
+
+	.actions{
+		display: none;
 	}
 
 }

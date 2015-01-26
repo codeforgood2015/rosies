@@ -163,6 +163,7 @@
 		};
 		
 		//array of objects {time: sometime, show: false} where 'sometime' is a timeslot gotten from rule.time, a timeslot is just an array of two strings, start and end
+		this.showTodayTimes = makeTimeObjects(this.todayTimes);
 		this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes);
 
 		//toggle whether or not the times nested underneath the 'today' tab are visible to user; toggled when user clicks the button
@@ -418,11 +419,11 @@
 			//determine whether or not the guests for day and time should be shown right now
 			var times = [];
 			if (day === 'today') {
-				times = makeTimeObjects(this.todayTimes);
+				times = this.showTodayTimes;
 				me.getTodayGuests(_time, me.getTodayGuestsCallback);
 
 			} else if (day === 'tomorrow') {
-				times = makeTimeObjects(this.tomorrowTimes);
+				times = this.showTomorrowTimes;
 				me.getTomorrowGuests(_time, me.getTomorrowGuestsCallback);
 
 			} else {
