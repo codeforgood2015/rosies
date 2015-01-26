@@ -142,14 +142,14 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/bower_components', express.static(path.join(__dirname, 'bower_components')));
 
 app.use(cookieParser());
-app.use(session({
+/*app.use(session({
 	secret: "rosie's place",
 	resave: false,
 	saveUninitialized: true,
 	store: new MongoStore({
 		mongooseConnection: mongoose.connection
 	})
-}));
+}));*/
 
 app.use('/auth', auth);
 app.get('/dev', dev.testDev);
