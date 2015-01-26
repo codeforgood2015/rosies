@@ -7,14 +7,41 @@ var moment = require('moment');
 var _ = require('underscore');
 
 /*
+	checkAdmin(req, res, next): Middleware function that validates that 
+	    an admin is logged in.
+*/
+var checkAdmin = function(req, res, next) {
+	if (req.session.name) {
+		next();
+	} else {
+		utils.sendErrResponse(res, 401, 'Admin not logged in.');
+	}
+};
+
+/*
 	GET /appointments: Return all appointments
 */
-// TODO: should check that an admin is logged in
-router.get('/', function(req, res) {
+router.get('/', checkAdmin, function(req, res) {
 	Appointment.find({}, function(err, appointments) {
 		utils.sendSuccessResponse(res, appointments);
 	});
 });
+
+/*
+	Testing call for the purposes of making a new appointment
+*/
+/*router.post('/testing', function(req, res) {
+	tempDate = utils.midnightDate(new Date(req.body.date));
+	var appt = new Appointment({date: tempDate});
+	console.log(tempDate);
+	appt.save(function(err) {
+		if (err) {
+			utils.sendErrResponse(res, 404, 'not saved');
+		} else {
+			utils.sendSuccessResponse(res, 'test appt saved');
+		}
+	});
+});*/
 
 /*
 	POST /appointments: create a new appointment
@@ -28,15 +55,11 @@ router.get('/', function(req, res) {
 */
 router.post('/', function(req, res) {
 	//takes the string and only saves the year, month, and day
-	tempDate = new Date(req.body.date);
-	console.log(tempDate)
-	fixedDate = new Date(tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate());
 	//saves birthday as a date as well
 	birthday = new Date(req.body.birthday.year, req.body.birthday.month, req.body.birthday.day);
 
-
 	var data = {
-		date: fixedDate,
+		date: utils.midnightDate(new Date(req.body.date)), 
 		timeslot: req.body.timeslot,
 		firstName: req.body.firstName.toUpperCase(),
 		lastName: req.body.lastName.toUpperCase(),
@@ -44,40 +67,35 @@ router.post('/', function(req, res) {
 		premade: req.body.premade,
 		waitlist: req.body.waitlist
 	}; 
-	console.log(dayString(data.date.getDay()), data.timeslot)
 	Rule.findOne({date: dayString(data.date.getDay()), time: data.timeslot}, function(err, rule){
-		if(err){
-			console.log(err)
-		}
-		else if(!rule){
-			console.log("doesn't fit a rule");
-			res.render('NewReservation');
-		}
-		else{
+		if (err) {
+			console.log(err);
+		} else if (!rule) {
+			utils.sendErrResponse(res, 401, 'Does not fit a rule.');
+		} else {
 			console.log(rule);
 			Appointment.find({date: data.date, timeslot: data.timeslot}, function(err, appointments) {
-			// TODO: check if user has already made an appointment
-			if (err){
-				console.log(err)
-			}
-			else if (appointments.length < rule.maxCap) {
-				data.waitlist = false;
-				var appointment = new Appointment(data);
-				appointment.save(function(err) {
-					utils.sendSuccessResponse(res, appointment);
-				});
-			} else if (appointments.length < rule.maxCap + rule.maxWaitlist) {
-				data.waitlist = true;
-				appointment = new Appointment(data);
-				appointment.save(function(err) {
-					utils.sendSuccessResponse(res, appointment);
-				});
-			} else {
-				res.sendErrResponse(res, 403, 'This timeslot is filled.');
-			}
-	});
+				// TODO: check if user has already made an appointment
+				if (err) {
+					console.log(err)
+				} else if (appointments.length < rule.maxCap) {
+					data.waitlist = false;
+					var appointment = new Appointment(data);
+					appointment.save(function(err) {
+						utils.sendSuccessResponse(res, appointment);
+					});
+				} else if (appointments.length < rule.maxCap + rule.maxWaitlist) {
+					data.waitlist = true;
+					appointment = new Appointment(data);
+					appointment.save(function(err) {
+						utils.sendSuccessResponse(res, appointment);
+					});
+				} else {
+					res.sendErrResponse(res, 403, 'This timeslot is filled.');
+				}
+			});
 		}
-	})
+	});
 });
 
 
@@ -88,43 +106,38 @@ router.post('/availability', function(req, res) {
 	var today = new Date(temptoday.getFullYear(), temptoday.getMonth(), temptoday.getDate());
 	var tomorrow = new Date(temptomorrow.getFullYear(), temptomorrow.getMonth(), temptomorrow.getDate());
 	Rule.find({date: {$in: [dayString(today.getDay()), dayString(tomorrow.getDay())]}}, function(err, rules){
-		if(err){
+		if (err) {
 			console.log(err);
-		}
-		else if (!rules || rules == []){
+		} else if (!rules || rules == []) {
 			console.log("didn't find any rules");
-		}
-		else{
+		} else {
 			var timesToday = [];
 			var timesTomorrow = [];
 			var passData = _.after(rules.length, function(){console.log(timesToday); console.log(timesTomorrow); res.json([timesToday, timesTomorrow])});
-			for(var i = 0; i < rules.length; i++){
+			for (var i = 0; i < rules.length; i++) {
 				//find appointments that correspond to the rule
-				if(rules[i].date == dayString(today.getDay())){
+				if (rules[i].date == dayString(today.getDay())) {
 					closedRules(rules[i], today, passData, timesToday);
 					console.log(i)
 				}
-				else if(rules[i].date == dayString(tomorrow.getDay())){
+				else if (rules[i].date == dayString(tomorrow.getDay())) {
 					closedRules(rules[i], tomorrow, passData, timesTomorrow);
 					console.log(i)
 				}
 			}
-
 		}
 	});
-
 });
 
 var closedRules = function(myRule, day, passData, times){
 	Appointment.find({date: day, timeslot: myRule.time}, function(err, appointments){
-		if(err || !appointments){
+		if (err || !appointments) {
 			console.log(err);
-		}
-		else{
+		} else {
 			times.push([myRule.time, checkRule(appointments.length, myRule)]);		
 		}
 		passData();	
-	})
+	});
 };
 
 router.post('/cancel', function(req, res){
@@ -135,9 +148,10 @@ router.post('/cancel', function(req, res){
 		lastName: req.body.lastName.toUpperCase(),
 		birthday: birthday
 	}
-	Appointment.find(data).remove().exec(
-		utils.sendSuccessResponse(res, 'done'))
-})
+	Appointment.find(data)
+	.remove()
+	.exec(utils.sendSuccessResponse(res, 'done'))
+});
 
 /*
 	GET /:time - given an input time as a URL param, return status of timeslot
@@ -165,9 +179,8 @@ router.get('/:time', function(req, res) {
 });
 
 router.put('/time', function(req, res) {
-	var fixedDate = new Date(req.body.date);
 	var data = {
-		date: fixedDate,
+		date: utils.midnightDate(new Date(req.body.date)),
 		timeslot: req.body.timeslot
 	};
 	Appointment.find(data, function(err, apps) {

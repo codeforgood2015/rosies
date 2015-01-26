@@ -6,16 +6,19 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var http = require('http');
+var bcrypt = require('bcrypt');
 var Agenda = require('agenda');
 var Rule = require('./models/rule').Rule;
 var Appointment = require('./models/appointment').Appointment;
+var Admin = require('./models/admin').Admin;
+var utils = require('./utils/utils');
 
 // handle the mongoose database
 var mongoose = require('mongoose');
 var connection_string = 'localhost/rosies';
 // OpenShift uses these for their Mongo instance
 if (process.env.OPENSHIFT_MONGODB_DB_USERNAMEODB_DB_PASSWORD) {
-  connection_string = process.env.OPENSHIFT_MONGODB_DB_USERNAME + ':' +
+	connection_string = process.env.OPENSHIFT_MONGODB_DB_USERNAME + ':' +
         process.env.OPENSHIFT_MONGODB_DB_PASSWORD + '@' +
         process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
         process.env.OPENSHIFT_MONGODB_DB_PORT + process.env.OPENSHIFT_APP_NAME;
@@ -29,7 +32,12 @@ db.once('open', function(callback) {
 		if (rules.length == 0) {
 			createDefaultRules();
 		}
-	})
+	});
+	Admin.find({}, function(err, admins) {
+		if (admins.length == 0) {
+			createDefaultAdmins();
+		}
+	});
 });
 
 var createDefaultRules = function() {
@@ -68,7 +76,18 @@ var createDefaultRules = function() {
 			}
 		}
 	}
-}
+};
+
+var createDefaultAdmins = function() {
+	bcrypt.hash('password', 10, function(err, hash) {
+		admin = new Admin({
+			username: admin,
+			password: hash,
+			type: 'admin'
+		});
+		admin.save();
+	});
+};
 
 // set up agenda in order to schedule jobs
 var agenda = new Agenda({
@@ -80,23 +99,19 @@ var agenda = new Agenda({
 
 // job processors
 agenda.define('prune appointments', function(job, done) {
-	console.log('checking appointments')
-	var temptoday = new Date(Date.now());
-	var today = new Date(temptoday.getFullYear(), temptoday.getMonth(), temptoday.getDate());
-	var tomorrow = new Date(temptoday.getFullYear, temptoday.getMonth() + 1, temptoday.getDate());
-	//delete appointments that are not today
-	Appointment.find({date: {$nin: [today, tomorrow]}})
-	.exec(function(err, appointments){
-		if(!err && appointments.length > 0){
-			console.log('pruning appointments')
-			Appointment.find({date: {$nin: [today,tomorrow]}}).remove().exec()
+	var today = utils.midnightDate(new Date(Date.now()));
+	Appointment.remove({
+		date: {$lt: today}
+	}, function(err) {
+		if (err) {
+			console.log(err);
 		}
-	})
+	});
  	done();
 });
 
 //cron format: minute, hour, dayOfMonth, monthOfYear, dayOfWeek, Year, * means any
-agenda.every('10 minutes', 'prune appointments');
+agenda.every('1 hour', 'prune appointments');
 agenda.on('fail', function(err, job){
 	console.log(err.message)
 })
@@ -135,7 +150,6 @@ app.use(session({
 		mongooseConnection: mongoose.connection
 	})
 }));
-
 
 app.use('/auth', auth);
 app.get('/dev', dev.testDev);
