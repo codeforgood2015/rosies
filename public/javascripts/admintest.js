@@ -10,13 +10,22 @@
 		/***********/
 		this.loginError = false;
 		this.missingLogin = false;
+		this.showNavbar = false; //change to false if admin type is not volunteer
+		this.volunteer = false; //turns true if admin type is volunteer
 
 		this.checkLogged = function(){
 			$http.get('/admin/check').success(function(data, status, headers, config) {
 				if(data.content.name){
 					$scope.currentSection = 1;
+					//check for admin or volunteer
+					if (data.content.type === 'volunteer') {
+						me.volunteer = true;
+					} else {
+						me.showNavbar = true;
+					}
+					//get all the times 
 					me.initializeGuests();
-					me.getTodayTimes();
+					me.getTodayTimes(); 
 					me.getTomorrowTimes();
 				}
 				else{
@@ -41,7 +50,7 @@
 			//if both username and password filled out, send put request
 			$http.put('/admin', {username: u, password: p}).success(function(data, status, headers, config) {
 				//proceed to menu
-				me.toSelectAction();
+				me.checkLogged();
 				//clear text boxes
 				$('#login-username').val('');
 				$('#login-password').val('');
@@ -55,11 +64,10 @@
 		/*  Changing Pages  */
 		/********************/
 
-			//section numbers -- 0:login, 1:actions, 2:viewguests, 3:hours, 4:accounts
-		//this.currentSection = 0;
+		//section numbers -- 0:login, 1:menu, 2:viewguests, 3:hours, 4:accounts, 5: addguest
 
 		this.toSelectAction = function() {
-			if (!this.loginError) $scope.currentSection = 1;
+			if (!this.loginError && !this.volunteer) $scope.currentSection = 1;
 		};
 		this.toSignupView = function() {
 			if (!this.loginError) $scope.currentSection = 1;
@@ -67,8 +75,6 @@
 			this.initializeGuests();
 			this.getTodayTimes();
 			this.getTomorrowTimes();
-			//this.getTodayGuests();
-			//this.getTomorrowGuests();
 		};
 		this.toHoursView = function() {
 			if (!this.loginError) $scope.currentSection = 3;
@@ -194,7 +200,7 @@
 			//get date and create the date string to query database with
 			var year = this.today.getFullYear().toString();
 			var month = this.today.getMonth()+1; //getMonth returns integer 0-11
-			var date = this.today.getDay();
+			var date = this.today.getDate();
 			var monthString = month < 10 ? '0' + month.toString() : month.toString();
 			var dateString = date < 10 ? '0' + date.toString() : date.toString();
 			var findDate = year + "-" + monthString + "-" + dateString;
@@ -231,7 +237,7 @@
 			tomorrow.setDate(tomorrow.getDate() + 1);
 			var year = this.tomorrow.getFullYear().toString();
 			var month = this.tomorrow.getMonth()+1; //getMonth returns integer 0-11
-			var date = this.tomorrow.getDay();
+			var date = this.tomorrow.getDate();
 			var monthString = month < 10 ? '0' + month.toString() : month.toString();
 			var dateString = date < 10 ? '0' + date.toString() : date.toString();
 			var findDate = year + "-" + month + "-" + date;
