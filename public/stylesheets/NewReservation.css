@@ -56,7 +56,9 @@ button:disabled{
 	text-decoration: line-through;
 }
 .waitlist{
-	background-color: lightblue;
+	background-color: midnightblue;
+	color: white;
+	font-size: 20px;
 }
 .closed{
 	background-color: black;
@@ -143,6 +145,10 @@ table tr td:nth-child(odd){
 	position: fixed;
 	left: 10px;
 	top: 10px;
+}
+
+.long{
+	font-size: 30px;
 }
 @media only screen and (max-width: 1300px){
 	html{

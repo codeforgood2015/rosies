@@ -142,7 +142,7 @@ var closedRules = function(myRule, day, passData, times){
 
 router.post('/cancel', function(req, res){
 	var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-	birthday = new Date(req.body.birthday.year, months.indexOf(req.body.birthday.month), req.body.birthday.day);
+	birthday = new Date(req.body.birthday.year, req.body.birthday.month, req.body.birthday.day);
 	var data = {
 		firstName: req.body.firstName.toUpperCase(),
 		lastName: req.body.lastName.toUpperCase(),

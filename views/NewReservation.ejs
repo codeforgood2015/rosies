@@ -104,13 +104,13 @@
 
 <div ng-show = "currentSelect === 1">
 <h3>{{'SELECT_A_TIME' | translate}}</h3>
-<div><button ng-repeat="time in timeSlots[ctrl.dateIndex]" class = "button1 {{time[1]}}" ng-disabled = {{ctrl.disableClosed(time)}} ng-click="ctrl.selectTime(time); ctrl.next()">{{ctrl.timeArrayToString(time[0])}}</button></div>
+<div><button ng-repeat="time in timeSlots[ctrl.dateIndex]" class = "button1 {{time[1]}}" ng-disabled = {{ctrl.disableClosed(time)}} ng-click="ctrl.buttonDo(time)">{{ctrl.timeArrayToString(time[0])}}<span ng-show = 'time[1] == "waitlist"'><br>{{'WAITLIST' | translate}}</span></button></div>
 </div>
 
 <div ng-show = "currentSelect === 2">
 <h3>{{'PREMADE_BAG' | translate}}</h3>
-	<button class = "button2" ng-click="ctrl.selectBag('YES'); ctrl.next()"><b>{{'YES' | translate}}</b><br>{{'MAKE_BAG' | translate}}</button>
-	<button class = "button2" ng-click="ctrl.selectBag('NO'); ctrl.next()"><b>{{'NO' | translate}}</b><br>{{'I_CHOOSE' | translate}}</button>
+	<button class = "button2" ng-click="ctrl.selectBag('YES'); ctrl.next()"><b>{{'YES' | translate}}</b><br><span class = 'long'>{{'MAKE_BAG' | translate}}</span></button>
+	<button class = "button2" ng-click="ctrl.selectBag('NO'); ctrl.next()"><b>{{'NO' | translate}}</b><br><span class = 'long'>{{'I_CHOOSE' | translate}}</span></button>
 </div>
 
 <!-- <div ng-show = "currentSelect === 3">

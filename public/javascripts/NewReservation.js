@@ -579,6 +579,20 @@ app.controller('datetimeController', function($scope, $translate, $http){
 		return(start[0] + ':' + start[1] + ' ' + start[2] + ' to ' + end[0] + ':' + end[1] + ' ' + end[2])
 	};
 
+	//gives callbacks for the times
+	this.buttonDo = function(time){
+		if(time[1] == 'open'){
+			me.selectTime(time)
+			me.next()
+		}
+		else if (time[1] == 'waitlist'){
+			me.selectTime(time)
+			me.showWaitlist()
+		}
+		else{
+			return ''
+		}
+	}
 	//shows the waitlist info page
 	this.showWaitlist = function(){
 		$scope.currentSelect = -7;
@@ -599,7 +613,6 @@ app.controller('datetimeController', function($scope, $translate, $http){
 				return true;
 			}
 		}
-
 
 		//$(".closed").prop('disabled', true);
 		//$(".closed").prop('ng-click', '');
@@ -640,7 +653,7 @@ app.controller('datetimeController', function($scope, $translate, $http){
 		myMonth = $("#dobmonth").val();
 		myCurrentDate = $("#dobdate").val();
 		myDates = range(1, 31, 1);
-		if(myYear != '?' && myMonth != '?'){
+		if(myYear != '?' && myMonth != '?' && myYear != undefined && myMonth != undefined && myYear != '' && myMonth != '' && myMonth != '? undefined:undefined ?' && myYear != '? undefined:undefined ?'){
 			myDates = this.monthDayPairs[myMonth];
 			if(myYear % 4 === 0 && myMonth == 1){
 				myDates = range(1, 29, 1);

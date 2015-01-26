@@ -72,7 +72,10 @@
 								{{ctrl.timeArrayToString(time.time)}} </a>
 								<table class='today-guests'>
 									<tr ng-repeat='guest in todayGuests[time.time]'> 
-											<td>Name: {{guest.firstName}} {{guest.lastName}}</td> <td>Bag: {{ctrl.displayYesNo(guest.premade);}}</td>
+											<td>Name: {{guest.firstName}} {{guest.lastName}}</td>
+											<td ng-show = 'guest.premade' class = 'bag'>BAG</td>
+											<td ng-show = '!guest.premade'></td>
+											<td ng-show = 'guest.waitlist' class = 'waitlistPerson'>waitlist</td>
 									</tr>
 								</table>
 							</li>
