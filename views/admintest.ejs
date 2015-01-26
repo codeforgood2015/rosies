@@ -15,8 +15,10 @@
 	<body>
 		<div ng-controller='AdminController as ctrl'>
 			<!-- back button -->
-<!-- 			<button id='back-button' ng-click='ctrl.back();' ng-show="currentSection>0"> back </button>
- -->			<!-- logo -->
+			<button id='logout' class = 'topLeft' ng-click='ctrl.logout();' ng-show="currentSection!=0"> logout </button>
+			<button id='print' class = 'topLeft' ng-click='ctrl.print();' ng-show="currentSection==1"> print </button>
+
+			<!-- logo -->
 			<img id='logo' src='../public/images/logo.png'/>
 			<h1> Food Pantry Admin Site </h1>
 
@@ -28,7 +30,7 @@
 					<br>
 					<p>Password</p><input type='password' id = "login-password"></input>
 					<br>
-					<input class='-not-disappear' id='login-button' type='button' value='login' ng-click="ctrl.login();"></input>
+					<input class='-not-disappear' id='login-button' type='submit' value='login' ng-click="ctrl.login();"></input>
 				</form>
 				<div class='login-error' ng-show='ctrl.loginError'>
 					<p> Incorrect username or password combination. </p>
@@ -40,7 +42,7 @@
 			</div>
 			
 			<!-- Buttons for different actions admins can take -->
-			<div class='actions'>
+			<div class='actions' ng-show = 'currentSection != 0'>
 				<ul>
 				<li class='select-action-button' ng-class= '{activeMenu:currentSection==1}' ng-click='ctrl.toSignupView();'>
 					CURRENT SIGNUPS
@@ -60,7 +62,6 @@
 			<div class='viewguests' ng-show="currentSection === 1">
 				<h3>Current Signups</h3>
 				<p> Click on a day and a time to see a list of guests and whether or not they require a pre-made bag. </p>
-				<button id = 'print' ng-click = 'ctrl.printPage()'>Print Page</button>
 				<ul id='times'>
 					<!-- Today -->
 					<li> <a href='#' ng-click='ctrl.toggleToday();'>Today </a> <button class= 'showDays' id = 'showtoday' ng-click = 'ctrl.showAll("today")'>Show All</button>

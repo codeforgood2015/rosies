@@ -52,6 +52,13 @@
 			}); 
 		};
 
+		this.logout = function(){
+			$http.get('/admin/logout').success(function(data, status, headers, config){
+				$scope.currentSection = 0;
+				//window.location = '/admin';
+			})
+		}
+
 		/********************/
 		/*  Changing Pages  */
 		/********************/
@@ -474,7 +481,7 @@
 		}
 
 		//opens print dialogue, we need to also display a printer friendly version
-		this.printPage = function(){
+		this.print = function(){
 			window.print();
 		}
 

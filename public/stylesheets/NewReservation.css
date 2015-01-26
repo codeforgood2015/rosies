@@ -23,9 +23,7 @@ html{
 #logo{
 	width: 200px;
 }
-button:focus{
-	outline:0;
-}
+
 button{
 	color: #3c84d5;
 	font-size: 40px;
