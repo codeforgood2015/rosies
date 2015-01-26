@@ -5,7 +5,7 @@
 		<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src='../public/javascripts/admintest.js'></script>
-		<link href='http://fonts.googleapis.com/css?family=Open+Sans|Roboto|Playfair+Display|Sacramento' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans|Roboto|Playfair+Display|Sacramento' rel='stylesheet' type='text/css'/>
 		<link href='../public/stylesheets/admintest.css' type='text/css' rel='stylesheet'/>
 		<title>
 			Admin Home
@@ -15,8 +15,8 @@
 	<body>
 		<div ng-controller='AdminController as ctrl'>
 			<!-- back button -->
-			<button id='back-button' ng-click='ctrl.back();' ng-show="ctrl.currentSection>0"> back </button>
-			<!-- logo -->
+<!-- 			<button id='back-button' ng-click='ctrl.back();' ng-show="currentSection>0"> back </button>
+ -->			<!-- logo -->
 			<img id='logo' src='../public/images/logo.png'/>
 			<h1> Food Pantry Admin Site </h1>
 
@@ -40,28 +40,25 @@
 			</div>
 			
 			<!-- Buttons for different actions admins can take -->
-			<div class='actions' ng-show='currentSection === 1'>
-				<h3>Menu</h3>
-				<button class='select-action-button' ng-click='ctrl.toSignupView();'>
-					View current food pantry signups.
-				</button>
-				<br>
-				<button class='select-action-button' ng-click='ctrl.toHoursView();'>
-					Manage food pantry hours.
-				</button>
-				<br>
-				<button class='select-action-button' ng-click='ctrl.toAccountsView();'>
-					Manage admin accounts.
-				</button>
-				<br>
-				<button class = 'select-action-button' ng-click = 'ctrl.toAddGuestsView();'>
-					Add guests.
-				</button>
-			</div>
-			
+			<div class='actions'>
+				<ul>
+				<li class='select-action-button' ng-class= '{activeMenu:currentSection==1}' ng-click='ctrl.toSignupView();'>
+					CURRENT SIGNUPS
+				</li>
+				<li class='select-action-button' ng-class= ' {activeMenu:currentSection==3}' ng-click='ctrl.toHoursView();'>
+					FOOD PANTRY HOURS
+				</li>
+				<li class='select-action-button' ng-class= ' {activeMenu:currentSection==4}' ng-click='ctrl.toAccountsView();'>
+					ADMIN ACCOUNTS
+				</li>
+				<li class = 'select-action-button' ng-class= ' {activeMenu:currentSection==5}' ng-click = 'ctrl.toAddGuestsView();'>
+					ADD GUEST ACCOUNT
+				</li>
+				</ul>
+			</div>			
 			<!-- Interactive view for the current guest signups for today or tomorrow. JQuery and show/hidden tags -->
-			<div class='viewguests' ng-show="currentSection === 2">
-				<h3> View guests </h3>
+			<div class='viewguests' ng-show="currentSection === 1">
+				<h3>Current Signups</h3>
 				<p> Click on a day and a time to see a list of guests and whether or not they require a pre-made bag. </p>
 				<button id = 'print' ng-click = 'ctrl.printPage()'>Print Page</button>
 				<ul id='times'>
@@ -224,7 +221,7 @@
 			<!-- Scrollable table with current admins and delete buttons-->
 			<!-- Form for new admin -->
 			<div class='accounts' ng-show='currentSection === 4'>
-				<button ng-click='ctrl.getAdminUsernames();'> Refresh Admin Accounts </button>
+<!-- 				<button ng-click='ctrl.getAdminUsernames();'> Refresh Admin Accounts </button> -->
 				<h3>Manage admin accounts</h3>
 				<table class='admin-list' >
 					<tr ng-repeat='admin in ctrl.allUsernames'>

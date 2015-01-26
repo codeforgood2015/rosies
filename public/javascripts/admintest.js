@@ -16,6 +16,9 @@
 			$http.get('/admin/check').success(function(data, status, headers, config) {
 				if(data.content.name){
 					$scope.currentSection = 1;
+					me.initializeGuests();
+					me.getTodayTimes();
+					me.getTomorrowTimes();
 				}
 				else{
 					$scope.currentSection = 0;
@@ -60,7 +63,7 @@
 			if (!this.loginError) $scope.currentSection = 1;
 		};
 		this.toSignupView = function() {
-			if (!this.loginError) $scope.currentSection = 2;
+			if (!this.loginError) $scope.currentSection = 1;
 			//query database to get today's and tomorrow's signups
 			this.initializeGuests();
 			this.getTodayTimes();
