@@ -9,21 +9,30 @@
 		/*  LOGIN  */
 		/***********/
 		this.loginError = false;
-		this.login = function() {
-			// TESTING CODE TO CHECK FUNCTIONALITY OF ADMIN AUTHORIZATION
-			/*$http.put('/admin', {username: "'test'", password:"'test'"})
-				.success(function(data, status, headers, config) {
-					console.log(data);
-				})
-				.error(function(data, status, headers, config){
+		this.missingLogin = false;
 
-				});*/
-			var valid = true; //TODO actually validate login information
-			if (valid) {
-				this.toSelectAction();
-			} else {
-				this.loginError = true; //displays login error message, and prevents login button from progressing user to the next page
-			}
+		//called when user presses 'login' button
+		this.login = function() {
+			this.loginError = false; //reset every time user attempts to log in
+			this.missingLogin = false;
+			var u = $('#login-username').val();
+			var p = $('#login-password').val();
+			//if either is missing
+			if (!u || !p) {
+				this.missingLogin = true;
+				return;
+			} 
+			//if both username and password filled out, send put request
+			$http.put('/admin', {username: u, password: p}).success(function(data, status, headers, config) {
+				//proceed to menu
+				me.toSelectAction();
+				//clear text boxes
+				$('#login-username').val('');
+				$('#login-password').val('');
+			}).error(function(data, status, headers, config) {
+				me.loginError = true;
+				return;
+			}); 
 		};
 
 		/********************/
@@ -60,23 +69,22 @@
 		}
 		//back button
 		this.back = function() {
-			//hide the guests in viewgusts
-			this.resetShowTimesAndGuests();
-			//this.clearDefaultTimeslotsInput();
-			//this.clearEditedSpecialTimeslots();
 			if (this.currentSection > 1) {
 				this.toSelectAction(); //return to the select action screen
 			} else {
 				this.currentSection = 0;
 			}
-			//if the user goes back, the editing and adding buttons disappear and their fields should be cleared
-			//this.showEditDefaultHours = false;
-			//hide the edit admin side
+			//hide the guests in viewgusts
+			this.resetShowTimesAndGuests();
+			//hide new admin form
 			this.hideNewAdminAccountView();
-			this.cancelEditedDefaultHours();
-			this.cancelEditedSpecialHours();
+			//hide editing and adding forms
+			this.cancelEditedDefaultRule();
+			this.cancelEditedSpecialRule();
+			this.cancelAddedSpecialRule();
+			this.cancelAddedDefaultRule();
+			//clear inputs that aren't of type text
 			$("input :not(type=text)").val('');
-			//TODO: remove the additional slots that have been created
 		};
 
 
@@ -484,7 +492,7 @@
 			this.showAddDefault = true;
 			this.addDay = day;
 			//if we're showing the adding window, we don't know the edit window
-			this.cancelEditedDefaultHours();
+			this.cancelEditedDefaultRule();
 		}
 
 		this.saveAddedDefaultRule = function() {
@@ -528,7 +536,7 @@
 			this.showEditDefault = true;
 			this.editRule = rule;
 			//if we're showing the editing window, we don't also show the add window
-			this.cancelAddedDefaultHours();
+			this.cancelAddedDefaultRule();
 		}
 
 		this.saveEditedDefaultRule = function() {
