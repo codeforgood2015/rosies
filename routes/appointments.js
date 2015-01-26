@@ -7,41 +7,13 @@ var moment = require('moment');
 var _ = require('underscore');
 
 /*
-	checkAdmin(req, res, next): Middleware function that validates that 
-	    an admin is logged in.
-*/
-var checkAdmin = function(req, res, next) {
-	if (req.session.name) {
-		next();
-	} else {
-		utils.sendErrResponse(res, 401, 'Admin not logged in.');
-	}
-};
-
-/*
 	GET /appointments: Return all appointments
 */
-router.get('/', checkAdmin, function(req, res) {
+router.get('/', utils.checkAdmin, function(req, res) {
 	Appointment.find({}, function(err, appointments) {
 		utils.sendSuccessResponse(res, appointments);
 	});
 });
-
-/*
-	Testing call for the purposes of making a new appointment
-*/
-/*router.post('/testing', function(req, res) {
-	tempDate = utils.midnightDate(new Date(req.body.date));
-	var appt = new Appointment({date: tempDate});
-	console.log(tempDate);
-	appt.save(function(err) {
-		if (err) {
-			utils.sendErrResponse(res, 404, 'not saved');
-		} else {
-			utils.sendSuccessResponse(res, 'test appt saved');
-		}
-	});
-});*/
 
 /*
 	POST /appointments: create a new appointment
@@ -54,10 +26,7 @@ router.get('/', checkAdmin, function(req, res) {
 	- waitlist: boolean representing whether this is a waitlisted array
 */
 router.post('/', function(req, res) {
-	//takes the string and only saves the year, month, and day
-	//saves birthday as a date as well
 	birthday = new Date(req.body.birthday.year, req.body.birthday.month, req.body.birthday.day);
-
 	var data = {
 		date: utils.midnightDate(new Date(req.body.date)), 
 		timeslot: req.body.timeslot,
@@ -66,7 +35,7 @@ router.post('/', function(req, res) {
 		birthday: birthday,
 		premade: req.body.premade,
 		waitlist: req.body.waitlist
-	}; 
+	};
 	Rule.findOne({date: dayString(data.date.getDay()), time: data.timeslot}, function(err, rule){
 		if (err) {
 			console.log(err);
@@ -98,45 +67,89 @@ router.post('/', function(req, res) {
 	});
 });
 
-
-// TODO: Move to rules route
-router.post('/availability', function(req, res) {
-	var temptoday = new Date(Date.now());
-	var temptomorrow = new Date(Date.now() + 1000*60*60*24);
-	var today = new Date(temptoday.getFullYear(), temptoday.getMonth(), temptoday.getDate());
-	var tomorrow = new Date(temptomorrow.getFullYear(), temptomorrow.getMonth(), temptomorrow.getDate());
-	Rule.find({date: {$in: [dayString(today.getDay()), dayString(tomorrow.getDay())]}}, function(err, rules){
+/*
+	GET /appointments/availability - return an array of times with their status
+	Returns - 
+		An array, times, such that times[0] represents the times for today and
+		times[1] represents the times for tomorrow.
+*/
+router.get('/availability', function(req, res) {
+	var today = utils.midnightDate(new Date(Date.now()));
+	var tomorrow = utils.midnightDate(new Date(Date.now() + 1000*60*60*24));
+	// fetch appropriate rule for today, checking special and default rules
+	dateToRule(today, function(err, todRules) {
 		if (err) {
 			console.log(err);
-		} else if (!rules || rules == []) {
-			console.log("didn't find any rules");
+		} else if (!todRules || todRules == []) {
+			console.log('no rules found');
 		} else {
 			var timesToday = [];
-			var timesTomorrow = [];
-			var passData = _.after(rules.length, function(){console.log(timesToday); console.log(timesTomorrow); res.json([timesToday, timesTomorrow])});
-			for (var i = 0; i < rules.length; i++) {
-				//find appointments that correspond to the rule
-				if (rules[i].date == dayString(today.getDay())) {
-					closedRules(rules[i], today, passData, timesToday);
-					console.log(i)
-				}
-				else if (rules[i].date == dayString(tomorrow.getDay())) {
-					closedRules(rules[i], tomorrow, passData, timesTomorrow);
-					console.log(i)
-				}
+			// this executes after the for loop below finishes. Necessary to avoid
+			// asynchronous problems with querying Appointments in closedRules
+			var fetchTomorrow = _.after(todRules.length, function() {
+				dateToRule(tomorrow, function(err, tomRules) {
+					if (err) {
+						console.log(err);
+					} else if (!tomRules || tomRules == []) {
+						console.log('no rules found');
+					} else {
+						var timesTomorrow = [];
+						var sendData = _.after(tomRules.length, function() {
+							utils.sendSuccessResponse(res, [timesToday, timesTomorrow]);
+						});
+						for (var i = 0; i < tomRules.length; i++) {
+							closedRules(tomRules[i], tomorrow, timesTomorrow, sendData);
+						}
+					}
+				});
+			});
+			for (var i = 0; i < todRules.length; i++){
+				closedRules(todRules[i], today, timesToday, fetchTomorrow);
 			}
 		}
 	});
 });
 
-var closedRules = function(myRule, day, passData, times){
+/*
+	Helper function to populate the entries of an array with the availability of a day's timeslot
+	Arguments:
+	- myRule: rule object that is to be checked against
+	- day: Date object representing the day the rule is for
+	- times: Array to be populated by this method
+	- callback: function(), to be executed in the main function calling this helper method.
+*/
+var closedRules = function(myRule, day, times, callback){
 	Appointment.find({date: day, timeslot: myRule.time}, function(err, appointments){
 		if (err || !appointments) {
 			console.log(err);
 		} else {
 			times.push([myRule.time, checkRule(appointments.length, myRule)]);		
 		}
-		passData();	
+		callback();
+	});
+};
+
+/*
+	Given a date object, returns the appropriate rules corresponding to the date.
+		If there are no specific rules, then returns the default rules. The returned
+		rules object is accessed through the callback.
+	Arguments:
+		dateObj: Javascript date object corresponding to the date to find rules for
+		callback: function(err, rules)
+*/
+var dateToRule = function(dateObj, callback) {
+	var year = dateObj.getFullYear();
+	var month = dateObj.getMonth() + 1;
+	var date = dateObj.getDate();
+	var dateString = year + '-' + month + '-' + date;
+	Rule.find({date: dateString}, function(err, rules) {
+		if (rules.length == 0) {
+			Rule.find({date: dayString(dateObj.getDay())}, function(err, defaultRules) {
+				callback(err, defaultRules);
+			});
+		} else {
+			callback(err, rules);
+		}
 	});
 };
 

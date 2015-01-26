@@ -506,17 +506,17 @@ app.controller('datetimeController', function($scope, $translate, $http){
 				if (data.content.available == true) {
 					$scope.currentSelect +=1;
 					$scope.submitSuccess = false;
-					$http.post('/appointments/availability').success(function(data, status, headers, config){
-						console.log(data);
+					$http.get('/appointments/availability').success(function(data, status, headers, config){
+						//console.log(data);
 						$scope.timeSlots = [];
-						$scope.timeSlots[0] = data[0];
+						$scope.timeSlots[0] = data.content[0];
 						$scope.timeSlots[0].sort(function(a, b){
 							var atemp = a[0][0].split(':');
 							var btemp = b[0][0].split(':');
 							console.log(atemp[0], btemp[0])
 							return Number(atemp[0]) - Number(btemp[0])
 						});
-						$scope.timeSlots[1] = data[1];
+						$scope.timeSlots[1] = data.content[1];
 						$scope.timeSlots[1].sort(function(a, b){
 							var atemp = a[0][0].split(':');
 							var btemp = b[0][0].split(':');
