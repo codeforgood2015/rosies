@@ -11,6 +11,7 @@ html {
 }
 
 body {
+	margin: 0px;
 	margin-bottom: 50px;
 }
 
@@ -25,6 +26,7 @@ h3{
 	font-size: 75px;
 	margin-bottom: 20px;
 	margin-top: 25px;
+	text-align: center;
 	font-family: 'Playfair Display';
 }
 
@@ -73,6 +75,10 @@ button:active{
 	border-left: 3px solid gray;
 	border-right: 3px solid lightgray;
 	border-bottom: 3px solid lightgray;	
+}
+
+button:hover{
+	cursor: pointer;
 }
 .login{
 	background-color: rgba(0,0,0,0.3);
@@ -140,22 +146,53 @@ button:active{
 	top: 5px;
 	font-size: 24pt;
 	border-radius: 10px;
-
 }
 
 #print{
+	display: none;
 	position: fixed;
 	top: 5px;
 	right: 5px;
 }
 
+.actions{
+	background-color: #734866;
+	overflow: hidden;
+	margin-top: 10px;
+	width: 100%;
+}
+
+.actions ul{
+	margin: 0px;
+	padding: 10px;
+}
+
+
 .select-action-button {
-	border-radius: 10px;
+	color: white;
+	font-size: 18px;
+	border-radius: 6px;
+	padding: 10px;
+	width: 200px;
+	display: inline-table;
+	position: relative;
+	border: 0px;
+}
+
+.select-action-button:hover{
+	cursor: pointer;
 	background-color: white;
-	color: black;
-	padding: 5px;
-	margin: 10px;
-	font-size: 24pt;
+	color: #734866;
+}
+
+.select-action-button:active{
+	color: white;
+	background-color: #d973aa;;
+}
+
+.activeMenu{
+	color: white;
+	background-color: #d973aa;	
 }
 .showDays{
 	font-size: 15px;
@@ -169,6 +206,10 @@ button:active{
 
 .viewguests a {
  	color:white;
+}
+
+.viewguests a table{
+	display: none;
 }
 
 
@@ -193,9 +234,8 @@ button:active{
 } 
 
 .waitlistPerson{
-	background-color: rgba(0,0,0,0);
-	color:  #3c84d5;
-	border: 2px solid #3c84d5;
+	background-color: #d973aa;
+	color:  white;
 	border-radius: 12px;
 }
 
@@ -370,6 +410,10 @@ tr:nth-child(odd) {
 
 	.viewguests a{
 		color: black;
+	}
+
+	.actions{
+		display: none;
 	}
 
 }
