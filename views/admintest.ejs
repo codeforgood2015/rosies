@@ -5,7 +5,7 @@
 		<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src='../public/javascripts/admintest.js'></script>
-		<link href='http://fonts.googleapis.com/css?family=Open+Sans|Roboto|Playfair+Display' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans|Roboto|Playfair+Display|Sacramento' rel='stylesheet' type='text/css'>
 		<link href='../public/stylesheets/admintest.css' type='text/css' rel='stylesheet'/>
 		<title>
 			Admin Home
@@ -22,13 +22,13 @@
 
 			<!-- form for login -->
 			<div class='login' ng-show='ctrl.currentSection === 0'>
-				<h3>Admin Log In</h3>
+				<h3>Log In</h3>
 				<form>
-					username:<input id='login-username' type='text'></input>
+					<p>Username</p><input type='text'></input>
 					<br>
-					password:<input id='login-password' type='password'></input>
+					<p>Password</p><input type='password'></input>
 					<br>
-					<input class='-not-disappear' id='login-button' type='button' value='Login' ng-click="ctrl.login();"></input>
+					<input class='-not-disappear' id='login-button' type='button' value='login' ng-click="ctrl.login();"></input>
 				</form>
 				<div class='login-error' ng-show='ctrl.loginError'>
 					<p> Error: Sorry, incorrect username or password combination. </p>
