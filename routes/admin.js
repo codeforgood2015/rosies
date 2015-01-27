@@ -12,7 +12,7 @@ router.get('/', function(req, res) {
 });
 
 router.get('/hardreset', function(req, res) {
-	Admin.delete({}, function(err, numdeleted) {
+	Admin.remove({}, function(err, numdeleted) {
 		console.log('reset');
 		utils.sendSuccessResponse(res, 'deleted');
 	});
