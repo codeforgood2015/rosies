@@ -39,8 +39,9 @@ button:hover{
 	cursor: pointer;
 }
 #front{
+	position: relative;
+	margin-top: 200px;
 	background-color: white;
-	margin-top: 15%;
 	line-height: 350%;
 	padding-top: 50px;
 	vertical-align: center;
@@ -48,6 +49,7 @@ button:hover{
 	margin-left: auto;
 	margin-right: auto;
 	border-radius: 12px;
+	min-width: 800px;
 }
 
 #front p{
@@ -57,10 +59,10 @@ button:hover{
 }
 
 .info{
+	margin-top: 100px;
 	background-color: white;
 	border-radius: 12px;
 	width: 50%;
-	margin-top: 10%;
 	margin-right: auto;
 	margin-left: auto;
 	padding: 50px;
@@ -73,7 +75,6 @@ button:hover{
 }
 
 #features{
-	margin-top: 5%;
 	padding:20px;
 }
 
@@ -86,11 +87,11 @@ button:hover{
 }
 
 .nav{
+	margin-top: 20px;
 	color: white;
 	text-align: center;
-	position: fixed;
+	position: relative;
 	width: 100%;
-	bottom: 120px;
 	font-size: 30px;
 	font-family: 'Playfair Display';
 }
@@ -110,29 +111,21 @@ button:hover{
 
 #footer{
 	text-align: center;
-	position: fixed;
+	position: absolute;
 	width: 100%;
-	bottom: 0px;
 	margin: 0px;
 	font-size: 30px;
-	color: #8a4a77;
+	color: #d973aa;
 	padding-bottom: 20px;
+	bottom: 0px;
 }
 
-#footer:hover{
-	color: white;
-}
-
-#footer:hover button{
-	color: white;
-	border: 2px solid white;
-}
 #footer button{
 	background-color: rgba(0,0,0,0);
-	color: #8a4a77;
+	color: #d973aa;
 	padding: 5px;
 	border-radius: 6px;
-	border: 2px solid #8a4a77;
+	border: 2px solid #d973aa;
 	width: 200px;
 	font-size: 18px;
 	font-family: 'Roboto';
@@ -146,92 +139,31 @@ button:hover{
 #footer button:active{
 	background-color: #d973aa;
 }
+
 @media only screen and (max-height: 800px){
-	#front{
-		margin-top: 10%;
-	}
-	.info{
-		margin-top: 5%;
-		max-height: 500px;
-		overflow: auto;
-	}
-}
-
-@media only screen and (max-height: 750px){
-	.info{
-		max-height: 400px;
-	}
-}
-@media only screen and (max-height: 650px){
-	#front{
-		margin-top: 5%;
-	}
-	.info{
-		max-height: 300px;
-	}
-}
-
-@media only screen and (max-height: 600px){
-	html{
-		display: block;
-		position: relative;
-	}
-	.nav{
-		display: block;
-		position: relative;
-		bottom: 0px;
-	}
-
 	#footer{
-		display: block;
 		position: relative;
+		margin-top: 50px;
+	}
+	.info{
+		margin-top: 50px
 	}
 
 }
-
-
-@media only screen and (max-width: 1400px){
+@media only screen and (max-width: 825px){
 	h1{
-		font-size: 120px;
+		font-size: 75px;
 	}
+
 	#front{
-		padding-top: 25px;
-		padding-bottom: 25px;
-		margin-top: 20%;
+		min-width: 350px;
+		padding: 0px;
+		margin-top: 50px;
 	}
 
-	#team{
-		margin-top: 10%;
-	}
-
-	#about{
-		margin-top: 10%;
-	}
-}
-
-@media only screen and (max-width: 1050px){
-	h1{
-		font-size: 80px;
-	}
-	#front{
-		width: 80%;
-		line-height: 300%;
-		padding-top: 50px;
-		padding-bottom: 50px;
-		margin-top: 25%;
-	}
 	#front p{
-		font-size: 18px;
-	}
-	#nav{
-		font-size: 18px;
+		font-size: 14px;
 	}
 
-	#about{
-		margin-top: 5%;
-	}
-
-	#team{
-		margin-top: 15%;
-	}
 }
+

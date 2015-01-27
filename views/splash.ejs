@@ -6,8 +6,15 @@
 	<link href='../public/stylesheets/splash.css' type='text/css' rel='stylesheet'/>
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans|Roboto|Playfair+Display|Sacramento' rel='stylesheet' type='text/css'>
 </head>
+<title>
+	Reservations by Team Pad Thai
+</title>
 <body ng-app = 'splash'>
 <div ng-controller = 'splashController as ctrl'>
+	<div class = "nav">
+		<span ng-click = "ctrl.go(0)" ng-class= "{active:ctrl.current === 0}">home</span> | <span ng-click = "ctrl.go(1)" ng-class= "{active:ctrl.current === 1}">about</span> | <span ng-click = "ctrl.go(2)" ng-class= "{active:ctrl.current === 2}">features</span> | <span ng-click = "ctrl.go(3)" ng-class= "{active:ctrl.current === 3}">team</span>
+	</div>
+
 	<div id = "front" ng-show = "ctrl.current === 0" class = "animate-show 0">
 	<br>
 	<h1>Reservations</h1>
@@ -48,9 +55,6 @@
 		<p>6.148 and Code for Good Staff</p>
 	</div>
 
-	<div class = "nav">
-		<span ng-click = "ctrl.go(0)" ng-class= "{active:ctrl.current === 0}">home</span> | <span ng-click = "ctrl.go(1)" ng-class= "{active:ctrl.current === 1}">about</span> | <span ng-click = "ctrl.go(2)" ng-class= "{active:ctrl.current === 2}">features</span> | <span ng-click = "ctrl.go(3)" ng-class= "{active:ctrl.current === 3}">team</span>
-	</div>
 	<div id = "footer">
 		Ready to explore?<br><button onclick = "window.open('/', 'blank')">launch guest view</button> <button onclick = "window.open('/admin', 'blank')">launch admin view</button>
 	</div>
