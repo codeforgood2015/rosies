@@ -497,7 +497,6 @@ app.controller('datetimeController', function($scope, $translate, $http){
 	//IF THE USER IS VALID, GET THE LATEST TIMESLOT AVAILABILITY
 	this.lookup = function(user){
 		if(user && user.firstName && user.lastName && user.dob && user.dob.year && user.dob.month && user.dob.day){
-			console.log(user)
 			$http.post('/auth/guest', {
 				firstName: user.firstName,
 				lastName: user.lastName,
@@ -536,6 +535,12 @@ app.controller('datetimeController', function($scope, $translate, $http){
 					me.lastVisit.dateReal = new Date(data.content.available[0])
 					me.lastVisit.date = me.lastVisit.dateReal.toLocaleString($scope.langKey, me.dateOptions);
 					me.lastVisit.timeSlot = me.timeArrayToString(data.content.available[1]);
+					if (data.content.available[2] == 0){
+						me.lastVisit.waitlist = 'NO';
+					}
+					else{
+						me.lastVisit.waitlist = 'YES';
+					}
 					$scope.currentSelect = -8;
 				}
 			}).error(function(data, status, headers, config){
