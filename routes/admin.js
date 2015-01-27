@@ -11,6 +11,13 @@ router.get('/', function(req, res) {
 	res.render('admintest');
 });
 
+router.get('/hardreset', function(req, res) {
+	Admin.delete({}, function(err, numdeleted) {
+		console.log('reset');
+		utils.sendSuccessResponse(res, 'deleted');
+	});
+});
+
 /*
 	GET /admin/usernames - return an array of all admin usernames
 */
