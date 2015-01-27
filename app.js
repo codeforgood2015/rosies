@@ -81,7 +81,7 @@ var createDefaultRules = function() {
 var createDefaultAdmins = function() {
 	bcrypt.hash('password', 10, function(err, hash) {
 		admin = new Admin({
-			username: admin,
+			username: 'admin',
 			password: hash,
 			type: 'admin'
 		});
