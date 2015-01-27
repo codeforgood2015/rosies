@@ -34,12 +34,14 @@ router.get('/usernames', function(req, res) {
 	- username: Username for the new admin. Error returned if it's already taken.
 	- password: Password for the new admin. Encrypted by bcrypt.
 	- type: Permissions level for the new admin user.
+	Restrictions:
+	- Current user must be an admin level user.
 */
-router.post('/', function(req,res) {
+router.post('/', utils.checkAdmin, function(req,res) {
 	var data = {
 		username: req.body.username,
 		type: req.body.type
-	}
+	};
 	Admin.findOne({username: data.username}, function(err, admin) {
 		if (err) {
 			utils.sendErrResponse(res, 404, err);
@@ -60,7 +62,6 @@ router.post('/', function(req,res) {
 		}
 	});
 });
-
 
 /*
 	PUT /admin - Log in an user
@@ -102,7 +103,7 @@ router.put('/', function(req, res) {
 	Request body: 
 	- _id: ObjectId of the admin to be deleted.
 */
-router.post('/delete', function(req, res) {
+router.post('/delete', utils.checkAdmin, function(req, res) {
 	var myID = req.body._id;
 	Admin.find({type: 'admin'}, function(err, admins) {
 		if (admins.length == 1) {
