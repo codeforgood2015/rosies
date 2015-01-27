@@ -992,13 +992,17 @@
 			});
 		};
 
+		this.showAdminErrorLast = false; //true if user tried to remove last admin and error message needs to appear
+
 		//handler connected to each 'remove' button, that will remove the admin account associated with adminID 
 		this.removeAdmin = function(adminID) {
 			//for some reason doing $http.delete didn't work, so doing it as a post
 			$http.post('/admin/delete', {_id: adminID}).success(function(data, status, headers, config) {
 				me.getAdminUsernames(); //refreshes the admin list to reflect this delete
 			}).error(function(data, status ,headers, config) {
-				//popup an error message or something? haven't decided
+				if (status === 401) {
+					this.showAdminErrorLast = true;
+				}
 			});	
 		};
 
@@ -1011,18 +1015,25 @@
 
 		this.showAdminErrorUsername = false;
 		this.showAdminErrorPassword = false;
+		this.showAdminErrorMissing = false;
 
 		//called when user clicks 'save new admin account' button
 		this.addNewAdmin = function() {
 			//upon submitting, clear previous error messages
 			this.showAdminErrorPassword = false;
 			this.showAdminErrorUsername = false;
-			
+			this.showAdminErrorMissing = false;
+			this.showAdminErrorLast = false;
 			//read the input text
 			var newUsername = $('#new-admin-username').val();
 			var newPass = $('#new-admin-password').val();
 			var newPassConfirm = $('#new-admin-confirm-password').val();
 			var newType = $('#new-admin-type').val();
+
+			if (newUsername.length == 0 || newPass.length == 0 || newPassConfirm.length == 0) {
+				this.showAdminErrorMissing = true;
+				return;
+			}
 
 			//confirm that they typed same password twice
 			if(newPass !== newPassConfirm) {
@@ -1036,8 +1047,10 @@
 				me.clearAdminTextFields();
 				me.getAdminUsernames(); //refresh the admin list to reflect newly added account
 			}).error(function(data, status, headers, config) {
-				if (status === 403) {
+				if (status === 400) {
 					me.showAdminErrorUsername = true;
+				} else if (status === 403) {
+					me.showAdminErrorPassword = true;
 				} else {
 					window.alert('something very wrong in addNewAdmin()'); //remove after debugging
 				}
@@ -1055,23 +1068,10 @@
 			this.clearAdminTextFields();
 			this.showNewAdmin = false;
 			this.showAdminErrorPassword = false;
-			this.showAdminErrorUsername = false;			
+			this.showAdminErrorUsername = false;	
+			this.showAdminErrorMissing = false;
+			this.showAdminErrorLast = false;		
 		}
-
-		// this.validUsername = true;
-
-		// this.checkValidUsername = function() {
-		// 	var check_user = $('#new-admin-username').val();
-		// 	$http.post('/admin/check-username', {username: check_user}).success(function(data, status, headers, config) {
-		// 		if (data.content.valid) {
-		// 			this.validUsername = true;
-		// 		} else {
-		// 			this.validUsername = false;
-		// 		}
-		// 	}).error(function(data, status, headers, config) {
-
-		// 	});
-		// }
 
 		/***************/
 		/*  ADD GUESTS */

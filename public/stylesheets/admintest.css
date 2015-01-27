@@ -136,8 +136,9 @@ button:hover{
 	background-color: #1874CD;
 }
 
-.login-error p{
+.error {
 	color: red;
+	font-size: 12pt;
 }
 
 #logout {
@@ -250,10 +251,6 @@ button:hover{
 .hours {
 	margin-left: 2%;
 	margin-right: 2%;
-}
-
-.hours-error {
-	color: red;
 }
 
 #default-table{

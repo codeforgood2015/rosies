@@ -154,8 +154,8 @@
 			<td>{{allergies}}</td>
 		</tr> -->
 	<table>
-	<button class = "button4" ng-show = '!submitSuccess' ng-click = "ctrl.sendReservation(user, ctrl.dateSelect, ctrl.timeSelect, ctrl.bag)">submit</button><br>
-	<span ng-show = "submitSuccess">Successfully Saved!<br><button class = 'button5' ng-click = 'ctrl.print()'>print page</button><br><button class = 'button5' ng-click = 'ctrl.reset()'>exit</button></span>
+	<button class = "button4" ng-show = '!submitSuccess' ng-click = "ctrl.sendReservation(user, ctrl.dateSelect, ctrl.timeSelect, ctrl.bag)">{{'SUBMIT' | translate }}</button><br>
+	<span ng-show = "submitSuccess">Successfully Saved!<br><button class = 'button5' ng-click = 'ctrl.print()'>{{'PRINT' | translate }}</button><br><button class = 'button5' ng-click = 'ctrl.reset()'>{{'EXIT' | translate}}</button></span>
 </div>
 
 
