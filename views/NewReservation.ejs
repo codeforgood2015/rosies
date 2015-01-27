@@ -46,6 +46,7 @@
 	<h3>{{'REMINDER' | translate}}</h3>
 	<p>{{'YOUR_APPOINTMENTS_DATE' | translate}} {{ctrl.lastVisit.date}}.</p>
 	<p>{{'YOUR_APPOINTMENTS_TIME' | translate}} {{ctrl.lastVisit.timeSlot}}. </p>
+	<p>{{'WAITLIST' | translate}}: {{ctrl.lastVisit.waitlist | translate}}<p>
 	<p>{{'PRESS_CANCEL' | translate}}</p>
 	<p>{{'PRESS_EXIT' | translate}}</p>
 	<button class = 'button5' ng-click = 'ctrl.cancel(user)'>{{'CANCEL' | translate}}</button>

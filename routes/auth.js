@@ -121,7 +121,7 @@ var checkUser = function(data, callback) {
 	Appointment.findOne(data, function(err, appointment) {
 		console.log(appointment)
 		if (appointment) {
-			callback(err, [appointment.date.getTime(), appointment.timeslot]);
+			callback(err, [appointment.date.getTime(), appointment.timeslot, appointment.waitlist]);
 		} else {
 			callback(err, true);
 		}
