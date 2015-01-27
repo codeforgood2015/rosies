@@ -1,0 +1,20 @@
+{
+  "name": "rosies",
+  "version": "0.0.0",
+  "homepage": "https://github.com/codeforgood2015/rosies",
+  "authors": [
+    "Shi-Ke Xue <shikexue@mit.edu>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-translate": "~2.5.2"
+  }
+}

@@ -34,33 +34,52 @@ router.post('/', function(req, res) {
 		lastName: req.body.lastName.toUpperCase(),
 		birthday: birthday,
 		premade: req.body.premade,
-		waitlist: req.body.waitlist
+		waitlist: 0
 	};
-	Rule.findOne({date: dayString(data.date.getDay()), time: data.timeslot}, function(err, rule){
+	dateToRules(data.date, data.timeslot, function(err, rules) {
 		if (err) {
 			console.log(err);
-		} else if (!rule) {
+		} else if (!rules || rules == []) {
 			utils.sendErrResponse(res, 401, 'Does not fit a rule.');
 		} else {
-			console.log(rule);
-			Appointment.find({date: data.date, timeslot: data.timeslot}, function(err, appointments) {
-				// TODO: check if user has already made an appointment
-				if (err) {
-					console.log(err)
-				} else if (appointments.length < rule.maxCap) {
-					data.waitlist = false;
-					var appointment = new Appointment(data);
-					appointment.save(function(err) {
-						utils.sendSuccessResponse(res, appointment);
-					});
-				} else if (appointments.length < rule.maxCap + rule.maxWaitlist) {
-					data.waitlist = true;
-					appointment = new Appointment(data);
-					appointment.save(function(err) {
-						utils.sendSuccessResponse(res, appointment);
+			Appointment.find({
+				firstName: data.firstName, 
+				lastName: data.lastName, 
+				birthday: data.birthday
+			}, function(err, appointments) {
+				if (appointments.length == 0) {
+					checkTime(data, function(err, status) {
+						if (err) {
+							console.log(err);
+						}
+						switch(status) {
+							case 'open':
+								var appointment = new Appointment(data);
+								appointment.save();
+								utils.sendSuccessResponse(res, appointment);
+								break;
+							case 'waitlist':
+								Appointment.find({$and: [{date: data.date}, {$not: {waitlist: 0}}]})
+								.sort({waitlist: -1})
+								.exec(function(err, appointments) {
+									data.waitlist = appointments[0].waitlist + 1;
+									var appointment = new Appointment(data);
+									appointment.save();
+									utils.sendSuccessResponse(res, appointment);
+								});
+								break;
+							case 'closed':
+							console.log('filled');
+								utils.sendErrResponse(res, '401', 'This timeslot is filled.');
+								break;
+							default:
+								utils.sendErrResponse(res, '404', 'This should never be reached.');
+								break;
+						}
 					});
 				} else {
-					res.sendErrResponse(res, 403, 'This timeslot is filled.');
+					console.log('made');
+					utils.sendErrResponse(res, 401, 'An appointment has already been made.');
 				}
 			});
 		}
@@ -77,7 +96,7 @@ router.get('/availability', function(req, res) {
 	var today = utils.midnightDate(new Date(Date.now()));
 	var tomorrow = utils.midnightDate(new Date(Date.now() + 1000*60*60*24));
 	// fetch appropriate rule for today, checking special and default rules
-	dateToRule(today, function(err, todRules) {
+	dateToRules(today, null, function(err, todRules) {
 		if (err) {
 			console.log(err);
 		} else if (!todRules || todRules == []) {
@@ -87,7 +106,7 @@ router.get('/availability', function(req, res) {
 			// this executes after the for loop below finishes. Necessary to avoid
 			// asynchronous problems with querying Appointments in closedRules
 			var fetchTomorrow = _.after(todRules.length, function() {
-				dateToRule(tomorrow, function(err, tomRules) {
+				dateToRules(tomorrow, null, function(err, tomRules) {
 					if (err) {
 						console.log(err);
 					} else if (!tomRules || tomRules == []) {
@@ -135,22 +154,37 @@ var closedRules = function(myRule, day, times, callback){
 		rules object is accessed through the callback.
 	Arguments:
 		dateObj: Javascript date object corresponding to the date to find rules for
-		callback: function(err, rules)
+		time: Array of Strings in military time (HH:MM) representing a specific rule to find
+		callback: function(err, rules) 
+		- err is non-null only when mongo throws an error
+		- rules is an array of found rule objects
 */
-var dateToRule = function(dateObj, callback) {
+var dateToRules = function(dateObj, time, callback) {
 	var year = dateObj.getFullYear();
 	var month = dateObj.getMonth() + 1;
 	var date = dateObj.getDate();
 	var dateString = year + '-' + month + '-' + date;
-	Rule.find({date: dateString}, function(err, rules) {
-		if (rules.length == 0) {
-			Rule.find({date: dayString(dateObj.getDay())}, function(err, defaultRules) {
-				callback(err, defaultRules);
-			});
-		} else {
-			callback(err, rules);
-		}
-	});
+	if (time) {
+		Rule.find({date: dateString, time: time}, function(err, rules) {
+			if (rules.length == 0) {
+				Rule.find({date: dayString(dateObj.getDay()), time:time}, function(err, defaultRules) {
+					callback(err, defaultRules);
+				});
+			} else {
+				callback(err, rules);
+			}
+		});
+	} else {
+		Rule.find({date: dateString}, function(err, rules) {
+			if (rules.length == 0) {
+				Rule.find({date: dayString(dateObj.getDay())}, function(err, defaultRules) {
+					callback(err, defaultRules);
+				});
+			} else {
+				callback(err, rules);
+			}
+		});
+	}
 };
 
 /*
@@ -230,7 +264,7 @@ var checkTime = function(data, callback) {
 	}, function(err, appointments) {
 		Rule.find({date: data.date, timeslot: data.timeslot}, function(err, rules) {
 			if (rules.length == 0) {
-				Rule.findOne({date: dayString(data.date.getDay()), timeslot: data.timeslot}, function(err, rule) {
+				Rule.findOne({date: dayString(data.date.getDay()), time: data.timeslot}, function(err, rule) {
 					if (rule) {
 						callback(err, checkRule(appointments.length, rule));
 					} else {
@@ -269,6 +303,8 @@ var dayString = function(day) {
 	    status of the timeslot
 */
 var checkRule = function(num_appts, rule) {
+	console.log(rule.maxCap);
+	console.log(num_appts);
 	if (num_appts < rule.maxCap) {
 		return 'open';
 	} else if (num_appts < rule.maxCap + rule.maxWaitlist) {

@@ -9,7 +9,7 @@ var appointmentSchema = mongoose.Schema({
 	lastName: String,
 	birthday: Date,
 	premade: Boolean,
-	waitlist: Boolean
+	waitlist: Number // 0 if not on waitlist, otherwise represents position on waitlist
 });
 
 //add some validators?

@@ -17,7 +17,7 @@ var utils = require('./utils/utils');
 var mongoose = require('mongoose');
 var connection_string = 'localhost/rosies';
 // OpenShift uses these for their Mongo instance
-if (process.env.OPENSHIFT_MONGODB_DB_USERNAMEODB_DB_PASSWORD) {
+if (process.env.OPENSHIFT_MONGODB_DB_PASSWORD) {
 	connection_string = process.env.OPENSHIFT_MONGODB_DB_USERNAME + ':' +
         process.env.OPENSHIFT_MONGODB_DB_PASSWORD + '@' +
         process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
@@ -81,7 +81,7 @@ var createDefaultRules = function() {
 var createDefaultAdmins = function() {
 	bcrypt.hash('password', 10, function(err, hash) {
 		admin = new Admin({
-			username: admin,
+			username: 'admin',
 			password: hash,
 			type: 'admin'
 		});
