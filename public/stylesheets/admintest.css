@@ -466,15 +466,14 @@ button:hover{
 	display: block;
 	overflow: auto;
 	max-height: 300px;
-	max-width: 50%;
+	width: 400px;
 	margin: auto;
 	border: 1px solid black;
 	border-radius: 10px;
 	text-align: center;
-}
-
-.admin-list tr {
-	border: 1px black solid;
+	background-color: rgba(0,0,0,0.3);
+	margin-bottom: 20px;
+	overflow: hidden;
 }
 
 tr:nth-child(even) {
@@ -487,10 +486,43 @@ tr:nth-child(odd) {
   padding: 10px;
 }
 
-.admin-edit-buttons {
-	font-size: 18pt;
+.admin-list tr td:first-child{
+	background-color: #3c84d5 ;
 }
 
+.accounts button{
+	font-size: 14px;
+
+}
+
+.admin-list tr{
+	border-radius: 10px;
+}
+
+.new-admin{
+	background-color: rgba(0,0,0,0.3);
+	border-radius: 10px;
+	padding: 10px;
+	font-size: 14px;
+	width: 300px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.new-admin span{
+	font-size: 20pt;
+}
+
+.new-admin input{
+	margin: 0px;
+}
+.new-admin p{
+	margin: 10px 0px 0px 0px;
+}
+
+.new-admin select{
+	margin-bottom: 10px;
+}
 /*for printer friendly version*/
 @media only print{
 	html{

@@ -290,26 +290,26 @@
 			<!-- Form for new admin -->
 			<div class='accounts' ng-show='currentSection === 4'>
 <!-- 				<button ng-click='ctrl.getAdminUsernames();'> Refresh Admin Accounts </button> -->
-				<h3>Manage admin accounts</h3>
-				<table class='admin-list' >
+				<h3>Admin Accounts</h3>
+				<table class='admin-list'>
 					<tr ng-repeat='admin in ctrl.allUsernames'>
 						<td width='33%'> {{admin.username}} </td>
 						<td width='33%'> ({{admin.type}}) </td>
 						<td width='33%'> <button ng-click='ctrl.removeAdmin(admin._id)'> remove </button></td>
 					</tr>
 				</table>
-				<button ng-click='ctrl.toAddNewAdmin();'>Add New Admin Account</button>
+				<button ng-click='ctrl.toAddNewAdmin();' ng-show = '!ctrl.showNewAdmin'>Add New Admin Account</button>
 				<div class='new-admin' ng-show='ctrl.showNewAdmin'>
 					<form>
-						new username:<input id='new-admin-username' type='text'></input>
+						<span>New Admin</span>
+						<p>new username</p>
+						<input id='new-admin-username' type='text'></input>
 						<!--<p class='admin-error-username' ng-show="$('#new-admin-username').val().length>0 && ctrl.validUsername)">That username is available!</p>
 						<p class='admin-error-username' ng-show='!ctrl.validUsername;'>That username is already taken, please choose another one.</p>-->
-						<br>
-						new password:<input id='new-admin-password' type='password'></input>
-						<br>
-						confirm new password:<input id='new-admin-confirm-password' type='password'></input>
-						<br>
-						account type: <select id='new-admin-type'><option val='admin'>admin</option><option val='volunteer'>volunteer</option></select>
+						<p>new password</p>
+						<input id='new-admin-password' type='password'></input>
+						<p>confirm new password</p><input id='new-admin-confirm-password' type='password'></input>
+						<p>account type</p><select id='new-admin-type'><option val='admin'>admin</option><option val='volunteer'>volunteer</option></select>
 						<br>
 						<button class='not-disappear' id='new-admin' ng-click="ctrl.addNewAdmin();">Save New Admin Account</button>
 						<button ng-click='ctrl.hideNewAdminAccountView();'>Cancel</button>
