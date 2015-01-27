@@ -535,7 +535,6 @@
 			this.defaultHours[_day] = _rules;
 		}
 
-		//uses repe
 		this.getDefaultHours = function(depth) {
 			//stop once we've done all 7 days
 			if (depth >= this.daysOfWeek.length) return;
@@ -565,15 +564,26 @@
 		}
 
 		this.saveAddedDefaultRule = function() {
+			//check that all values exist and that capacities are both positive integers
 			if (!$scope.adsh || !$scope.adsm || !$scope.adsa || !$scope.adeh || !$scope.adem || !$scope.adea || $scope.admc < 0 || $scope.adw < 0) {
 				this.addDefaultHoursError = true;
 				return;
 			} else if (!$scope.admc || !$scope.adw) {
 				this.addDefaultHoursError = true;
 				return;
+			} else if (!this.validateCapacity($scope.admc) || !(this.validateCapacity($scope.adw))) {
+				this.addDefaultHoursError = true;
+				return;				
 			}
+
 			var s = this.convertToMilitary($scope.adsh + ':' + $scope.adsm + ' ' + $scope.adsa);
 			var e = this.convertToMilitary($scope.adeh + ':' + $scope.adem + ' ' + $scope.adea);
+			//check that start time is earlier than end time
+			if (!this.validateTime(s, e)) {
+				this.addDefaultHoursError = true;
+				return;
+			}
+
 			var c = $scope.admc;
 			var w = $scope.adw; 
 			var r = false; //repeat
@@ -637,9 +647,18 @@
 			} else if (!$scope.edmc || !$scope.edw) {
 				this.editDefaultHoursError = true;
 				return;
+			} else if (!this.validateCapacity($scope.edmc) || !(this.validateCapacity($scope.edw))) {
+				this.editDefaultHoursError = true;
+				return;				
 			}
+
 			var s = this.convertToMilitary($scope.edsh + ':' + $scope.edsm + ' ' + $scope.edsa);
 			var e = this.convertToMilitary($scope.edeh + ':' + $scope.edem + ' ' + $scope.edea);
+			if (!this.validateTime(s, e)) {
+				this.editDefaultHoursError = true;
+				return;
+			}
+
 			var c = $scope.edmc;
 			var w = $scope.edw;
 			var id = this.editRule._id;
@@ -738,10 +757,17 @@
 			} else if (!$scope.esmc || !$scope.esw) {
 				this.editSpecialHoursError = true;
 				return;
+			} else if (!this.validateCapacity($scope.esmc) || !(this.validateCapacity($scope.esw))) {
+				this.editSpecialHoursError = true;
+				return;				
 			}
 			//grab things, send to database, reload
 			var s = this.convertToMilitary($scope.essh + ':' + $scope.essm + ' ' + $scope.essa);
 			var e = this.convertToMilitary($scope.eseh + ':' + $scope.esem + ' ' + $scope.esea);
+			if (!this.validateTime(s, e)) {
+				this.editSpecialtHoursError = true;
+				return;
+			}
 			var c = $scope.esmc;
 			var w = $scope.esw;
 			var id = this.specialRule._id;
@@ -813,11 +839,18 @@
 			} else if (!$scope.asmc || !$scope.asw) {
 				this.addSpecialHoursError = true;
 				return;
+			} else if (!this.validateCapacity($scope.asmc) || !(this.validateCapacity($scope.asw))) {
+				this.addSpecialHoursError = true;
+				return;				
 			}
 
 			if (this.newDate.length > 0) {
 			var s = this.convertToMilitary($scope.assh + ':' + $scope.assm + ' ' + $scope.assa);
 			var e = this.convertToMilitary($scope.aseh + ':' + $scope.asem + ' ' + $scope.asea);
+			if (!this.validateTime(s, e)) {
+				this.addSpecialHoursError = true;
+				return;
+			}
 			var c = $scope.asmc;
 			var w = $scope.asw;
 				var d = this.newDate;
@@ -901,6 +934,7 @@
 			'November' : ["11", range(1, 30, 1)],
 			'December' : ["12", range(1, 31, 1)]	
 		};
+
 		//utility function to check that the date entered is valid 
 		this.validateDate = function() {
 			var year = $('#select-year').val();
@@ -924,6 +958,20 @@
 				this.cancelAddedSpecialRule();
 				this.showDateError = true; //because it gets reset in this.cancelAddedSpecialRule();
 			}
+		}
+
+		//validates that the capacity input string represents a positive integer
+		this.validateCapacity = function(cap) {
+			//regex borrowed from http://stackoverflow.com/questions/10834796/validate-that-a-string-is-a-positive-integer
+			return /^\+?[1-9]\d*$/.test(cap);
+		}
+
+		//validates that start time is earlier than end time
+		this.validateTime = function(start, end) { //start and end are both strings in military time format
+			var arbitraryDate = '1971 01 01 '; //space intentionally left at the end of the string
+			var startTime = Date.parse(arbitraryDate + start);
+			var endTime = Date.parse(arbitraryDate + end);
+			return (startTime < endTime);
 		}
 
 		/***************/

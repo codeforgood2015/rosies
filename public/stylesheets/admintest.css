@@ -252,6 +252,10 @@ button:hover{
 	margin-right: 2%;
 }
 
+.hours-error {
+	color: red;
+}
+
 #default-table{
 	background-color: rgba(0,0,0,0.3);
 	border-radius: 12px;

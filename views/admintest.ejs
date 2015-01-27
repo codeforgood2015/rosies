@@ -145,7 +145,7 @@
 							<button ng-click='ctrl.cancelEditedDefaultRule();'>Cancel</button>
 							<button ng-click='ctrl.deleteDefaultRule(ctrl.editRule); ctrl.showEditDefault = false;'>Delete this Timeslot</button>
 							<p>Your changed default hours won't be saved unless you click "Save New Hours"</p>
-							<p ng-show='ctrl.editDefaultHoursError'>There was an error with your information. Timeslot not updated.</p>
+							<p class='hours-error' ng-show='ctrl.editDefaultHoursError'>There was an error with your information. Timeslot not updated.</p>
 					</div>
 					<div class='add-default sideOption' ng-show = 'ctrl.showAddDefault'>
 						<p> <span>Adding Timeslot</span></p>
@@ -180,7 +180,7 @@
 							<button ng-click='ctrl.saveAddedDefaultRule();'>Save New Hours</button>
 							<button ng-click='ctrl.cancelAddedDefaultRule();'>Cancel</button>
 							<p>Your new default hours won't be saved unless you click "Save New Hours"</p>
-							<p ng-show='ctrl.addDefaultHoursError'>There was an error with your information. Timeslot not updated.</p>
+							<p class='hours-error' ng-show='ctrl.addDefaultHoursError'>There was an error with your information. Timeslot not updated.</p>
 						</form>
 					</div>
 				</div>
@@ -233,7 +233,7 @@
 							<button ng-click='ctrl.saveEditedSpecialRule();'>Save New Hours</button>
 							<button ng-click='ctrl.cancelEditedSpecialRule();'>Cancel</button>
 							<p>Your new hours won't be saved unless you click "Save New Hours"</p>
-							<p ng-show='ctrl.editSpecialHoursError'> There was an error with your information. Timeslot not updated. </p>
+							<p class='hours-error' ng-show='ctrl.editSpecialHoursError'> There was an error with your information. Timeslot not updated. </p>
 						</form>
 					</div>
 
@@ -280,7 +280,7 @@
 							<button ng-click='ctrl.saveAddedSpecialRule();'>Save New Hours</button>
 							<button ng-click='ctrl.cancelAddedSpecialRule();'>Cancel</button>
 							<p>Your new hours won't be saved unless you click "Save New Hours"</p>
-							<p ng-show='ctrl.addSpecialHoursError'>There was an error with your information. Timeslot not updated.</p>
+							<p class='hours-error' ng-show='ctrl.addSpecialHoursError'>There was an error with your information. Timeslot not updated.</p>
 						</form>
 					</div>
 				</div>
