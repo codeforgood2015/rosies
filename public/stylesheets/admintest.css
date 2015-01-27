@@ -1,6 +1,7 @@
 /*Stylesheet for admin side*/
 html {
 	background-color: #734866;
+	background-position: fixed;
 	color: white;
 	text-align: center;
 	font-family: 'Roboto' Helvetica;
@@ -79,6 +80,7 @@ button:active{
 
 button:hover{
 	cursor: pointer;
+	background-color: lightgray;
 }
 .login{
 	background-color: rgba(0,0,0,0.3);
@@ -148,7 +150,7 @@ button:hover{
 
 .topLeft{
 	right: 5px;
-	position: fixed;
+	position: absolute;
 	width: 100px;
 	height: 50px;
 	font-size: 24px;
@@ -156,6 +158,10 @@ button:hover{
 	background-color: rgba(0,0,0,0);
 	color: white;
 	border: 2px solid white;
+}
+
+.topLeft:active{
+	background-color: white;
 }
 .actions{
 	background-color: #734866;
@@ -246,6 +252,13 @@ button:hover{
 	margin-right: 2%;
 }
 
+#default-table{
+	background-color: rgba(0,0,0,0.3);
+	border-radius: 12px;
+	overflow: hidden;
+	margin-bottom: 20px;
+}
+
 #default-table td {
  	padding: 10px;
  }
@@ -255,7 +268,7 @@ button:hover{
 }
 
 .default {
-	width: 95%;
+	width: 100%;
 	margin-top: 50px;
 	margin-bottom: 50px;
 	border-top: 2pt white solid;
@@ -265,35 +278,61 @@ button:hover{
 	font-size: 12pt;
 	text-align: center;
 }
-
 .default a{
 	color: white;
 	text-decoration: none;
 }
+.default a span{
+	color: white;
+	text-decoration: underline;
+	font-size: 12px;
+}
+
+.default a span:hover{
+	color: #3c84d5;
+}
 
 .default-hours {
 	max-width: 65%;
-	float: left;
-	font-size: 12pt;
+	font-size: 10pt;
+	margin-left: auto;
+	margin-right: auto;
 	overflow: auto;
+}
+
+.default-hours table tr td:first-child{
+	font-size: 20px;
+	background-color: #3c84d5;
 }
 
 .edit-default {
-	float: right;
 	overflow: auto;
-	max-width: 35%;
+	max-width: 50%;
 	font-size: 11pt;
 }
 
+.edit-default p{
+	margin-bottom: 0px;
+}
 .add-default {
-	float: right;
 	overflow: auto;
-	max-width: 35%;
+	max-width: 50%;
 	font-size: 11pt;
 }
 
-.default span {
-	text-decoration: underline;
+.add-default p{
+	margin-bottom: 0px;
+}
+
+.sideOption{
+	background-color: rgba(0,0,0,0.3);
+	padding: 20px;
+	border-radius: 12px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.default p span {
 	font-size: 20pt;
 }
 
@@ -302,32 +341,67 @@ button:hover{
 	text-align: center;
 }
 
+.default-input p{
+	margin-bottom: 0px;
+	margin-top: 10px;
+	font-size: 12px;
+}
+
+.default-input input{
+	margin: 0px;
+}
+
+.default-input table{
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.default-input table tr td{
+	padding: 5px 10px 5px 10px;
+}
+
+.sideOption button{
+	margin-top: 10px;
+}
 .special {
 	clear: both;
-	width: 95%;
-	margin-top: 50px;
-	margin-bottom: 50px;
+	width: 100%;
+	margin: 0px;
 	border-top: 2pt white solid;
 }
 
 .special-hours {
 	width: 60%;
-	float: left;
+	margin-left: auto;
+	margin-right: auto;
 	font-size: 12pt;
 }
 
-.edit-special {
-	display: inline-block;
-	float: right;
-	max-width: 35%;
-	overflow: auto;
-	font-size: 10pt;
-}
 
 #special-table {
+	width: 300px;
 	display: block; /*have to make it block to make it scrollable*/
 	overflow: auto; 
 	max-height: 300px;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: rgba(0,0,0,0.3);
+	border-radius: 12px;
+
+}
+
+#special-table tr td a span{
+	text-decoration: underline;
+}
+
+#special-table tr td a span:hover{
+	color: #3c84d5;
+}
+
+#special-table tbody{
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 #special-table td{
@@ -335,30 +409,58 @@ button:hover{
 }
 
 #special-table a {
-	text-decoration: none;
 	color: white;
+	text-decoration: none;
 }
 
-.new-special {
-	clear: both;
-	width: 95%;
-	margin-top: 50px;
-	margin-bottom: 50px;
-	border-top: 2pt white solid;
+.special-input table{
+	margin-left: auto;
+	margin-right: auto;
 }
 
-.new-special-hours {
-	width: 30%;
-	float: left;
+.special-input p{ 
+	margin-bottom: 0px;
+	margin-top: 10px;
 }
 
-.add-special {
-	float: right;
+.special-input table input{
+	margin-top: 0px;
+}
+
+.special-hours button{
+	margin: 10px;
+}
+
+.add-special span{
+	font-size: 20pt;
+}
+
+.edit-special span{
+	font-size: 20pt;
+}
+
+.add-special{
 	display: inline-block;
 	max-width: 50%;
 	overflow: auto;
 	font-size: 10pt;
+	background-color: rgba(0,0,0,0.3);
+	padding:20px;
+	border-radius: 12px;
+	margin-top: 10px;
 }
+
+.edit-special{
+	display: inline-block;
+	max-width: 50%;
+	overflow: auto;
+	font-size: 10pt;
+	background-color: rgba(0,0,0,0.3);
+	padding:20px;
+	border-radius: 12px;
+	margin-top: 10px;
+}
+
 
 .admin-list {
 	display: block;

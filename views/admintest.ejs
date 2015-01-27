@@ -63,9 +63,9 @@
 				<p> Click on a day and a time to see a list of guests and whether or not they require a pre-made bag. </p>
 				<ul id='times'>
 					<!-- Today -->
-					<li> <a href='#' ng-click='ctrl.toggleToday();'>Today </a> <button class= 'showDays' id = 'showtoday' ng-click = 'ctrl.showAll("today")'>Show All</button>
+					<li> <a href='' ng-click='ctrl.toggleToday();'>Today </a> <button class= 'showDays' id = 'showtoday' ng-click = 'ctrl.showAll("today")'>Show All</button>
 						<ul class='today-times' ng-show='ctrl.showToday'> 							
-							<li ng-repeat='time in ctrl.todayTimes;'> <a href='#' ng-click='ctrl.showGuests("today", time);'>  
+							<li ng-repeat='time in ctrl.todayTimes;'> <a href='' ng-click='ctrl.showGuests("today", time);'>  
 								{{ctrl.timeArrayToString(time.time)}} ({{todayGuests[time.time].length}}) </a>
 								<table class='today-guests'>
 									<tr ng-repeat='guest in todayGuests[time.time]'> 
@@ -79,9 +79,9 @@
 						</ul>
 					</li>
 					<!-- Tomorrow -->
-					<li> <a href='#' ng-click='ctrl.toggleTomorrow();'>Tomorrow </a> <button class = 'showDays' id = 'showtomorrow' ng-click = 'ctrl.showAll("tomorrow")'>Show All</button>
+					<li> <a href='' ng-click='ctrl.toggleTomorrow();'>Tomorrow </a> <button class = 'showDays' id = 'showtomorrow' ng-click = 'ctrl.showAll("tomorrow")'>Show All</button>
 						<ul class='tomorrow-times' ng-show='ctrl.showTomorrow'> 
-							<li ng-repeat='time in ctrl.tomorrowTimes;'> <a href='#' ng-click='ctrl.showGuests("tomorrow", time);'>  
+							<li ng-repeat='time in ctrl.tomorrowTimes;'> <a href='' ng-click='ctrl.showGuests("tomorrow", time);'>  
 								{{ctrl.timeArrayToString(time.time)}} ({{tomorrowGuests[time.time].length}})</a>
 								<table class='tomorrow-guests'>
 									<tr ng-repeat='guest in tomorrowGuests[time.time]'> 
@@ -98,46 +98,83 @@
 			<div class='hours' ng-show='currentSection === 3'>
 				<h3>Food Pantry Hours of Operation</h3>
 				<div class='default'>
-					<h4 class='left-align'>Manage default hours:</h4>
-					<p class='left-align' style='font-size: 14pt'> Click a time to edit or delete it.</p>
+					<h4>Default Hours</h4>
+					<p style='font-size: 14pt'> Click a time to edit or delete it.</p>
 					<div class='default-hours'>
 						<table id='default-table'>
 							<tr ng-repeat='dayOfWeek in ctrl.daysOfWeek'>
-								<td style='text-decoration:underline'>{{dayOfWeek}}</td>
-								<td ng-repeat='rule in ctrl.defaultHours[dayOfWeek]'> <a href='' ng-click='ctrl.editDefaultHours(rule);'>{{rule.time[0]}}-{{rule.time[1]}} <br>({{rule.maxCap}}, {{rule.maxWaitlist}}) </a></td>
+								<td>{{dayOfWeek}}</td>
 								<td><button ng-click='ctrl.addDefaultHours(dayOfWeek);'>add</button></td>
+								<td ng-repeat='rule in ctrl.defaultHours[dayOfWeek]'> <a href='' ng-click='ctrl.editDefaultHours(rule);'><span>{{ctrl.timeArrayToString(rule.time)}}</span> <br>({{rule.maxCap}}, {{rule.maxWaitlist}}) </a></td>
+								
 							</tr>
 						</table>
 					</div>
 					<!-- Form for new hours.-->
-					<div class='edit-default' ng-show='ctrl.showEditDefault'>
-						<button ng-click='ctrl.deleteDefaultRule(ctrl.editRule);'>Delete this Timeslot</button>
-	 					<p> Editing timeslot on day: <span>{{ctrl.editRule.date}}</span> 
-	 						<br> Current timeslot: {{ctrl.editRule.time[0]}}-{{ctrl.editRule.time[1]}} ({{ctrl.editRule.maxCap}}, {{ctrl.editRule.maxWaitlist}})
-	 					</p>
+					<div class='edit-default sideOption' ng-show='ctrl.showEditDefault'>
+	 					<p> <span>Editing Timeslot</span></p> 
+	 					<p>Current timeslot: {{ctrl.editRule.date}} {{ctrl.timeArrayToString(ctrl.editRule.time)}} ({{ctrl.editRule.maxCap}}, {{ctrl.editRule.maxWaitlist}})</p>
 						<form class='edit-default-times'>
 							<div class='slots'>
 								<div class='default-input'>
-									start: <select ng-model='edsh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='edsm'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='edsa'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
-									<br> end: <select ng-model='edeh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='edem'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='edea'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
-									<br> timeslot capacity: <input ng-model='edmc' type='text' placeholder='25'></input>
-									<br> waitlist capacity: <input ng-model='edw' type='text' placeholder='2'></input> 
+									<table>
+										<tr>
+											<td>
+												<p>start time</p>
+												<select ng-model='edsh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='edsm'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='edsa'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
+											</td>
+											<td>
+												<p>end time</p>
+												<select ng-model='edeh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='edem'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='edea'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<p>timeslot capacity</p>
+												<input ng-model='edmc' type='text' placeholder='25'></input>
+											</td>
+											<td>
+												<p>waitlist capacity</p>
+												<input ng-model='edw' type='text' placeholder='2'></input>
+											</td>
+										</tr>
+									</table>
 								</div>
 							</div> 
 							<button ng-click='ctrl.saveEditedDefaultRule();'>Save New Hours</button>
 							<button ng-click='ctrl.cancelEditedDefaultRule();'>Cancel</button>
-							<p>Your new default hours won't be saved unless you click "Save New Hours"</p>
+							<button ng-click='ctrl.deleteDefaultRule(ctrl.editRule); ctrl.showEditDefault = false;'>Delete this Timeslot</button>
+							<p>Your changed default hours won't be saved unless you click "Save New Hours"</p>
 							<p ng-show='ctrl.editDefaultHoursError'>There was an error with your information. Timeslot not updated.</p>
 					</div>
-					<div class='add-default' ng-show = 'ctrl.showAddDefault'>
-						<p> Adding a timeslot for day <span>{{ctrl.addDay}}</span> </p>
+					<div class='add-default sideOption' ng-show = 'ctrl.showAddDefault'>
+						<p> <span>Adding Timeslot</span></p>
+						<p>{{ctrl.addDay}}</p>
 						<form class='add-default-times'>
 							<div class='slots'>
 								<div class='default-input'>
-									start: <select ng-model='adsh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='adsm'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='adsa'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
-									<br> end: <select ng-model='adeh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='adem'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='adea'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
-									<br> timeslot capacity: <input ng-model='admc' type='text' placeholder='25'></input>
-									<br> waitlist capacity: <input ng-model='adw' type='text' placeholder='2'></input> 
+									<table>
+										<tr>
+											<td>
+												<p>start time</p>
+												<select ng-model='adsh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='adsm'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='adsa'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
+											</td>
+											<td>
+												<p>end time</p>
+												<select ng-model='adeh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='adem'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='adea'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<p>timeslot capacity</p>
+												<input ng-model='admc' type='text' placeholder='25'></input>
+											</td>
+											<td>
+												<p>waitlist capacity</p>
+												<input ng-model='adw' type='text' placeholder='2'></input>
+											</td>
+										</tr>
+									</table>
 								</div>
 							</div> 
 							<button ng-click='ctrl.saveAddedDefaultRule();'>Save New Hours</button>
@@ -149,29 +186,48 @@
 				</div>
 				<!-- Current specific date rules -->
 				<div class='special'>
-					<h4 class='left-align'>Manage special hours:</h4>
+					<h4>Special Hours</h4>
 					<div class='special-hours'>
 						<table id='special-table'>
 							<!--Runs the specialRules function to get a list of rules, each of which contains a date and a list of times -->
 							<tr ng-repeat='date in ctrl.specialDates'>
 								<td> <strong> {{date}} </strong> </td>
-								<td ng-repeat='rule in ctrl.specialRules[date]'> <a href='#' ng-click='ctrl.editSpecialHours(rule)'> {{rule.time[0]}}-{{rule.time[1]}} <br> ({{rule.maxCap}}, {{rule.maxWaitlist}})</a></td> 
+								<td ng-repeat='rule in ctrl.specialRules[date]'> <a href='' ng-click='ctrl.showAddSpecial = false; ctrl.editSpecialHours(rule)'><span>{{ctrl.timeArrayToString(rule.time)}} </span><br> ({{rule.maxCap}}, {{rule.maxWaitlist}})</a></td> 
 							</tr>
 						</table> 
+						<button ng-click='ctrl.showAddSpecial = true; ctrl.showEditSpecial = false;'>add</button>
 					</div>
 						<!-- Form for editing special hours.-->
 					<div class='edit-special' ng-show='ctrl.showEditSpecial'>
-	 					<p> Editing timeslot on day: <span>{{ctrl.specialRule.date}}</span> 
-	 						<br> Current timeslot: {{ctrl.specialRule.time[0]}}-{{ctrl.specialRule.time[1]}} ({{ctrl.specialRule.maxCap}}, {{ctrl.specialRule.maxWaitlist}})
+						<span>Editing Special Rule</span>
+	 					<p> Curent: {{ctrl.specialRule.date}} {{ctrl.timeArrayToString(ctrl.specialRule.time)}} ({{ctrl.specialRule.maxCap}}, {{ctrl.specialRule.maxWaitlist}})
 	 					</p>
-	 					<button ng-click='ctrl.deleteSpecialRule(ctrl.specialRule);'>Delete this Timeslot </button>
+	 					<button ng-click='ctrl.deleteSpecialRule(ctrl.specialRule); ctrl.showEditSpecial = false;'>Delete this Timeslot </button>
 						<form class='new-special-times'>
 							<div class='slots'>
 								<div class='special-input'>
-									start: <select ng-model='essh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='essm'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='essa'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
-									<br> end: <select ng-model='eseh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='esem'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='esea'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
-									<br> timeslot capacity: <input ng-model='esmc' type='text' placeholder='25'></input>
-									<br> waitlist capacity: <input ng-model='esw' type='text' placeholder='2'></input> 
+									<table>
+										<tr>
+											<td>
+												<p>start time</p>
+												<select ng-model='essh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='essm'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='essa'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
+											</td>
+											<td>
+												<p>end time</p>
+												<select ng-model='eseh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='esem'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='esea'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<p>timeslot capacity</p>
+												<input ng-model='esmc' type='text' placeholder='25'></input>
+											</td>
+											<td>
+												<p>waitlist capacity</p>
+												<input ng-model='esw' type='text' placeholder='2'></input>
+											</td>
+										</tr>
+									</table>
 								</div>
 							</div> 
 							<button ng-click='ctrl.saveEditedSpecialRule();'>Save New Hours</button>
@@ -180,33 +236,45 @@
 							<p ng-show='ctrl.editSpecialHoursError'> There was an error with your information. Timeslot not updated. </p>
 						</form>
 					</div>
-				</div>
-				<div class='new-special'>
-					<div class='new-special-hours'>
-						<h4 class='left-align'> Add a New Special Hours Rule </h4>
-						<p>Select a Date:</p>
-						<select id="select-year">
-							<option ng-repeat = "year in ctrl.futureYears" value = {{year}}>{{year}}</option>
-						</select>
-						<select id="select-month">
-							<option ng-repeat = "month in ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November', 'December']" value={{month}}>{{month}}</option>
-						</select>
-						<select id="select-date">
-							<option ng-repeat = "day in ctrl.allDays" value={{day}}> {{day}}</option>
-						</select>
-						<button ng-click='ctrl.addSpecialRule();'>Select</button>
-						<p ng-show='ctrl.showDateError'>Error: Please choose a valid date. </p>
-					</div>
+
 					<!-- Form for adding special hours.-->
 					<div class='add-special' ng-show='ctrl.showAddSpecial'>
-						<p>Adding timeslot on date: {{ctrl.newDate}} </p>
+						<span>Adding Special Rule</span>
 						<form class='add-special-times'>
 							<div class='slots'>
 								<div class='special-input'>
-									start: <select ng-model='assh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='assm'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='assa'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
-									<br> end: <select ng-model='aseh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='asem'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='asea'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
-									<br> timeslot capacity: <input ng-model='asmc' type='text' placeholder='25'></input>
-									<br> waitlist capacity: <input ng-model='asw' type='text' placeholder='2'></input> 
+									<p>Select a Date:</p>
+									<select id="select-year">
+										<option ng-model = "addSpecial.year" ng-repeat = "year in ctrl.futureYears" value = {{year}}>{{year}}</option>
+									</select>
+									<select id="select-month">
+										<option ng-model = "addSpecial.month" ng-repeat = "month in ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November', 'December']" value={{month}}>{{month}}</option>
+									</select>
+									<select id="select-date">
+										<option ng-model = "addSpecial.day" ng-repeat = "day in ctrl.allDays" value={{day}}> {{day}}</option>
+									</select>
+									<table>
+										<tr>
+											<td>
+												<p>start time</p>
+												<select ng-model='assh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='assm'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='assa'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
+											</td>
+											<td>
+												<p>end time</p>
+												<select ng-model='aseh'><option ng-repeat='h in ctrl.hoursRange' val={{h}}>{{h}}</option></select> : <select ng-model='asem'><option ng-repeat='m in ctrl.minutesRange' val={{m}}>{{m}}</option></select> <select ng-model='asea'><option ng-repeat='x in ctrl.ampmSelect' val={{x}}>{{x}}</option></select>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<p>timeslot capacity</p>
+												<input ng-model='asmc' type='text' placeholder='25'></input>
+											</td>
+											<td>
+												<p>waitlist capacity</p>
+												<input ng-model='asw' type='text' placeholder='2'></input>
+											</td>
+										</tr>
+									</table>								
 								</div>
 							</div> 
 							<button ng-click='ctrl.saveAddedSpecialRule();'>Save New Hours</button>

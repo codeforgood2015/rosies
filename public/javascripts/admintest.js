@@ -247,12 +247,11 @@
 			var date = this.tomorrow.getDate();
 			var monthString = month < 10 ? '0' + month.toString() : month.toString();
 			var dateString = date < 10 ? '0' + date.toString() : date.toString();
-			var findDate = year + "-" + month + "-" + date;
+			var findDate = year + "-" + monthString + "-" + dateString;
 			//try to see if there's a special rule for today's date 
 			$http.get('/rules/special/'+findDate).success(function(data, status, headers, config){
 				if (data.content.length > 0) {
 					me.tomorrowTimes = data.content;
-					window.alert('get tomorrow times success');
 				} else {
 					//if no special rule, fall back to default 
 					me.queryDefaultTomorrow();
@@ -522,6 +521,11 @@
 			depth += 1; //increment depth so next loop we grab the next day in the list
 			//for each day of the week, get the rules fo that day and populate the defaultHours object
 			$http.get('/rules/default/'+day).success(function(data, status, headers, config) {
+				data.content.sort(function(a, b){
+					var atemp = a.time[0].split(':');
+					var btemp = b.time[0].split(':');
+					return Number(atemp[0]) - Number(btemp[0])
+				});
 				me.populateDefaultHours(day, data.content);
 				me.getDefaultHours(depth); //recursive step
 			}).error(function(data, status, headers, config) {
@@ -538,7 +542,6 @@
 		}
 
 		this.saveAddedDefaultRule = function() {
-			window.alert('reached');
 			if (!$scope.adsh || !$scope.adsm || !$scope.adsa || !$scope.adeh || !$scope.adem || !$scope.adea || $scope.admc < 0 || $scope.adw < 0) {
 				this.addDefaultHoursError = true;
 				return;
@@ -780,6 +783,7 @@
 
 		this.saveAddedSpecialRule = function() {
 			this.addSpecialHoursError = false;
+			me.validateDate();
 			if (!$scope.assh || !$scope.assm || !$scope.assa || !$scope.aseh || !$scope.asem || !$scope.asea || $scope.asmc < 0 || $scope.asw < 0) {
 				this.addSpecialHoursError = true;
 				return;
