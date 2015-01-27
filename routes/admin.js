@@ -130,7 +130,7 @@ router.get('/check', function(req, res) {
 /*
 	PUT /admin/logout - logs out a user and clears session cookies
 	Returns: 
-	String: 'Successfully logged out.' or 'Already logged out.'
+	- String: 'Successfully logged out.' or 'Already logged out.'
 */
 router.put('/logout', function(req, res) {
 	if (req.session.name) {
