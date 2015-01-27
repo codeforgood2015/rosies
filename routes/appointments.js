@@ -62,7 +62,11 @@ router.post('/', function(req, res) {
 								Appointment.find({$and: [{date: data.date}, {$not: {waitlist: 0}}]})
 								.sort({waitlist: -1})
 								.exec(function(err, appointments) {
-									data.waitlist = appointments[0].waitlist + 1;
+									if (appointments) {
+										data.waitlist = appointments[0].waitlist + 1;
+									} else {
+										data.waitlist = 1;
+									}
 									var appointment = new Appointment(data);
 									appointment.save();
 									utils.sendSuccessResponse(res, appointment);
@@ -201,9 +205,19 @@ router.post('/cancel', function(req, res){
 		lastName: req.body.lastName.toUpperCase(),
 		birthday: birthday
 	}
-	Appointment.find(data)
-	.remove()
-	.exec(utils.sendSuccessResponse(res, 'done'))
+	Appointment.findOne(data, function(err, appointment) {
+		console.log(data);
+		console.log(appointment);
+		var waitlist = appointment.waitlist;
+		Appointment.remove(data, function() {
+			Appointment.find({waitlist: {$gt: waitlist}}, function(err, appointments) {
+				for (var i = 0; i < appointments.length; i++) {
+					appointments[i].waitlist -= 1;
+					appointments[i].save();
+				}
+			});
+		});
+	});
 });
 
 /*
