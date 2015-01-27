@@ -44,14 +44,26 @@ utils.midnightDate = function(dateObj) {
 
 /*
     checkAdmin(req, res, next): Middleware function that validates that 
-        an admin is logged in.
+        an admin is logged in and has admin type.
 */
 utils.checkAdmin = function(req, res, next) {
-    if (req.session.name) {
+    if (req.session.name && req.session.type == 'admin') {
         next();
     } else {
         utils.sendErrResponse(res, 401, 'Admin not logged in.');
     }
 };
+
+/*
+    checkVolunteer(req, res, next): Middleware function that validates that
+        either a volunteer or admin is logged in.
+*/
+utils.checkVolunteer = function(req, res, next) {
+    if (req.session.name) {
+        next();
+    } else {
+        utils.sendErrResponse(res, 401, 'Volunteer or Admin not logged in.');
+    }
+}
 
 module.exports = utils;

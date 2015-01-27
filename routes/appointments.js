@@ -9,7 +9,7 @@ var _ = require('underscore');
 /*
 	GET /appointments: Return all appointments
 */
-router.get('/', utils.checkAdmin, function(req, res) {
+router.get('/', utils.checkVolunteer, function(req, res) {
 	Appointment.find({}, function(err, appointments) {
 		utils.sendSuccessResponse(res, appointments);
 	});
