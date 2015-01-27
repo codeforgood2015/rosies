@@ -99,6 +99,7 @@ router.put('/', function(req, res) {
 				if (result) {
 					req.session.name = req.body.username;
 					req.session.userId = admin._id;
+					req.session.type = admin.type;
 					/*req.session.save(function(err) {
 						if (err) {
 							utils.sendErrResponse(res, 404, err);
@@ -118,7 +119,7 @@ router.put('/', function(req, res) {
 });
 
 router.get('/check', function(req, res) {
-	utils.sendSuccessResponse(res, {name: req.session.name, id: req.session.userId});
+	utils.sendSuccessResponse(res, {name: req.session.name, id: req.session.userId, type: req.session.type});
 });
 
 router.get('/session', function(req, res) {

@@ -4,7 +4,7 @@ var Guest = require('../models/guest').Guest;
 var Admin = require('../models/admin').Admin;
 
 exports.testDev = function(req, res){
-	Appointment.find().exec(function(err, appointments){console.log(appointments)})
+	Rule.find().exec(function(err, appointments){console.log(appointments)})
 	/*Guest.find().remove().exec()*/
 /*	birthday = new Date(1995, 4, 23);
 	beginningOftime = new Date (1950, 1, 1);
