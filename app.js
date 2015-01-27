@@ -23,7 +23,6 @@ if (process.env.OPENSHIFT_MONGODB_DB_PASSWORD) {
         process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
         process.env.OPENSHIFT_MONGODB_DB_PORT + process.env.OPENSHIFT_APP_NAME;
 }
-console.log('connection_string=' + connection_string);
 mongoose.connect(connection_string);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
