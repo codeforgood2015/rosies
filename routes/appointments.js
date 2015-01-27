@@ -206,8 +206,6 @@ router.post('/cancel', function(req, res){
 		birthday: birthday
 	}
 	Appointment.findOne(data, function(err, appointment) {
-		console.log(data);
-		console.log(appointment);
 		var waitlist = appointment.waitlist;
 		Appointment.remove(data, function() {
 			Appointment.find({waitlist: {$gt: waitlist}}, function(err, appointments) {
@@ -215,6 +213,7 @@ router.post('/cancel', function(req, res){
 					appointments[i].waitlist -= 1;
 					appointments[i].save();
 				}
+				utils.sendSuccessResponse(res, 'Successfully canceled.');
 			});
 		});
 	});
