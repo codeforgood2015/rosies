@@ -27,7 +27,7 @@
 				<form>
 					<p>Username</p><input type='text' id = "login-username"></input>
 					<br>
-					<p>Password</p><input type='password' id = "login-password"></input>
+					<p>Password</p><input ng-keypress='ctrl.enterLogin($event);' type='password' id = "login-password"></input>
 					<br>
 					<input class='-not-disappear' id='login-button' type='submit' value='login' ng-click="ctrl.login();"></input>
 				</form>
@@ -191,7 +191,7 @@
 						<table id='special-table'>
 							<!--Runs the specialRules function to get a list of rules, each of which contains a date and a list of times -->
 							<tr ng-repeat='date in ctrl.specialDates'>
-								<td> <strong> {{date}} </strong> </td>
+								<td> <strong> {{ctrl.convertDateToReadable(date);}} </strong> </td>
 								<td ng-repeat='rule in ctrl.specialRules[date]'> <a href='' ng-click='ctrl.showAddSpecial = false; ctrl.editSpecialHours(rule)'><span>{{ctrl.timeArrayToString(rule.time)}} </span><br> ({{rule.maxCap}}, {{rule.maxWaitlist}})</a></td> 
 							</tr>
 						</table> 
@@ -200,7 +200,7 @@
 						<!-- Form for editing special hours.-->
 					<div class='edit-special' ng-show='ctrl.showEditSpecial'>
 						<span>Editing Special Rule</span>
-	 					<p> Curent: {{ctrl.specialRule.date}} {{ctrl.timeArrayToString(ctrl.specialRule.time)}} ({{ctrl.specialRule.maxCap}}, {{ctrl.specialRule.maxWaitlist}})
+	 					<p> Curent: {{ctrl.convertDateToReadable(ctrl.specialRule.date);}} - {{ctrl.timeArrayToString(ctrl.specialRule.time)}} ({{ctrl.specialRule.maxCap}}, {{ctrl.specialRule.maxWaitlist}})
 	 					</p>
 	 					<button ng-click='ctrl.deleteSpecialRule(ctrl.specialRule); ctrl.showEditSpecial = false;'>Delete this Timeslot </button>
 						<form class='new-special-times'>

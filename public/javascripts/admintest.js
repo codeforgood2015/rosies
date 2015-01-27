@@ -60,12 +60,34 @@
 			}); 
 		};
 
+		//called if enter button is pressed and the cursor is in the password text input box
+		this.enterLogin = function(event) {
+			if (event.keyCode === 13) {
+				this.login();
+			}
+		}
+
 		this.logout = function(){
 			$http.get('/admin/logout').success(function(data, status, headers, config){
 				$scope.currentSection = 0;
 				me.showNavbar = false;
 				//window.location = '/admin';
 			})
+		}
+
+		//function that recompresses any editing windows or expanded trees on the pages
+		this.resetPages = function() {
+				//hide the guests in viewgusts
+				me.resetShowTimesAndGuests();
+				//hide new admin form
+				me.hideNewAdminAccountView();
+				//hide editing and adding forms
+				me.cancelEditedDefaultRule();
+				me.cancelEditedSpecialRule();
+				me.cancelAddedSpecialRule();
+				me.cancelAddedDefaultRule();
+				//clear inputs that aren't of type text
+				$("input :not(type=text)").val('');
 		}
 
 		/********************/
