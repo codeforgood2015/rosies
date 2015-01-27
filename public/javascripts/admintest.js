@@ -75,21 +75,6 @@
 			})
 		}
 
-		//function that recompresses any editing windows or expanded trees on the pages
-		this.resetPages = function() {
-				//hide the guests in viewgusts
-				me.resetShowTimesAndGuests();
-				//hide new admin form
-				me.hideNewAdminAccountView();
-				//hide editing and adding forms
-				me.cancelEditedDefaultRule();
-				me.cancelEditedSpecialRule();
-				me.cancelAddedSpecialRule();
-				me.cancelAddedDefaultRule();
-				//clear inputs that aren't of type text
-				$("input :not(type=text)").val('');
-		}
-
 		/********************/
 		/*  Changing Pages  */
 		/********************/
@@ -119,25 +104,21 @@
 		this.toAddGuestsView = function() {
 			if (!this.loginError) $scope.currentSection = 5;
 		}
-		//back button
-		this.back = function() {
-			if ($scope.currentSection > 1) {
-				this.toSelectAction(); //return to the select action screen
-			} else {
-				$scope.currentSection = 0;
-			}
-			//hide the guests in viewgusts
-			this.resetShowTimesAndGuests();
-			//hide new admin form
-			this.hideNewAdminAccountView();
-			//hide editing and adding forms
-			this.cancelEditedDefaultRule();
-			this.cancelEditedSpecialRule();
-			this.cancelAddedSpecialRule();
-			this.cancelAddedDefaultRule();
-			//clear inputs that aren't of type text
-			$("input :not(type=text)").val('');
-		};
+
+		//function that recompresses any editing windows or expanded trees on the pages
+		this.resetPages = function() {
+				//hide the guests in viewgusts
+				me.resetShowTimesAndGuests();
+				//hide new admin form
+				me.hideNewAdminAccountView();
+				//hide editing and adding forms
+				me.cancelEditedDefaultRule();
+				me.cancelEditedSpecialRule();
+				me.cancelAddedSpecialRule();
+				me.cancelAddedDefaultRule();
+				//clear inputs that aren't of type text
+				$("input :not(type=text)").val('');
+		}
 
 
 		/*************************/
@@ -225,15 +206,20 @@
 			this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes);
 		}
 
+		this.dateToString = function(dateObject) {
+			var year = dateObject.getFullYear().toString();
+			var month = dateObject.getMonth()+1; //getMonth returns integer 0-11
+			var date = dateObject.getDate();
+			var monthString = month < 10 ? '0' + month.toString() : month.toString();
+			var dateString = date < 10 ? '0' + date.toString() : date.toString();
+			var returnDate = year + "-" + monthString + "-" + dateString;	
+			return returnDate;
+		}
+
 		//query database to populate this.todayTimes with the proper start times to display on the view guests page
 		this.getTodayTimes = function() {
 			//get date and create the date string to query database with
-			var year = this.today.getFullYear().toString();
-			var month = this.today.getMonth()+1; //getMonth returns integer 0-11
-			var date = this.today.getDate();
-			var monthString = month < 10 ? '0' + month.toString() : month.toString();
-			var dateString = date < 10 ? '0' + date.toString() : date.toString();
-			var findDate = year + "-" + monthString + "-" + dateString;
+			var findDate = this.dateToString(this.today);
 			//try to see if there's a special rule for today's date 
 			$http.get('/rules/special/' + findDate).success(function(data, status, headers, config){
 				if (data.content.length > 0) {
@@ -263,14 +249,7 @@
 		//analogous to getTodayTimes() above
 		this.getTomorrowTimes = function() {
 			//get date and create the date string to query database with
-			var tomorrow = new Date();
-			tomorrow.setDate(tomorrow.getDate() + 1);
-			var year = this.tomorrow.getFullYear().toString();
-			var month = this.tomorrow.getMonth()+1; //getMonth returns integer 0-11
-			var date = this.tomorrow.getDate();
-			var monthString = month < 10 ? '0' + month.toString() : month.toString();
-			var dateString = date < 10 ? '0' + date.toString() : date.toString();
-			var findDate = year + "-" + monthString + "-" + dateString;
+			var findDate = this.dateToString(this.tomorrow);
 			//try to see if there's a special rule for today's date 
 			$http.get('/rules/special/'+findDate).success(function(data, status, headers, config){
 				if (data.content.length > 0) {
@@ -1001,7 +980,7 @@
 				me.getAdminUsernames(); //refreshes the admin list to reflect this delete
 			}).error(function(data, status ,headers, config) {
 				if (status === 401) {
-					this.showAdminErrorLast = true;
+					me.showAdminErrorLast = true;
 				}
 			});	
 		};

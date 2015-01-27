@@ -15,7 +15,9 @@ router.get('/', function(req, res) {
 	GET /admin/usernames - return an array of all admin usernames
 */
 router.get('/usernames', function(req, res) {
-	Admin.find({}, function(err, admins) {
+	Admin.find({})
+	.sort({username: 1})
+	.exec(function(err, admins) {
 		if (err) {
 			utils.sendErrResponse(res, 404, err);
 		} else {

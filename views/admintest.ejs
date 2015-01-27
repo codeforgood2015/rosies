@@ -99,7 +99,7 @@
 				<h3>Food Pantry Hours of Operation</h3>
 				<div class='default'>
 					<h4>Default Hours</h4>
-					<p style='font-size: 14pt'> Click a time to edit or delete it.</p>
+					<p style='font-size: 14pt'> Click a time to edit or delete it, or click 'add' to add a timeslot to that day.</p>
 					<div class='default-hours'>
 						<table id='default-table'>
 							<tr ng-repeat='dayOfWeek in ctrl.daysOfWeek'>
@@ -191,6 +191,7 @@
 				<!-- Current specific date rules -->
 				<div class='special'>
 					<h4>Special Hours</h4>
+					<p style='font-size: 14pt'> Click a time to edit or delete it, or click 'add' to add a new special hours timeslot. </p>
 					<div class='special-hours'>
 						<table id='special-table'>
 							<!--Runs the specialRules function to get a list of rules, each of which contains a date and a list of times -->
