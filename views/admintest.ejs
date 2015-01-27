@@ -31,11 +31,11 @@
 					<br>
 					<input class='-not-disappear' id='login-button' type='submit' value='login' ng-click="ctrl.login();"></input>
 				</form>
-				<div class='login-error' ng-show='ctrl.loginError'>
+				<div class='error' ng-show='ctrl.loginError'>
 					<p> Incorrect username or password combination. </p>
 					<p> Try again or contact a Rosie's Place administrator for help remembering or requesting an account. </p>
 				</div>
-				<div class='login-error' ng-show='ctrl.missingLogin'>
+				<div class='error' ng-show='ctrl.missingLogin'>
 					<p> Missing username or password. </p>
 				</div>
 			</div>
@@ -145,7 +145,9 @@
 							<button ng-click='ctrl.cancelEditedDefaultRule();'>Cancel</button>
 							<button ng-click='ctrl.deleteDefaultRule(ctrl.editRule); ctrl.showEditDefault = false;'>Delete this Timeslot</button>
 							<p>Your changed default hours won't be saved unless you click "Save New Hours"</p>
-							<p class='hours-error' ng-show='ctrl.editDefaultHoursError'>There was an error with your information. Timeslot not updated.</p>
+							<div class='error' ng-show='ctrl.editDefaultHoursError'>
+								<p>There was an error with your information. Timeslot not updated.</p>
+							</div>
 					</div>
 					<div class='add-default sideOption' ng-show = 'ctrl.showAddDefault'>
 						<p> <span>Adding Timeslot</span></p>
@@ -180,7 +182,9 @@
 							<button ng-click='ctrl.saveAddedDefaultRule();'>Save New Hours</button>
 							<button ng-click='ctrl.cancelAddedDefaultRule();'>Cancel</button>
 							<p>Your new default hours won't be saved unless you click "Save New Hours"</p>
-							<p class='hours-error' ng-show='ctrl.addDefaultHoursError'>There was an error with your information. Timeslot not updated.</p>
+							<div class='error' ng-show='ctrl.addDefaultHoursError'>
+								<p>There was an error with your information. Timeslot not updated.</p>
+							</div>
 						</form>
 					</div>
 				</div>
@@ -233,7 +237,9 @@
 							<button ng-click='ctrl.saveEditedSpecialRule();'>Save New Hours</button>
 							<button ng-click='ctrl.cancelEditedSpecialRule();'>Cancel</button>
 							<p>Your new hours won't be saved unless you click "Save New Hours"</p>
-							<p class='hours-error' ng-show='ctrl.editSpecialHoursError'> There was an error with your information. Timeslot not updated. </p>
+							<div class='error' ng-show='ctrl.editSpecialHoursError'> 
+								<p>There was an error with your information. Timeslot not updated. </p>
+							</div>
 						</form>
 					</div>
 
@@ -280,7 +286,9 @@
 							<button ng-click='ctrl.saveAddedSpecialRule();'>Save New Hours</button>
 							<button ng-click='ctrl.cancelAddedSpecialRule();'>Cancel</button>
 							<p>Your new hours won't be saved unless you click "Save New Hours"</p>
-							<p class='hours-error' ng-show='ctrl.addSpecialHoursError'>There was an error with your information. Timeslot not updated.</p>
+							<div class='error' ng-show='ctrl.addSpecialHoursError'>
+								<p>There was an error with your information. Timeslot not updated.</p>
+							</div>
 						</form>
 					</div>
 				</div>
@@ -298,14 +306,15 @@
 						<td width='33%'> <button ng-click='ctrl.removeAdmin(admin._id)'> remove </button></td>
 					</tr>
 				</table>
+				<div class='error' ng-show = 'ctrl.showAdminErrorLast'> 
+					<p>There must always be at least one admin-level account available. </p>
+				</div>
 				<button ng-click='ctrl.toAddNewAdmin();' ng-show = '!ctrl.showNewAdmin'>Add New Admin Account</button>
 				<div class='new-admin' ng-show='ctrl.showNewAdmin'>
 					<form>
 						<span>New Admin</span>
 						<p>new username</p>
 						<input id='new-admin-username' type='text'></input>
-						<!--<p class='admin-error-username' ng-show="$('#new-admin-username').val().length>0 && ctrl.validUsername)">That username is available!</p>
-						<p class='admin-error-username' ng-show='!ctrl.validUsername;'>That username is already taken, please choose another one.</p>-->
 						<p>new password</p>
 						<input id='new-admin-password' type='password'></input>
 						<p>confirm new password</p><input id='new-admin-confirm-password' type='password'></input>
@@ -314,8 +323,11 @@
 						<button class='not-disappear' id='new-admin' ng-click="ctrl.addNewAdmin();">Save New Admin Account</button>
 						<button ng-click='ctrl.hideNewAdminAccountView();'>Cancel</button>
 					</form>
-					<p ng-show='ctrl.showAdminErrorUsername'>The username you have requested is already taken, select a different one.</p>
-					<p ng-show='ctrl.showAdminErrorPassword'>Please ensure that you have typed the same password twice.</p>
+					<div class='error'>
+						<p ng-show='ctrl.showAdminErrorUsername'>The username you have requested is already taken, select a different one.</p>
+						<p ng-show='ctrl.showAdminErrorPassword'>Please ensure that you have typed the same password twice.</p>
+						<p ng-show='ctrl.showAdminErrorMissing'>Please ensure that you have filled out all required fields.</p>
+					</div>
 				</div>
 			</div>
 
