@@ -75,7 +75,7 @@ router.get('/special', function(req, res) {
 	Returns
 	- rule: newly created rule
 */
-router.post('/special/', function(req, res) {
+router.post('/special/', utils.checkAdmin, function(req, res) {
 	var data = {
 		maxCap: req.body.maxCap,
 		maxWaitlist: req.body.maxWaitlist,
@@ -140,7 +140,7 @@ router.get('/:id', function(req, res) {
 	Returns
 	- rule: the modified rule document
 */
-router.put('/:id', function(req, res) {
+router.put('/:id', utils.checkAdmin, function(req, res) {
 	var data = {
 		maxCap: req.body.maxCap,
 		maxWaitlist: req.body.maxWaitlist,
@@ -168,7 +168,7 @@ router.put('/:id', function(req, res) {
 	Returns
 	- rule: the deleted rule document
 */
-router.delete('/:id', function(req, res) {
+router.delete('/:id', utils.checkAdmin, function(req, res) {
 	Rule.remove({_id: req.params.id}, function(err, rule) {
 		if (err) {
 			utils.sendErrResponse(res, 404, err);
