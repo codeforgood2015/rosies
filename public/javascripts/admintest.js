@@ -68,7 +68,7 @@
 		}
 
 		this.logout = function(){
-			$http.get('/admin/logout').success(function(data, status, headers, config){
+			$http.put('/admin/logout').success(function(data, status, headers, config){
 				$scope.currentSection = 0;
 				me.showNavbar = false;
 				//window.location = '/admin';
