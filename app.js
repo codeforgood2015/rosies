@@ -113,16 +113,14 @@ agenda.define('prune appointments', function(job, done) {
 //cron format: minute, hour, dayOfMonth, monthOfYear, dayOfWeek, Year, * means any
 agenda.every('1 hour', 'prune appointments');
 agenda.on('fail', function(err, job){
-	console.log(err.message)
-})
+	console.log(err.message);
+});
 agenda.start();
-
-console.log("starting")
 
 // routes for the app
 var auth = require('./routes/auth');
 var admin = require('./routes/admin');
-var dev = require('./routes/dev');
+//var dev = require('./routes/dev');
 var appointments = require('./routes/appointments');
 var rules = require('./routes/rules');
 var guest = require('./routes/guest');
@@ -152,7 +150,7 @@ app.use(session({
 }));
 
 app.use('/auth', auth);
-app.get('/dev', dev.testDev);
+//app.get('/dev', dev.testDev);
 //app.get('/dev/set', dev.createDefaultRules);
 app.use('/admin', admin);
 app.use('/appointments', appointments);
@@ -160,11 +158,11 @@ app.use('/rules', rules);
 app.use('/guest', guest);
 
 app.get('/', function(req, res) {
-	res.render('NewReservation')
+	res.render('NewReservation');
 });
 
 app.get('/splash', function(req, res){
-	res.render('splash')
+	res.render('splash');
 });
 
 module.exports = app;

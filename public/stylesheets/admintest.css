@@ -136,8 +136,9 @@ button:hover{
 	background-color: #1874CD;
 }
 
-.login-error p{
+.error {
 	color: red;
+	font-size: 12pt;
 }
 
 #logout {

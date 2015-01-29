@@ -68,26 +68,11 @@
 		}
 
 		this.logout = function(){
-			$http.get('/admin/logout').success(function(data, status, headers, config){
+			$http.put('/admin/logout').success(function(data, status, headers, config){
 				$scope.currentSection = 0;
 				me.showNavbar = false;
 				//window.location = '/admin';
 			})
-		}
-
-		//function that recompresses any editing windows or expanded trees on the pages
-		this.resetPages = function() {
-				//hide the guests in viewgusts
-				me.resetShowTimesAndGuests();
-				//hide new admin form
-				me.hideNewAdminAccountView();
-				//hide editing and adding forms
-				me.cancelEditedDefaultRule();
-				me.cancelEditedSpecialRule();
-				me.cancelAddedSpecialRule();
-				me.cancelAddedDefaultRule();
-				//clear inputs that aren't of type text
-				$("input :not(type=text)").val('');
 		}
 
 		/********************/
@@ -119,25 +104,21 @@
 		this.toAddGuestsView = function() {
 			if (!this.loginError) $scope.currentSection = 5;
 		}
-		//back button
-		this.back = function() {
-			if ($scope.currentSection > 1) {
-				this.toSelectAction(); //return to the select action screen
-			} else {
-				$scope.currentSection = 0;
-			}
-			//hide the guests in viewgusts
-			this.resetShowTimesAndGuests();
-			//hide new admin form
-			this.hideNewAdminAccountView();
-			//hide editing and adding forms
-			this.cancelEditedDefaultRule();
-			this.cancelEditedSpecialRule();
-			this.cancelAddedSpecialRule();
-			this.cancelAddedDefaultRule();
-			//clear inputs that aren't of type text
-			$("input :not(type=text)").val('');
-		};
+
+		//function that recompresses any editing windows or expanded trees on the pages
+		this.resetPages = function() {
+				//hide the guests in viewgusts
+				me.resetShowTimesAndGuests();
+				//hide new admin form
+				me.hideNewAdminAccountView();
+				//hide editing and adding forms
+				me.cancelEditedDefaultRule();
+				me.cancelEditedSpecialRule();
+				me.cancelAddedSpecialRule();
+				me.cancelAddedDefaultRule();
+				//clear inputs that aren't of type text
+				$("input :not(type=text)").val('');
+		}
 
 
 		/*************************/
@@ -225,15 +206,20 @@
 			this.showTomorrowTimes = makeTimeObjects(this.tomorrowTimes);
 		}
 
+		this.dateToString = function(dateObject) {
+			var year = dateObject.getFullYear().toString();
+			var month = dateObject.getMonth()+1; //getMonth returns integer 0-11
+			var date = dateObject.getDate();
+			var monthString = month < 10 ? '0' + month.toString() : month.toString();
+			var dateString = date < 10 ? '0' + date.toString() : date.toString();
+			var returnDate = year + "-" + monthString + "-" + dateString;	
+			return returnDate;
+		}
+
 		//query database to populate this.todayTimes with the proper start times to display on the view guests page
 		this.getTodayTimes = function() {
 			//get date and create the date string to query database with
-			var year = this.today.getFullYear().toString();
-			var month = this.today.getMonth()+1; //getMonth returns integer 0-11
-			var date = this.today.getDate();
-			var monthString = month < 10 ? '0' + month.toString() : month.toString();
-			var dateString = date < 10 ? '0' + date.toString() : date.toString();
-			var findDate = year + "-" + monthString + "-" + dateString;
+			var findDate = this.dateToString(this.today);
 			//try to see if there's a special rule for today's date 
 			$http.get('/rules/special/' + findDate).success(function(data, status, headers, config){
 				if (data.content.length > 0) {
@@ -263,14 +249,7 @@
 		//analogous to getTodayTimes() above
 		this.getTomorrowTimes = function() {
 			//get date and create the date string to query database with
-			var tomorrow = new Date();
-			tomorrow.setDate(tomorrow.getDate() + 1);
-			var year = this.tomorrow.getFullYear().toString();
-			var month = this.tomorrow.getMonth()+1; //getMonth returns integer 0-11
-			var date = this.tomorrow.getDate();
-			var monthString = month < 10 ? '0' + month.toString() : month.toString();
-			var dateString = date < 10 ? '0' + date.toString() : date.toString();
-			var findDate = year + "-" + monthString + "-" + dateString;
+			var findDate = this.dateToString(this.tomorrow);
 			//try to see if there's a special rule for today's date 
 			$http.get('/rules/special/'+findDate).success(function(data, status, headers, config){
 				if (data.content.length > 0) {
@@ -535,7 +514,6 @@
 			this.defaultHours[_day] = _rules;
 		}
 
-		//uses repe
 		this.getDefaultHours = function(depth) {
 			//stop once we've done all 7 days
 			if (depth >= this.daysOfWeek.length) return;
@@ -565,15 +543,26 @@
 		}
 
 		this.saveAddedDefaultRule = function() {
+			//check that all values exist and that capacities are both positive integers
 			if (!$scope.adsh || !$scope.adsm || !$scope.adsa || !$scope.adeh || !$scope.adem || !$scope.adea || $scope.admc < 0 || $scope.adw < 0) {
 				this.addDefaultHoursError = true;
 				return;
 			} else if (!$scope.admc || !$scope.adw) {
 				this.addDefaultHoursError = true;
 				return;
+			} else if (!this.validateCapacity($scope.admc) || !(this.validateCapacity($scope.adw))) {
+				this.addDefaultHoursError = true;
+				return;				
 			}
+
 			var s = this.convertToMilitary($scope.adsh + ':' + $scope.adsm + ' ' + $scope.adsa);
 			var e = this.convertToMilitary($scope.adeh + ':' + $scope.adem + ' ' + $scope.adea);
+			//check that start time is earlier than end time
+			if (!this.validateTime(s, e)) {
+				this.addDefaultHoursError = true;
+				return;
+			}
+
 			var c = $scope.admc;
 			var w = $scope.adw; 
 			var r = false; //repeat
@@ -637,9 +626,18 @@
 			} else if (!$scope.edmc || !$scope.edw) {
 				this.editDefaultHoursError = true;
 				return;
+			} else if (!this.validateCapacity($scope.edmc) || !(this.validateCapacity($scope.edw))) {
+				this.editDefaultHoursError = true;
+				return;				
 			}
+
 			var s = this.convertToMilitary($scope.edsh + ':' + $scope.edsm + ' ' + $scope.edsa);
 			var e = this.convertToMilitary($scope.edeh + ':' + $scope.edem + ' ' + $scope.edea);
+			if (!this.validateTime(s, e)) {
+				this.editDefaultHoursError = true;
+				return;
+			}
+
 			var c = $scope.edmc;
 			var w = $scope.edw;
 			var id = this.editRule._id;
@@ -738,10 +736,17 @@
 			} else if (!$scope.esmc || !$scope.esw) {
 				this.editSpecialHoursError = true;
 				return;
+			} else if (!this.validateCapacity($scope.esmc) || !(this.validateCapacity($scope.esw))) {
+				this.editSpecialHoursError = true;
+				return;				
 			}
 			//grab things, send to database, reload
 			var s = this.convertToMilitary($scope.essh + ':' + $scope.essm + ' ' + $scope.essa);
 			var e = this.convertToMilitary($scope.eseh + ':' + $scope.esem + ' ' + $scope.esea);
+			if (!this.validateTime(s, e)) {
+				this.editSpecialtHoursError = true;
+				return;
+			}
 			var c = $scope.esmc;
 			var w = $scope.esw;
 			var id = this.specialRule._id;
@@ -813,11 +818,18 @@
 			} else if (!$scope.asmc || !$scope.asw) {
 				this.addSpecialHoursError = true;
 				return;
+			} else if (!this.validateCapacity($scope.asmc) || !(this.validateCapacity($scope.asw))) {
+				this.addSpecialHoursError = true;
+				return;				
 			}
 
 			if (this.newDate.length > 0) {
 			var s = this.convertToMilitary($scope.assh + ':' + $scope.assm + ' ' + $scope.assa);
 			var e = this.convertToMilitary($scope.aseh + ':' + $scope.asem + ' ' + $scope.asea);
+			if (!this.validateTime(s, e)) {
+				this.addSpecialHoursError = true;
+				return;
+			}
 			var c = $scope.asmc;
 			var w = $scope.asw;
 				var d = this.newDate;
@@ -833,7 +845,7 @@
 					me.clearDate();
 					me.getSpecialHours();
 				}).error(function(data, status, headers, config) {
-					window.alert('error in saveEditedSpecialHours');
+					window.alert('error in saveAddedSpecialHours');
 				});
 			}
 		}
@@ -901,6 +913,7 @@
 			'November' : ["11", range(1, 30, 1)],
 			'December' : ["12", range(1, 31, 1)]	
 		};
+
 		//utility function to check that the date entered is valid 
 		this.validateDate = function() {
 			var year = $('#select-year').val();
@@ -926,6 +939,20 @@
 			}
 		}
 
+		//validates that the capacity input string represents a positive integer
+		this.validateCapacity = function(cap) {
+			//regex borrowed from http://stackoverflow.com/questions/10834796/validate-that-a-string-is-a-positive-integer
+			return /^\+?[1-9]\d*$/.test(cap);
+		}
+
+		//validates that start time is earlier than end time
+		this.validateTime = function(start, end) { //start and end are both strings in military time format
+			var arbitraryDate = '1971 01 01 '; //space intentionally left at the end of the string
+			var startTime = Date.parse(arbitraryDate + start);
+			var endTime = Date.parse(arbitraryDate + end);
+			return (startTime < endTime);
+		}
+
 		/***************/
 		/*  ADMIN PAGE */
 		/***************/
@@ -944,13 +971,17 @@
 			});
 		};
 
+		this.showAdminErrorLast = false; //true if user tried to remove last admin and error message needs to appear
+
 		//handler connected to each 'remove' button, that will remove the admin account associated with adminID 
 		this.removeAdmin = function(adminID) {
 			//for some reason doing $http.delete didn't work, so doing it as a post
 			$http.post('/admin/delete', {_id: adminID}).success(function(data, status, headers, config) {
 				me.getAdminUsernames(); //refreshes the admin list to reflect this delete
 			}).error(function(data, status ,headers, config) {
-				//popup an error message or something? haven't decided
+				if (status === 401) {
+					me.showAdminErrorLast = true;
+				}
 			});	
 		};
 
@@ -963,18 +994,25 @@
 
 		this.showAdminErrorUsername = false;
 		this.showAdminErrorPassword = false;
+		this.showAdminErrorMissing = false;
 
 		//called when user clicks 'save new admin account' button
 		this.addNewAdmin = function() {
 			//upon submitting, clear previous error messages
 			this.showAdminErrorPassword = false;
 			this.showAdminErrorUsername = false;
-			
+			this.showAdminErrorMissing = false;
+			this.showAdminErrorLast = false;
 			//read the input text
 			var newUsername = $('#new-admin-username').val();
 			var newPass = $('#new-admin-password').val();
 			var newPassConfirm = $('#new-admin-confirm-password').val();
 			var newType = $('#new-admin-type').val();
+
+			if (newUsername.length == 0 || newPass.length == 0 || newPassConfirm.length == 0) {
+				this.showAdminErrorMissing = true;
+				return;
+			}
 
 			//confirm that they typed same password twice
 			if(newPass !== newPassConfirm) {
@@ -988,8 +1026,10 @@
 				me.clearAdminTextFields();
 				me.getAdminUsernames(); //refresh the admin list to reflect newly added account
 			}).error(function(data, status, headers, config) {
-				if (status === 403) {
+				if (status === 400) {
 					me.showAdminErrorUsername = true;
+				} else if (status === 403) {
+					me.showAdminErrorPassword = true;
 				} else {
 					window.alert('something very wrong in addNewAdmin()'); //remove after debugging
 				}
@@ -1007,23 +1047,10 @@
 			this.clearAdminTextFields();
 			this.showNewAdmin = false;
 			this.showAdminErrorPassword = false;
-			this.showAdminErrorUsername = false;			
+			this.showAdminErrorUsername = false;	
+			this.showAdminErrorMissing = false;
+			this.showAdminErrorLast = false;		
 		}
-
-		// this.validUsername = true;
-
-		// this.checkValidUsername = function() {
-		// 	var check_user = $('#new-admin-username').val();
-		// 	$http.post('/admin/check-username', {username: check_user}).success(function(data, status, headers, config) {
-		// 		if (data.content.valid) {
-		// 			this.validUsername = true;
-		// 		} else {
-		// 			this.validUsername = false;
-		// 		}
-		// 	}).error(function(data, status, headers, config) {
-
-		// 	});
-		// }
 
 		/***************/
 		/*  ADD GUESTS */

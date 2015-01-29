@@ -9,7 +9,7 @@ var _ = require('underscore');
 /*
 	GET /appointments: Return all appointments
 */
-router.get('/', utils.checkAdmin, function(req, res) {
+router.get('/', utils.checkVolunteer, function(req, res) {
 	Appointment.find({}, function(err, appointments) {
 		utils.sendSuccessResponse(res, appointments);
 	});
@@ -21,9 +21,8 @@ router.get('/', utils.checkAdmin, function(req, res) {
 	- date: Date object representing the day of appointment
 	- timeslot: Array of Strings representing the time interval of appointment
 	- firstName, lastName: Strings identifying the guest
-	- birthday: Guest's birthday, as a String
+	- birthday: Guest's birthday, as an Object with year, month, and day.
 	- premade: boolean representing whether a premade bag is accepted
-	- waitlist: boolean representing whether this is a waitlisted array
 */
 router.post('/', function(req, res) {
 	birthday = new Date(req.body.birthday.year, req.body.birthday.month, req.body.birthday.day);
@@ -73,7 +72,6 @@ router.post('/', function(req, res) {
 								});
 								break;
 							case 'closed':
-							console.log('filled');
 								utils.sendErrResponse(res, '401', 'This timeslot is filled.');
 								break;
 							default:
@@ -82,7 +80,6 @@ router.post('/', function(req, res) {
 						}
 					});
 				} else {
-					console.log('made');
 					utils.sendErrResponse(res, 401, 'An appointment has already been made.');
 				}
 			});
@@ -220,43 +217,23 @@ router.post('/cancel', function(req, res){
 });
 
 /*
-	GET /:time - given an input time as a URL param, return status of timeslot
+	PUT /time - given an input date and timeslot, return appointments at that time
 	Request body/Parameters:
-	- time: Any string that can be parsed by moment, as defined at momentjs.com
+	- date: a Date parseable string or object
+	- timeslot: an array of strings in HH:MM military time
 	Returns
-	- status: a string taking on the states 'open', 'closed', or 'waitlist'
+	- apps: an array of appointments at the time.
 */
-router.get('/:time', function(req, res) {
-	var dateObj = moment(req.params.time);
-	var month = dateObj.month();
-	var day = dateObj.date();
-	var year = dateObj.year();
-	var data = {
-		date: new Date(year, month, day),
-		timeslot: dateObj.hour() + ':' + dateObj.minute()
-	};
-	checkTime(data, function(err, status) {
-		if (err) {
-			utils.sendErrResponse(res, 403, err);
-		} else {
-			utils.sendSuccessResponse(res, status);
-		}
-	});
-});
-
-router.put('/time', function(req, res) {
+router.put('/time', utils.checkVolunteer, function(req, res) {
 	var data = {
 		date: utils.midnightDate(new Date(req.body.date)),
 		timeslot: req.body.timeslot
 	};
 	Appointment.find(data, function(err, apps) {
-		console.log(apps)
 		if (err) {
 			utils.sendErrResponse(res, 403, err);
 		} else {
-			console.log(apps)
 			utils.sendSuccessResponse(res, apps);
-			//res.json(apps);
 		}
 	});
 });
@@ -358,17 +335,6 @@ router.put('/:id', function(req, res) {
 			appointment.save(function(err) {
 				utils.sendSuccessResponse(res, appointment);
 			});
-		}
-	});
-});
-
-//TODO: Check that the signed-in user is the one deleting the appointment
-router.delete('/id', function(req, res) {
-	Appointment.remove({id: req.params.id}, function(err, appointment) {
-		if (err) {
-			utils.sendErrResponse(res, 404, err);
-		} else {
-			utils.sendSuccessResponse(res, appointment);
 		}
 	});
 });

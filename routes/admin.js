@@ -4,26 +4,20 @@ var Admin = require('../models/admin').Admin;
 var utils = require('../utils/utils');
 var bcrypt = require('bcrypt');
 
-// GET /admin - return a list of all admins
-// TODO: Check log-in status
+/*
+	GET /admin - Render a view for administrators to modify their settings.
+*/
 router.get('/', function(req, res) {
-	// Admin.find({}, function(err, admins) {
-	// 	utils.sendSuccessResponse(res, admins);
-	// });
 	res.render('admintest');
 });
 
 /*
-	POST /admin - create a new admin user
-	Request body: 
-	- username: String
-	- password: String
+	GET /admin/usernames - return an array of all admin usernames
 */
-
-
-//GET /admin/usernames - return list of all admin usernames
 router.get('/usernames', function(req, res) {
-	Admin.find({}, function(err, admins) {
+	Admin.find({})
+	.sort({username: 1})
+	.exec(function(err, admins) {
 		if (err) {
 			utils.sendErrResponse(res, 404, err);
 		} else {
@@ -42,15 +36,14 @@ router.get('/usernames', function(req, res) {
 	- username: Username for the new admin. Error returned if it's already taken.
 	- password: Password for the new admin. Encrypted by bcrypt.
 	- type: Permissions level for the new admin user.
+	Restrictions:
+	- Current user must be an admin level user.
 */
-router.post('/', function(req,res) {
+router.post('/', utils.checkAdmin, function(req,res) {
 	var data = {
 		username: req.body.username,
 		type: req.body.type
-	}
-
-	console.log(data)
-	console.log(req.body)
+	};
 	Admin.findOne({username: data.username}, function(err, admin) {
 		if (err) {
 			utils.sendErrResponse(res, 404, err);
@@ -66,20 +59,8 @@ router.post('/', function(req,res) {
 					} else {
 						utils.sendSuccessResponse(res, 'User created.');
 					}
-				})
+				});
 			});
-		}
-	});
-});
-
-//DELETE /admin/delete - deletes an admin account based on its _id
-router.post('/delete', function(req, res) {
-	var myID = req.body._id;
-	Admin.remove({_id:myID}, function(err, admin) {
-		if (err) {
-			utils.sendErrResponse(res, 400, 'Could not remove account');
-		} else {
-			utils.sendSuccessResponse(res, admin);
 		}
 	});
 });
@@ -118,42 +99,62 @@ router.put('/', function(req, res) {
 	});
 });
 
-router.get('/check', function(req, res) {
-	utils.sendSuccessResponse(res, {name: req.session.name, id: req.session.userId, type: req.session.type});
+/*
+	POST /admin/delete - deletes an admin account. The DELETE verb had problems with
+		AngularJS, so using a POST instead.
+	Request body: 
+	- _id: ObjectId of the admin to be deleted.
+*/
+router.post('/delete', utils.checkAdmin, function(req, res) {
+	var myID = req.body._id;
+	Admin.findById(myID, function(err, user){
+		if (user.type == 'admin') {
+			Admin.find({type: 'admin'}, function(err, admins) {
+				if (admins.length == 1) {
+					utils.sendErrResponse(res, 401, 'Cannot remove the last admin.');
+				} else {
+					Admin.remove({_id:myID}, function(err, admin) {
+						if (err) {
+							utils.sendErrResponse(res, 400, 'Could not remove account');
+						} else {
+							utils.sendSuccessResponse(res, admin);
+						}
+					});
+				}
+			});
+		} else {
+			Admin.remove({_id: myID}, function(err, admin) {
+				if (err) {
+					utils.sendErrResponse(res, 400, 'Could not remove account');
+				} else {
+					utils.sendSuccessResponse(res, admin);
+				}
+			})
+		}
+	});
 });
 
-router.get('/session', function(req, res) {
-	utils.sendSuccessResponse(res, req.session);
+/*
+	GET /admin/check - return a JSON object for important session data.
+*/
+router.get('/check', function(req, res) {
+	utils.sendSuccessResponse(res, {name: req.session.name, id: req.session.userId, type: req.session.type});
 });
 
 /*
 	PUT /admin/logout - logs out a user and clears session cookies
 	Returns: 
-	String: 'Successfully logged out.'
+	- String: 'Successfully logged out.' or 'Already logged out.'
 */
-router.get('/logout', function(req, res) {
+router.put('/logout', function(req, res) {
 	if (req.session.name) {
 		req.session.name = null;
 		req.session.userId = null;
+		req.session.type = null;
 		utils.sendSuccessResponse(res, 'Successfully logged out.');
 	} else {
 		utils.sendSuccessResponse(res, 'Already logged out.');
 	}
-});
-
-// checks whether a given username is taken or not; might need to be fixed 
-//returns an error response if username is taken, returns success response with valid:true if username is available
-//to be called whenever admin types in a new username, so that an error message can display right underneath the text box
-router.post('/check-username', function(req, res) {
-	var check_username = req.body.username;
-	Admin.find({username: check_username}, function(err, admins) {
-		if (admins && admins.length > 0) {
-			var response = {valid: false};
-		} else {
-			var response = {valid: true};
-		}
-		utils.sendSuccessResponse(res, response); //returns true if username is available, false if username is taken
-	})
 });
 
 module.exports = router;
