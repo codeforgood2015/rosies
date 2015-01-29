@@ -85,7 +85,10 @@
 								{{ctrl.timeArrayToString(time.time)}} ({{tomorrowGuests[time.time].length}})</a>
 								<table class='tomorrow-guests'>
 									<tr ng-repeat='guest in tomorrowGuests[time.time]'> 
-										<td>Name: {{guest.firstName}} {{guest.lastName}}</td> <td>Bag: {{ctrl.displayYesNo(guest.premade);}}</td>
+											<td>{{guest.firstName}} {{guest.lastName}}</td>
+											<td ng-show = 'guest.premade' class = 'bag'>BAG</td>
+											<td ng-show = '!guest.premade'></td>
+											<td ng-show = 'guest.waitlist' class = 'waitlistPerson'>waitlist</td>
 									</tr>
 								</table>
 							</li>
