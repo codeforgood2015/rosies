@@ -845,7 +845,7 @@
 					me.clearDate();
 					me.getSpecialHours();
 				}).error(function(data, status, headers, config) {
-					window.alert('error in saveEditedSpecialHours');
+					window.alert('error in saveAddedSpecialHours');
 				});
 			}
 		}
