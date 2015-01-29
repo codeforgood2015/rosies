@@ -107,17 +107,29 @@ router.put('/', function(req, res) {
 */
 router.post('/delete', utils.checkAdmin, function(req, res) {
 	var myID = req.body._id;
-	Admin.find({type: 'admin'}, function(err, admins) {
-		if (admins.length == 1) {
-			utils.sendErrResponse(res, 401, 'Cannot remove the last admin.');
+	Admin.findById(myID, function(err, user){
+		if (user.type == 'admin') {
+			Admin.find({type: 'admin'}, function(err, admins) {
+				if (admins.length == 1) {
+					utils.sendErrResponse(res, 401, 'Cannot remove the last admin.');
+				} else {
+					Admin.remove({_id:myID}, function(err, admin) {
+						if (err) {
+							utils.sendErrResponse(res, 400, 'Could not remove account');
+						} else {
+							utils.sendSuccessResponse(res, admin);
+						}
+					});
+				}
+			});
 		} else {
-			Admin.remove({_id:myID}, function(err, admin) {
+			Admin.remove({_id: myID}, function(err, admin) {
 				if (err) {
 					utils.sendErrResponse(res, 400, 'Could not remove account');
 				} else {
 					utils.sendSuccessResponse(res, admin);
 				}
-			});
+			})
 		}
 	});
 });
