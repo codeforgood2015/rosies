@@ -6,8 +6,8 @@ var rulesSchema = mongoose.Schema({
 	maxCap: Number, 
 	maxWaitlist: Number,
 	time: [String], // military time string, should be size 2
-	date: String, // either day of week or a date string
-	repeat: Boolean //true if rule should repeat yearly
+	date: String, // either day of week or a date string yyyy-mm-dd
+	repeat: Boolean
 });
 
 module.exports.Rule = mongoose.model('Rule', rulesSchema);

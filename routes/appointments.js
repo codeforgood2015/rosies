@@ -163,7 +163,9 @@ var closedRules = function(myRule, day, times, callback){
 var dateToRules = function(dateObj, time, callback) {
 	var year = dateObj.getFullYear();
 	var month = dateObj.getMonth() + 1;
+	month = month >= 10 ? String(month) : '0' + String(month);
 	var date = dateObj.getDate();
+	date = date >= 10 ? String(date) : '0' + String(date);
 	var dateString = year + '-' + month + '-' + date;
 	if (time) {
 		Rule.find({date: dateString, time: time}, function(err, rules) {
