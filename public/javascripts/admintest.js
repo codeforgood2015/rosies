@@ -302,11 +302,11 @@
 			var hour = t[0];
 			var minute = t[1];
 			var AMPM = '';
-			if (Number.parse(hour) > 12) {
+			if (Number(hour) > 12) {
 				AMPM = 'PM';
-				hour = Number.parse(hour) - 12;
+				hour = Number(hour) - 12;
 				hour = hour.toString();
-			} else if (Number.parse(hour) == 12) {
+			} else if (Number(hour) == 12) {
 				AMPM = 'PM'
 			} else {
 				AMPM = 'AM';
@@ -920,7 +920,7 @@
 			var month = $('#select-month').val();
 			var day = $('#select-date').val();
 			var last_allowed_date = monthToNumber[month][1][(monthToNumber[month][1].length)-1];
-			if (month === 'February' && Number.parse(year)%4 == 0) {
+			if (month === 'February' && Number(year)%4 == 0) {
 				last_allowed_date = 29;
 			}
 			if (!year || !month || !day) {
