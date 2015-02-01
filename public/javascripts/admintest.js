@@ -151,31 +151,33 @@
 		}
 
 		this.timeArrayToString = function(timeArray){
-			start = timeArray[0].split(':');
-			end = timeArray[1].split(':');
-			if(Number(start[0]) > 12){
-				start[0] = Number(start[0]) - 12;
-				start[0] = String(start[0]);
-				start[2] = 'PM';
+			if(timeArray){
+				start = timeArray[0].split(':');
+				end = timeArray[1].split(':');
+				if(Number(start[0]) > 12){
+					start[0] = Number(start[0]) - 12;
+					start[0] = String(start[0]);
+					start[2] = 'PM';
+				}
+				else if (Number(start[0]) == 12){
+					start[2] = 'PM'
+				}
+				else{
+					start[2] = 'AM';
+				}
+				if(Number(end[0]) > 12){
+					end[0] = Number(end[0]) - 12;
+					end[0] = String(end[0]);
+					end[2] = 'PM';
+				}
+				else if (Number(end[0]) == 12){
+					end[2] = 'PM';
+				}
+				else{
+					end[2] = 'AM';
+				}
+				return(start[0] + ':' + start[1] + ' ' + start[2] + ' to ' + end[0] + ':' + end[1] + ' ' + end[2])
 			}
-			else if (Number(start[0]) == 12){
-				start[2] = 'PM'
-			}
-			else{
-				start[2] = 'AM';
-			}
-			if(Number(end[0]) > 12){
-				end[0] = Number(end[0]) - 12;
-				end[0] = String(end[0]);
-				end[2] = 'PM';
-			}
-			else if (Number(end[0]) == 12){
-				end[2] = 'PM';
-			}
-			else{
-				end[2] = 'AM';
-			}
-			return(start[0] + ':' + start[1] + ' ' + start[2] + ' to ' + end[0] + ':' + end[1] + ' ' + end[2])
 		};
 		
 		//array of objects {time: sometime, show: false} where 'sometime' is a timeslot gotten from rule.time, a timeslot is just an array of two strings, start and end
@@ -315,11 +317,12 @@
 		}
 
 		this.convertDateToReadable = function(date) {
+		if(date){
 			var d = date.split('-'); //assumes dates come in form yyyy-mm-dd, as we inputed them
 			var year = d[0];
 			var month = d[1];
 			var date = d[2];
-			return month + '/' + date + '/' + year;
+			return month + '/' + date + '/' + year;		}
 		}
 
 		$scope.todayGuests = {};
@@ -757,8 +760,11 @@
 				maxWaitlist: w,
 				repeat: r
 			};
+
+			console.log("got here")
 			$http.put('/rules/' + id, data).success(function(data, status, headers, config) {
 				me.getSpecialHours();
+				console.log("got here 2")
 			}).error(function(data, status, headers, config) {
 				window.alert('error in saveEditedSpecialHours');
 			});

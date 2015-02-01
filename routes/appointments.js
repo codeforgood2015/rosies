@@ -61,7 +61,8 @@ router.post('/', function(req, res) {
 								Appointment.find({$and: [{date: data.date}, {$not: {waitlist: 0}}]})
 								.sort({waitlist: -1})
 								.exec(function(err, appointments) {
-									if (appointments) {
+									if (appointments && appointments.length > 0) {
+										console.log(appointments)
 										data.waitlist = appointments[0].waitlist + 1;
 									} else {
 										data.waitlist = 1;
@@ -72,6 +73,7 @@ router.post('/', function(req, res) {
 								});
 								break;
 							case 'closed':
+								console.log('closed')
 								utils.sendErrResponse(res, '401', 'This timeslot is filled.');
 								break;
 							default:
@@ -170,6 +172,7 @@ var dateToRules = function(dateObj, time, callback) {
 	if (time) {
 		Rule.find({date: dateString, time: time}, function(err, rules) {
 			if (rules.length == 0) {
+				console.log('hi')
 				Rule.find({date: dayString(dateObj.getDay()), time:time}, function(err, defaultRules) {
 					callback(err, defaultRules);
 				});
@@ -254,7 +257,13 @@ var checkTime = function(data, callback) {
 		date: data.date, 
 		timeslot: data.timeslot
 	}, function(err, appointments) {
-		Rule.find({date: data.date, timeslot: data.timeslot}, function(err, rules) {
+		var year = data.date.getFullYear();
+		var month = data.date.getMonth() + 1;
+		month = month >= 10 ? String(month) : '0' + String(month);
+		var date = data.date.getDate();
+		date = date >= 10 ? String(date) : '0' + String(date);
+		var dateString = year + '-' + month + '-' + date;
+		Rule.find({date: dateString, time: data.timeslot}, function(err, rules) {
 			if (rules.length == 0) {
 				Rule.findOne({date: dayString(data.date.getDay()), time: data.timeslot}, function(err, rule) {
 					if (rule) {
